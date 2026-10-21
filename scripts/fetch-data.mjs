@@ -35,7 +35,7 @@ async function listRepos() {
   return all;
 }
 
-const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json)$|checksums?/i;
+const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i;
 
 const repos = (await listRepos()).filter(
   (r) =>

@@ -1,0 +1,52 @@
+name: Build & Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 */3 * * *'        # 3시간마다 릴리스 정보 갱신
+  workflow_dispatch:               # 수동 실행 (Actions 탭 → Run workflow)
+  repository_dispatch:             # 다른 저장소에서 릴리스 직후 즉시 갱신 요청
+    types: [release-published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch repos & releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ORG: ${{ github.repository_owner }}
+        run: node scripts/fetch-data.mjs
+      - name: Assemble site
+        run: |
+          mkdir -p _site/data
+          cp index.html config.json _site/
+          cp data/repos.json _site/data/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

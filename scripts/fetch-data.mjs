@@ -1,6 +1,6 @@
 // MinaryHub 공개 저장소 + 최신 릴리스 정보를 수집해 data/repos.json 으로 저장합니다.
 // GitHub Actions 에서 GITHUB_TOKEN 으로 실행됩니다. (로컬: GITHUB_TOKEN=... node scripts/fetch-data.mjs)
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 
 const ORG = process.env.ORG || 'MinaryHub';
 const OUT = process.env.OUT || 'data/repos.json';
@@ -37,6 +37,34 @@ async function listRepos() {
 
 const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i;
 
+// 아이콘·스크린샷: config.overrides → 이 사이트의 screenshots/<저장소>/ → 앱 저장소의 screenshots/, docs/images/ 등
+const IMG = /\.(png|jpe?g|webp|gif)$/i;
+const SHOT_PATH = /(^|\/)(screenshots?|docs\/(images|img|screenshots?)|\.github\/screenshots?)\/[^/]+$|(^|\/)screenshot[^/]*$/i;
+const ICON_GUESS = [/(^|\/)(app[_-]?)?icon(-?(512|256))?\.png$/i, /(^|\/)logo\.png$/i, /targetsize-256_altform-unplated\.png$/i, /Square310x310Logo\.png$/i];
+const raw = (r, p) => `https://raw.githubusercontent.com/${ORG}/${r.name}/${r.default_branch}/${p.split('/').map(encodeURIComponent).join('/')}`;
+
+async function localShots(name) {
+  try {
+    const dir = `screenshots/${name}`;
+    return (await readdir(dir)).filter((f) => IMG.test(f)).sort().map((f) => `${dir}/${encodeURIComponent(f)}`);
+  } catch { return []; }
+}
+
+async function repoMedia(r, o) {
+  const tree = (await gh(`/repos/${ORG}/${r.name}/git/trees/${r.default_branch}?recursive=1`))?.tree || [];
+  const files = tree.filter((f) => f.type === 'blob' && IMG.test(f.path) && !/node_modules|tests?\/|fixtures|goldens/i.test(f.path));
+  const resolve = (p) => (/^https?:|^screenshots\//.test(p) ? p : raw(r, p));
+  let icon = o.icon ? resolve(o.icon) : null;
+  if (!icon) for (const re of ICON_GUESS) {
+    const f = files.filter((x) => re.test(x.path) && x.size > 1500).sort((a, b) => a.size - b.size)[0];
+    if (f) { icon = raw(r, f.path); break; }
+  }
+  let screenshots = (o.screenshots || []).map(resolve);
+  if (!screenshots.length) screenshots = await localShots(r.name);
+  if (!screenshots.length) screenshots = files.filter((f) => SHOT_PATH.test(f.path)).map((f) => f.path).sort().slice(0, 6).map((p) => raw(r, p));
+  return { icon, screenshots };
+}
+
 const repos = (await listRepos()).filter(
   (r) =>
     !r.private &&
@@ -51,6 +79,7 @@ const result = [];
 for (const r of repos) {
   const rel = await gh(`/repos/${ORG}/${r.name}/releases/latest`);
   const o = overrides[r.name] || {};
+  const media = await repoMedia(r, o);
   result.push({
     name: r.name,
     displayName: o.displayName || r.name,
@@ -61,6 +90,7 @@ for (const r of repos) {
     topics: r.topics || [],
     stars: r.stargazers_count,
     pushedAt: r.pushed_at,
+    ...media,
     release: rel && {
       tag: rel.tag_name,
       name: rel.name || rel.tag_name,

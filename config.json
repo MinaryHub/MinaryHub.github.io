@@ -3,5 +3,13 @@
   "tagline": "MinaryHub에서 만드는 도구들을 소개하고, 최신 빌드를 바로 내려받을 수 있는 곳입니다.",
   "hide": ["Kerminal.Release", "DeskCue.Release", "VirtualDesktopIndicator"],
   "order": [],
-  "overrides": {}
+  "overrides": {
+    "Kreate": { "icon": "apps/kreate/assets/kreate.png" },
+    "Curvo": { "icon": "ProjectorWarp/packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png" },
+    "DeskCue": { "icon": "packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png" },
+    "Kerminal": { "icon": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png" },
+    "HanEng": { "icon": "assets/icon-256.png" },
+    "NetworkScanner": { "icon": "assets/app.png" },
+    "Kite": { "icon": "build/png/256.png" }
+  }
 }

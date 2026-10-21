@@ -34,7 +34,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/data
-          cp index.html config.json _site/
+          cp index.html config.json logo.webp _site/
           cp data/repos.json _site/data/
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3

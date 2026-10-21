@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MinaryHub</title>
 <meta name="description" content="MinaryHub 공개 프로젝트 소개 및 최신 빌드 다운로드">
+<link rel="icon" type="image/webp" href="logo.webp">
+<link rel="apple-touch-icon" href="logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -12,14 +14,14 @@
   :root {
     --bg: #f7f7f5; --surface: #ffffff; --surface-2: #f0f0ed; --border: #e3e3de;
     --text: #1b1b19; --muted: #6b6b66; --accent: #2f5bea; --accent-ink: #ffffff;
-    --accent-soft: #e8eefe; --ok: #1f8a4c; --radius: 14px;
+    --accent-soft: #e8eefe; --ok: #1f8a4c; --radius: 14px; --logo-bg: transparent; --logo-pad: 0;
     --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #111113; --surface: #19191c; --surface-2: #222226; --border: #2c2c31;
       --text: #ececee; --muted: #9a9aa3; --accent: #7c9cff; --accent-ink: #0d0d10;
-      --accent-soft: #1f2640; --ok: #4cc47f; --shadow: none;
+      --accent-soft: #1f2640; --ok: #4cc47f; --shadow: none; --logo-bg: #f3f4ee; --logo-pad: 3px;
     }
   }
   * { box-sizing: border-box; }
@@ -30,8 +32,7 @@
 
   header { padding: 56px 0 28px; }
   .brand { display: flex; align-items: center; gap: 12px; }
-  .logo { width: 40px; height: 40px; border-radius: 10px; background: var(--text); color: var(--bg);
-    display: grid; place-items: center; font: 600 18px "JetBrains Mono", monospace; }
+  .logo { width: 48px; height: 48px; border-radius: 50%; flex: none; background: var(--logo-bg); padding: var(--logo-pad); }
   h1 { font-size: 30px; margin: 0; letter-spacing: -.02em; }
   .tagline { color: var(--muted); margin: 10px 0 0; max-width: 620px; }
   .meta { color: var(--muted); font-size: 13px; margin-top: 14px; }
@@ -87,7 +88,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><div class="logo">M</div><h1 id="title">MinaryHub</h1></div>
+    <div class="brand"><img class="logo" src="logo.webp" alt="" width="48" height="48"><h1 id="title">MinaryHub</h1></div>
     <p class="tagline" id="tagline"></p>
     <div class="meta" id="meta"></div>
   </header>

@@ -173,7 +173,7 @@
         homepage: r.homepage || '', language: r.language, topics: r.topics || [], pushedAt: r.pushed_at,
         release: rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
           publishedAt: rel.published_at, prerelease: rel.prerelease,
-          assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json)$|checksums?/i.test(a.name))
+          assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
             .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) } };
     }));
     repos.sort((a, b) => (!!b.release - !!a.release) || new Date(b.release?.publishedAt || b.pushedAt) - new Date(a.release?.publishedAt || a.pushedAt));
@@ -184,7 +184,8 @@
 
   function assetBtn(a, primary) {
     const { os, arch } = classify(a.name);
-    const label = primary ? `${OS_LABEL[os]}${arch ? ' ' + arch : ''}용 다운로드` : a.name;
+    const archLabel = os === 'mac' ? ({ arm64: 'Apple Silicon', x64: 'Intel', universal: 'Universal' }[arch] || '') : arch;
+    const label = primary ? `${OS_LABEL[os]}${archLabel ? ' ' + archLabel : ''}용 다운로드` : a.name;
     return `<a class="btn${primary ? ' primary' : ''}" href="${esc(a.url)}" title="${esc(a.name)}" rel="nofollow">
       <span class="l">${ICONS[os]}<span class="fname">${esc(label)}</span></span><span class="sz">${fmtSize(a.size)}</span></a>`;
   }
@@ -195,7 +196,11 @@
     let dl = '';
     if (rel && rel.assets.length) {
       const scored = rel.assets.map((a) => { const c = classify(a.name);
-        return { a, s: (c.os === userOS ? 10 : 0) + (c.arch === 'x64' || c.arch === 'universal' ? 2 : 0) + (/setup|install|\.msi$|\.dmg$/i.test(a.name) ? 1 : 0) }; })
+        const archScore = userOS === 'mac'
+          ? ({ universal: 3, arm64: 2, x64: 1 }[c.arch] || 0)   // Mac: Apple Silicon 우선
+          : ({ x64: 2, universal: 2 }[c.arch] || 0);
+        const fmtScore = userOS === 'linux' ? (/\.(appimage|deb|tar\.gz)$/i.test(a.name) ? 1 : 0) : (/\.zip$/i.test(a.name) ? 0.5 : 0);
+        return { a, s: (c.os === userOS ? 10 : 0) + archScore + fmtScore + (/setup|install|\.msi$|\.dmg$/i.test(a.name) ? 1 : 0) }; })
         .sort((x, y) => y.s - x.s);
       const best = scored[0].s >= 10 ? scored[0].a : null;
       const rest = rel.assets.filter((a) => a !== best);

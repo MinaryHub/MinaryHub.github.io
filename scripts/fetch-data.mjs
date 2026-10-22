@@ -50,6 +50,18 @@ async function localShots(name) {
   } catch { return []; }
 }
 
+// 마지막 대안: README에 넣어 둔 이미지(배지·아이콘 제외)
+const BADGE = /shields\.io|badge|badgen|img\.shields|codecov|github\.com\/[^/]+\/[^/]+\/(actions|workflows)|icon|logo/i;
+async function readmeImages(r) {
+  const md = (await gh(`/repos/${ORG}/${r.name}/readme`))?.content;
+  if (!md) return [];
+  const text = Buffer.from(md, 'base64').toString('utf8');
+  const urls = [...text.matchAll(/!\[[^\]]*\]\(\s*<?([^)\s>]+)>?[^)]*\)|<img[^>]+src=["']([^"']+)["']/gi)].map((m) => m[1] || m[2]);
+  return [...new Set(urls)].filter((u) => !BADGE.test(u) && (IMG.test(u.split(/[?#]/)[0]) || /user-attachments|githubusercontent/.test(u)))
+    .map((u) => /^https?:/.test(u) ? u.replace(/github\.com\/([^/]+\/[^/]+)\/blob\//, 'raw.githubusercontent.com/$1/') : raw(r, u.replace(/^\.?\//, '')))
+    .slice(0, 10);
+}
+
 async function repoMedia(r, o) {
   const tree = (await gh(`/repos/${ORG}/${r.name}/git/trees/${r.default_branch}?recursive=1`))?.tree || [];
   const files = tree.filter((f) => f.type === 'blob' && IMG.test(f.path) && !/node_modules|tests?\/|fixtures|goldens/i.test(f.path));
@@ -61,7 +73,8 @@ async function repoMedia(r, o) {
   }
   let screenshots = (o.screenshots || []).map(resolve);
   if (!screenshots.length) screenshots = await localShots(r.name);
-  if (!screenshots.length) screenshots = files.filter((f) => SHOT_PATH.test(f.path)).map((f) => f.path).sort().slice(0, 6).map((p) => raw(r, p));
+  if (!screenshots.length) screenshots = files.filter((f) => SHOT_PATH.test(f.path)).map((f) => f.path).sort().slice(0, 10).map((p) => raw(r, p));
+  if (!screenshots.length) screenshots = await readmeImages(r);
   return { icon, screenshots };
 }
 

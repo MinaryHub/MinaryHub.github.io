@@ -83,7 +83,9 @@ async function repoMedia(r, o) {
 async function latestRelease(name) {
   const list = ((await gh(`/repos/${ORG}/${name}/releases?per_page=30`)) || []).filter((x) => !x.draft);
   list.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
-  return list.find((x) => !x.prerelease) || list[0] || null;
+  // 설치 파일이 붙은 정식 릴리스를 우선 (파일 없는 릴리스·빌드 중인 릴리스는 건너뜀)
+  const hasFiles = (x) => (x.assets || []).some((a) => !SKIP_ASSET.test(a.name));
+  return list.find((x) => !x.prerelease && hasFiles(x)) || list.find((x) => !x.prerelease) || list[0] || null;
 }
 
 const repos = (await listRepos()).filter(

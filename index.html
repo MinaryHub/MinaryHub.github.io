@@ -180,6 +180,28 @@
     return loadFromApi();
   }
 
+  // 실시간 보정: repos.json 생성 이후 조직에 새로 발행된 릴리스가 있으면 해당 저장소만 API로 다시 읽어 반영
+  // (조직 이벤트 1회 + 바뀐 저장소 수만큼 호출, 5분 캐시 → 방문자 IP당 60회 제한에 여유)
+  const relOf = (rel) => rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
+    publishedAt: rel.published_at, prerelease: rel.prerelease,
+    assets: (rel.assets || []).filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
+      .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) };
+  async function liveReleases(data) {
+    const KEY = 'mh-live-v1';
+    try { const c = JSON.parse(localStorage.getItem(KEY)); if (c && c.g === data.generatedAt && Date.now() - c.t < 5*60*1000) return c.d; } catch {}
+    const api = (p) => fetch('https://api.github.com' + p, { headers: { Accept: 'application/vnd.github+json' } })
+      .then((r) => r.status === 404 ? null : r.ok ? r.json() : Promise.reject(new Error('GitHub API ' + r.status)));
+    const since = new Date(data.generatedAt);
+    const events = (await api(`/orgs/${ORG}/events?per_page=100`)) || [];
+    const names = new Set(data.repos.map((r) => r.name));
+    const changed = [...new Set(events.filter((e) => e.type === 'ReleaseEvent' && new Date(e.created_at) > since)
+      .map((e) => e.repo.name.split('/')[1]).filter((n) => names.has(n)))];
+    const d = {};
+    await Promise.all(changed.map(async (n) => { d[n] = relOf(await api(`/repos/${ORG}/${n}/releases/latest`).catch(() => undefined)); }));
+    try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), g: data.generatedAt, d })); } catch {}
+    return d;
+  }
+
   async function loadFromApi() {
     const KEY = 'mh-cache-v1';
     try { const c = JSON.parse(localStorage.getItem(KEY)); if (c && Date.now() - c.t < 30*60*1000) return c.d; } catch {}
@@ -299,10 +321,27 @@
       $('#tagline').textContent = cfg.tagline || '';
       const data = await loadData();
       const repos = data.repos;
-      const nRel = repos.filter((r) => r.release).length;
-      $('#meta').innerHTML = `공개 프로젝트 <b>${repos.length}</b>개 · 다운로드 가능 <b>${nRel}</b>개 · 정보 갱신 ${ago(data.generatedAt)}` +
-        (userOS !== 'other' ? ` · 내 환경: <b>${OS_LABEL[userOS]}</b>` : '');
-      $('#grid').innerHTML = repos.length ? repos.map(card).join('') : '<div class="state">공개된 프로젝트가 없습니다.</div>';
+      const render = (nLive) => {
+        const nRel = repos.filter((r) => r.release).length;
+        $('#meta').innerHTML = `공개 프로젝트 <b>${repos.length}</b>개 · 다운로드 가능 <b>${nRel}</b>개 · 정보 갱신 ${ago(data.generatedAt)}${nLive ? ` · 새 릴리스 ${nLive}건 실시간 반영` : ''}` +
+          (userOS !== 'other' ? ` · 내 환경: <b>${OS_LABEL[userOS]}</b>` : '');
+        $('#grid').innerHTML = repos.length ? repos.map(card).join('') : '<div class="state">공개된 프로젝트가 없습니다.</div>';
+        if (repos.length) applyFilter();
+      };
+      render(0);
+      if (!data.live) liveReleases(data).then((d) => {
+        let n = 0;
+        for (const r of repos) if (r.name in d && d[r.name] !== undefined) { r.release = d[r.name]; n++; }
+        if (!n) return;
+        const cfgOrder = (cfg.order || []).map((x) => x.toLowerCase());
+        repos.sort((a, b) => {
+          const ia = cfgOrder.indexOf(a.name.toLowerCase()), ib = cfgOrder.indexOf(b.name.toLowerCase());
+          if (ia !== -1 || ib !== -1) return (ia === -1 ? 1e9 : ia) - (ib === -1 ? 1e9 : ib);
+          if (!!a.release !== !!b.release) return a.release ? -1 : 1;
+          return new Date(b.release?.publishedAt || b.pushedAt) - new Date(a.release?.publishedAt || a.pushedAt);
+        });
+        render(n);
+      }).catch(() => {});
       $('#q').addEventListener('input', applyFilter);
       $('#chips').addEventListener('click', (e) => {
         const b = e.target.closest('.chip'); if (!b) return;

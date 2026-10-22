@@ -108,6 +108,14 @@
   .foot a { color: var(--accent); text-decoration: none; }
   .norel { font-size: 13px; color: var(--muted); background: var(--surface-2); border-radius: 10px; padding: 10px 14px; }
 
+  .star { display: inline-flex; align-items: center; gap: 5px; font: 500 12px "JetBrains Mono", monospace;
+    color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 3px 9px; cursor: pointer; }
+  .star:hover { border-color: var(--accent); color: var(--text); }
+  .star[aria-pressed="true"] { color: #c98a12; border-color: #c98a12; }
+  .star:disabled { opacity: .6; cursor: progress; }
+  .auth { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .auth button { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; }
   .state { text-align: center; color: var(--muted); padding: 60px 0; }
   footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--border); }
   @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 26px; } header { padding-top: 36px; } }
@@ -119,6 +127,7 @@
     <div class="brand"><img class="logo" src="logo.webp" alt="" width="48" height="48"><h1 id="title">MinaryHub</h1></div>
     <p class="tagline" id="tagline"></p>
     <div class="meta" id="meta"></div>
+    <div class="auth" id="auth" hidden></div>
   </header>
 
   <div class="toolbar">
@@ -243,7 +252,7 @@
       r.name.toLowerCase() !== ORG.toLowerCase() + '.github.io').map(async (r) => {
       const rel = await api(`/repos/${ORG}/${r.name}/releases?per_page=30`).then(pickLatest).catch(() => null);
       return { name: r.name, displayName: r.name, description: r.description || '', url: r.html_url,
-        homepage: r.homepage || '', language: r.language, topics: r.topics || [], pushedAt: r.pushed_at,
+        homepage: r.homepage || '', language: r.language, topics: r.topics || [], pushedAt: r.pushed_at, stars: r.stargazers_count,
         release: rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
           publishedAt: rel.published_at, prerelease: rel.prerelease,
           assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
@@ -341,9 +350,74 @@
       ${shotsHtml(r)}
       ${dl}
       <div class="foot"><span>${rel ? '릴리스 ' + fmtDate(rel.publishedAt) : '최근 업데이트 ' + fmtDate(r.pushedAt)}</span>
-        </div>
+        <button class="star" type="button" data-repo="${esc(r.name)}" aria-pressed="false" title="GitHub 별 주기"><span class="si">☆</span><span class="sn">${Number(r.stars) || 0}</span></button></div>
     </article>`;
   }
+
+  // ★ GitHub 별: 팝업으로 GitHub App 로그인 → 토큰은 이 브라우저(localStorage)에만 보관
+  const STAR_API = 'https://minaryhub-star.vercel.app';
+  const AUTH_KEY = 'mh-star-auth';
+  const starred = {};   // repo -> true/false (로그인한 사용자 기준)
+  let auth = null, me = null, pendingStar = null;
+  try { auth = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch {}
+  if (auth && auth.expiresAt && auth.expiresAt < Date.now()) auth = null;
+  const saveAuth = (a) => { auth = a; try { a ? localStorage.setItem(AUTH_KEY, JSON.stringify(a)) : localStorage.removeItem(AUTH_KEY); } catch {} };
+  const gh = (method, path) => fetch('https://api.github.com' + path, { method,
+    headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + auth.token, 'X-GitHub-Api-Version': '2022-11-28' } })
+    .then((r) => { if (r.status === 401) { logout(); throw new Error('auth'); } return r; });
+
+  function paintStar(btn) {
+    const on = !!starred[btn.dataset.repo];
+    btn.setAttribute('aria-pressed', on);
+    btn.querySelector('.si').textContent = on ? '★' : '☆';
+    btn.title = auth ? (on ? '별 취소' : '별 주기') : 'GitHub 로그인 후 별 주기';
+  }
+  function paintStars() { document.querySelectorAll('.star').forEach(paintStar); }
+  function paintAuth() {
+    const el = $('#auth');
+    if (!auth) { el.hidden = true; el.innerHTML = ''; return; }
+    el.hidden = false;
+    el.innerHTML = `GitHub: <b>${esc(me || '로그인됨')}</b> · <button type="button" id="logout">로그아웃</button>`;
+    $('#logout').onclick = logout;
+  }
+  function logout() { saveAuth(null); me = null; for (const k in starred) delete starred[k]; paintAuth(); paintStars(); }
+  async function loadStarState() {
+    if (!auth) return;
+    try {
+      const u = await gh('GET', '/user'); if (u.ok) me = (await u.json()).login; paintAuth();
+      await Promise.all([...new Set([...document.querySelectorAll('.star')].map((b) => b.dataset.repo))].map(async (n) => {
+        const r = await gh('GET', `/user/starred/${ORG}/${n}`); starred[n] = r.status === 204;
+      }));
+      paintStars();
+    } catch {}
+  }
+  async function toggleStar(btn) {
+    const n = btn.dataset.repo, on = !!starred[n];
+    btn.disabled = true;
+    try {
+      const r = await gh(on ? 'DELETE' : 'PUT', `/user/starred/${ORG}/${n}`);
+      if (r.status !== 204) throw new Error('GitHub ' + r.status);
+      starred[n] = !on;
+      document.querySelectorAll(`.star[data-repo="${CSS.escape(n)}"]`).forEach((b) => {
+        const c = b.querySelector('.sn'); c.textContent = Math.max(0, (+c.textContent || 0) + (on ? -1 : 1)); paintStar(b); });
+    } catch (e) { if (e.message !== 'auth') alert('별을 바꾸지 못했습니다: ' + e.message); }
+    finally { btn.disabled = false; }
+  }
+  window.addEventListener('message', (e) => {
+    if (e.origin !== STAR_API || !e.data || e.data.type !== 'mh-star-auth') return;
+    if (e.data.error) { alert('GitHub 로그인 실패: ' + e.data.error); pendingStar = null; return; }
+    saveAuth({ token: e.data.token, expiresAt: e.data.expiresAt });
+    const p = pendingStar; pendingStar = null;
+    loadStarState().then(() => { const b = p && document.querySelector(`.star[data-repo="${CSS.escape(p)}"]`); if (b && !starred[p]) toggleStar(b); });
+  });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.star'); if (!btn) return;
+    if (auth) return toggleStar(btn);
+    pendingStar = btn.dataset.repo;
+    const w = 520, h = 680, x = Math.max(0, (screen.width - w) / 2), y = Math.max(0, (screen.height - h) / 2);
+    if (!window.open(STAR_API + '/api/login', 'mh-star-login', `popup,width=${w},height=${h},left=${x},top=${y}`))
+      alert('팝업이 차단되었습니다. 이 사이트의 팝업을 허용해 주세요.');
+  });
 
   let filter = 'all';
   function applyFilter() {
@@ -370,8 +444,10 @@
           (userOS !== 'other' ? ` · 내 환경: <b>${OS_LABEL[userOS]}</b>` : '');
         $('#grid').innerHTML = repos.length ? repos.map(card).join('') : '<div class="state">공개된 프로젝트가 없습니다.</div>';
         if (repos.length) applyFilter();
+        paintStars();
       };
       render(0);
+      paintAuth(); loadStarState();
       if (!data.live) liveReleases(data, cfg).then((d) => {
         let n = 0;
         for (const r of repos) if (d.rel[r.name] !== undefined) { r.release = d.rel[r.name]; n++; }

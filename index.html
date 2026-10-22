@@ -186,6 +186,8 @@
     publishedAt: rel.published_at, prerelease: rel.prerelease,
     assets: (rel.assets || []).filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
       .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) };
+  const pickLatest = (list) => { list = (list || []).filter((x) => !x.draft)
+    .sort((a, b) => new Date(b.published_at) - new Date(a.published_at)); return list.find((x) => !x.prerelease) || list[0] || null; };
   async function liveReleases(data) {
     const KEY = 'mh-live-v1';
     try { const c = JSON.parse(localStorage.getItem(KEY)); if (c && c.g === data.generatedAt && Date.now() - c.t < 5*60*1000) return c.d; } catch {}
@@ -197,7 +199,7 @@
     const changed = [...new Set(events.filter((e) => e.type === 'ReleaseEvent' && new Date(e.created_at) > since)
       .map((e) => e.repo.name.split('/')[1]).filter((n) => names.has(n)))];
     const d = {};
-    await Promise.all(changed.map(async (n) => { d[n] = relOf(await api(`/repos/${ORG}/${n}/releases/latest`).catch(() => undefined)); }));
+    await Promise.all(changed.map(async (n) => { d[n] = await api(`/repos/${ORG}/${n}/releases?per_page=30`).then((l) => relOf(pickLatest(l))).catch(() => undefined); }));
     try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), g: data.generatedAt, d })); } catch {}
     return d;
   }
@@ -210,7 +212,7 @@
     const list = await api(`/orgs/${ORG}/repos?type=public&per_page=100`);
     const repos = await Promise.all(list.filter((r) => !r.fork && !r.archived && r.name !== '.github' &&
       r.name.toLowerCase() !== ORG.toLowerCase() + '.github.io').map(async (r) => {
-      const rel = await api(`/repos/${ORG}/${r.name}/releases/latest`).catch(() => null);
+      const rel = await api(`/repos/${ORG}/${r.name}/releases?per_page=30`).then(pickLatest).catch(() => null);
       return { name: r.name, displayName: r.name, description: r.description || '', url: r.html_url,
         homepage: r.homepage || '', language: r.language, topics: r.topics || [], pushedAt: r.pushed_at,
         release: rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,

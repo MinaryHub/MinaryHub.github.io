@@ -331,17 +331,17 @@
     } else if (rel) {
       dl = `<div class="norel">첨부 파일이 없는 릴리스입니다. <a href="${esc(rel.url)}">릴리스 노트 보기</a></div>`;
     } else {
-      dl = `<div class="norel">아직 공개된 빌드가 없습니다 — 소스에서 직접 빌드할 수 있습니다.</div>`;
+      dl = `<div class="norel">아직 공개된 빌드가 없습니다.</div>`;
     }
     return `<article class="card" data-rel="${rel ? 1 : 0}" data-q="${esc((r.displayName + ' ' + r.name + ' ' + r.description + ' ' + (r.language||'') + ' ' + r.topics.join(' ')).toLowerCase())}">
-      <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((r.displayName || '?')[0])}</span>`}<h2><a href="${esc(r.url)}">${esc(r.displayName)}</a></h2></div>
+      <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((r.displayName || '?')[0])}</span>`}<h2>${r.homepage ? `<a href="${esc(r.homepage)}">${esc(r.displayName)}</a>` : esc(r.displayName)}</h2></div>
         ${rel ? `<a class="ver${rel.prerelease ? ' pre' : ''}" href="${esc(rel.url)}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</a>` : ''}</div>
       <p class="desc${r.description ? '' : ' empty'}">${esc(r.description || '설명이 아직 없습니다.')}</p>
       <div class="tags">${r.language ? `<span class="tag lang" style="--dot:${color}">${esc(r.language)}</span>` : ''}${r.topics.slice(0, 4).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
       ${shotsHtml(r)}
       ${dl}
       <div class="foot"><span>${rel ? '릴리스 ' + fmtDate(rel.publishedAt) : '최근 업데이트 ' + fmtDate(r.pushedAt)}</span>
-        <span>${r.homepage ? `<a href="${esc(r.homepage)}">홈페이지</a> · ` : ''}<a href="${esc(r.url)}">저장소 →</a></span></div>
+        ${r.homepage ? `<span><a href="${esc(r.homepage)}">홈페이지 →</a></span>` : ''}</div>
     </article>`;
   }
 

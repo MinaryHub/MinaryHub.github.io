@@ -65,6 +65,14 @@ async function repoMedia(r, o) {
   return { icon, screenshots };
 }
 
+// GitHub의 "Latest" 표시(releases/latest)는 수동 지정·--latest=false 등으로 어긋날 수 있으므로
+// 발행일 기준 가장 최근 정식 릴리스를 직접 고른다 (정식이 없으면 최신 프리릴리스)
+async function latestRelease(name) {
+  const list = ((await gh(`/repos/${ORG}/${name}/releases?per_page=30`)) || []).filter((x) => !x.draft);
+  list.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+  return list.find((x) => !x.prerelease) || list[0] || null;
+}
+
 const repos = (await listRepos()).filter(
   (r) =>
     !r.private &&
@@ -77,7 +85,7 @@ const repos = (await listRepos()).filter(
 
 const result = [];
 for (const r of repos) {
-  const rel = await gh(`/repos/${ORG}/${r.name}/releases/latest`);
+  const rel = await latestRelease(r.name);
   const o = overrides[r.name] || {};
   const media = await repoMedia(r, o);
   result.push({

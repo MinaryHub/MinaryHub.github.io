@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MinaryHub 통계</title>
+<link rel="icon" type="image/webp" href="logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --surface-2: #f0f0ed; --border: #e3e3de;
+    --text: #1b1b19; --muted: #6b6b66; --accent: #2f5bea; --accent-soft: #e8eefe; --ok: #1f8a4c;
+    --radius: 14px; --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111113; --surface: #19191c; --surface-2: #222226; --border: #2c2c31;
+      --text: #ececee; --muted: #9a9aa3; --accent: #7c9cff; --accent-soft: #1f2640; --ok: #4cc47f; --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 "Noto Sans KR", system-ui, -apple-system, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px 48px; }
+  header { padding: 40px 0 20px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 28px; letter-spacing: -.02em; display: flex; align-items: center; gap: 12px; }
+  h1 img { width: 40px; height: 40px; border-radius: 10px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .range { display: flex; gap: 6px; }
+  .range button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer; }
+  .range button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi, .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .kpi { padding: 16px 18px; min-width: 0; }
+  .kpi .l { color: var(--muted); font-size: 13px; }
+  .kpi .v { font: 600 28px "JetBrains Mono", monospace; letter-spacing: -.02em; margin-top: 2px; }
+  .kpi .s { color: var(--muted); font-size: 12px; }
+  .panel { padding: 18px 20px; margin-bottom: 16px; min-width: 0; }
+  .panel h2 { font-size: 16px; margin: 0 0 12px; }
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .two .panel { margin-bottom: 0; }
+  .chart { width: 100%; height: 200px; display: block; }
+  .chart .bar { fill: var(--accent); }
+  .chart .bar2 { fill: var(--ok); }
+  .chart text { fill: var(--muted); font: 11px "JetBrains Mono", monospace; }
+  .chart .grid { stroke: var(--border); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  td.n, th.n { text-align: right; font-family: "JetBrains Mono", monospace; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  .meter { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-top: 4px; }
+  .meter span { display: block; height: 100%; background: var(--accent); }
+  .files { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  .state { text-align: center; color: var(--muted); padding: 60px 0; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .two { grid-template-columns: 1fr; } .two .panel { margin-bottom: 16px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1><img src="logo.webp" alt="">MinaryHub 통계</h1>
+      <div class="sub" id="sub">불러오는 중…</div>
+    </div>
+    <div class="range" id="range">
+      <button data-d="7" aria-pressed="false">7일</button>
+      <button data-d="30" aria-pressed="true">30일</button>
+      <button data-d="90" aria-pressed="false">90일</button>
+      <button data-d="365" aria-pressed="false">1년</button>
+    </div>
+  </header>
+  <main id="main"><div class="state">불러오는 중…</div></main>
+  <footer>방문자는 브라우저별 익명 ID로 셉니다(IP 미저장). 국가는 접속 IP로 서버가 판별한 값입니다. 다운로드는 사이트의 다운로드 버튼 클릭 수입니다. · <a href="./">MinaryHub로 돌아가기</a></footer>
+</div>
+<script>
+(() => {
+  const API = 'https://minaryhub-star.vercel.app/api/stats';
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const num = (n) => Number(n || 0).toLocaleString('ko-KR');
+  let regionName = (c) => c;
+  try { const dn = new Intl.DisplayNames(['ko'], { type: 'region' }); regionName = (c) => { try { return dn.of(c) || c; } catch { return c; } }; } catch {}
+  const flag = (c) => /^[A-Z]{2}$/.test(c) ? String.fromCodePoint(...[...c].map((ch) => 0x1F1E6 + ch.charCodeAt(0) - 65)) : '🌐';
+  const country = (c) => c === '??' ? '<span>🌐 알 수 없음</span>' : `${flag(c)} ${esc(regionName(c))} <span class="sub">${esc(c)}</span>`;
+
+  function chart(daily, days) {
+    // 빈 날짜도 0으로 채워 연속된 막대로 그림
+    const map = Object.fromEntries(daily.map((d) => [d.d, d]));
+    const list = [];
+    const today = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+    for (let i = days - 1; i >= 0; i--) {
+      const t = new Date(today); t.setDate(t.getDate() - i);
+      const k = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+      list.push({ d: k, ...(map[k] || { visits: 0, visitors: 0, downloads: 0 }) });
+    }
+    const W = 1000, H = 200, L = 36, B = 22, T = 8;
+    const max = Math.max(1, ...list.map((d) => Math.max(d.visitors, d.downloads)));
+    const step = (W - L) / list.length, bw = Math.max(1, step * 0.38);
+    const y = (v) => H - B - (v / max) * (H - B - T);
+    let g = '';
+    for (let i = 0; i <= 4; i++) { const v = Math.round(max * i / 4), yy = y(v);
+      g += `<line class="grid" x1="${L}" x2="${W}" y1="${yy}" y2="${yy}"/><text x="${L - 6}" y="${yy + 4}" text-anchor="end">${v}</text>`; }
+    const every = Math.ceil(list.length / 8);
+    list.forEach((d, i) => {
+      const x = L + i * step + step * 0.1;
+      g += `<rect class="bar" x="${x}" y="${y(d.visitors)}" width="${bw}" height="${H - B - y(d.visitors)}"><title>${d.d} 방문자 ${d.visitors} · 방문 ${d.visits}</title></rect>`;
+      g += `<rect class="bar2" x="${x + bw}" y="${y(d.downloads)}" width="${bw}" height="${H - B - y(d.downloads)}"><title>${d.d} 다운로드 ${d.downloads}</title></rect>`;
+      if (i % every === 0) g += `<text x="${x + bw}" y="${H - 6}" text-anchor="middle">${d.d.slice(5).replace('-', '/')}</text>`;
+    });
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="일별 방문자와 다운로드">${g}</svg>
+      <div class="legend"><span><i style="background:var(--accent)"></i>방문자</span><span><i style="background:var(--ok)"></i>다운로드</span></div>`;
+  }
+
+  async function load(days) {
+    $('#main').innerHTML = '<div class="state">불러오는 중…</div>';
+    try {
+      const s = await fetch(`${API}?days=${days}`).then((r) => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)));
+      const since = s.all.since ? new Date(s.all.since).toLocaleDateString('ko-KR') : null;
+      $('#sub').textContent = since ? `${since}부터 수집 · 최근 ${days}일 기준` : '아직 수집된 기록이 없습니다';
+      const maxC = Math.max(1, ...s.countries.map((c) => c.visitors));
+      const maxA = Math.max(1, ...s.apps.map((a) => a.downloads));
+      $('#main').innerHTML = `
+        <section class="kpis">
+          <div class="kpi"><div class="l">방문자</div><div class="v">${num(s.range.visitors)}</div><div class="s">전체 ${num(s.all.visitors)}</div></div>
+          <div class="kpi"><div class="l">방문 수</div><div class="v">${num(s.range.visits)}</div><div class="s">전체 ${num(s.all.visits)}</div></div>
+          <div class="kpi"><div class="l">다운로드 클릭</div><div class="v">${num(s.range.downloads)}</div><div class="s">전체 ${num(s.all.downloads)}</div></div>
+          <div class="kpi"><div class="l">접속 국가</div><div class="v">${num(s.countries.filter((c) => c.country !== '??').length)}</div><div class="s">최근 ${days}일</div></div>
+        </section>
+        <section class="panel"><h2>일별 추이</h2>${chart(s.daily, days)}</section>
+        <div class="two">
+          <section class="panel"><h2>앱별 다운로드</h2>${s.apps.length ? `<table><thead><tr><th>앱</th><th class="n">클릭</th><th class="n">사람</th></tr></thead><tbody>
+            ${s.apps.map((a) => `<tr><td>${esc(a.app || '(알 수 없음)')}<div class="meter"><span style="width:${a.downloads / maxA * 100}%"></span></div>
+              <div class="files">${a.files.slice(0, 3).map((f) => `${esc(f.file)} ${f.n}`).join(' · ')}${a.files.length > 3 ? ` 외 ${a.files.length - 3}개` : ''}</div></td>
+              <td class="n">${num(a.downloads)}</td><td class="n">${num(a.people)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">아직 다운로드 기록이 없습니다.</div>'}</section>
+          <section class="panel"><h2>접속 국가</h2>${s.countries.length ? `<table><thead><tr><th>국가</th><th class="n">방문자</th><th class="n">방문</th><th class="n">다운로드</th></tr></thead><tbody>
+            ${s.countries.map((c) => `<tr><td>${country(c.country)}<div class="meter"><span style="width:${c.visitors / maxC * 100}%"></span></div></td>
+              <td class="n">${num(c.visitors)}</td><td class="n">${num(c.visits)}</td><td class="n">${num(c.downloads)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">아직 방문 기록이 없습니다.</div>'}</section>
+        </div>`;
+    } catch (e) {
+      $('#main').innerHTML = `<div class="state">통계를 불러오지 못했습니다. (${esc(e.message)})</div>`;
+    }
+  }
+
+  $('#range').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#range button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    load(+b.dataset.d);
+  });
+  load(30);
+})();
+</script>
+</body>
+</html>

@@ -342,7 +342,7 @@
     } else {
       dl = `<div class="norel">아직 공개된 빌드가 없습니다.</div>`;
     }
-    return `<article class="card" data-rel="${rel ? 1 : 0}" data-q="${esc((r.displayName + ' ' + r.name + ' ' + r.description + ' ' + (r.language||'') + ' ' + r.topics.join(' ')).toLowerCase())}">
+    return `<article class="card" data-app="${esc(r.name)}" data-rel="${rel ? 1 : 0}" data-q="${esc((r.displayName + ' ' + r.name + ' ' + r.description + ' ' + (r.language||'') + ' ' + r.topics.join(' ')).toLowerCase())}">
       <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((r.displayName || '?')[0])}</span>`}<h2>${esc(r.displayName)}</h2></div>
         ${rel ? `<a class="ver${rel.prerelease ? ' pre' : ''}" href="${esc(rel.url)}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</a>` : ''}</div>
       <p class="desc${r.description ? '' : ' empty'}">${esc(r.description || '설명이 아직 없습니다.')}</p>
@@ -417,6 +417,33 @@
     const w = 520, h = 680, x = Math.max(0, (screen.width - w) / 2), y = Math.max(0, (screen.height - h) / 2);
     if (!window.open(STAR_API + '/api/login', 'mh-star-login', `popup,width=${w},height=${h},left=${x},top=${y}`))
       alert('팝업이 차단되었습니다. 이 사이트의 팝업을 허용해 주세요.');
+  });
+
+  // 방문·다운로드 통계: 익명 방문자 ID(이 브라우저에만 저장)와 이벤트 종류만 보냅니다. 국가는 서버가 판별합니다.
+  // 사이트 주인은 주소에 ?notrack=1 을 붙여 한 번 열면 이 브라우저의 기록이 빠집니다(?notrack=0 으로 해제).
+  const track = (() => {
+    let vid = null, off = false;
+    try {
+      const q = new URLSearchParams(location.search).get('notrack');
+      if (q === '1') localStorage.setItem('mh-notrack', '1'); else if (q === '0') localStorage.removeItem('mh-notrack');
+      off = localStorage.getItem('mh-notrack') === '1';
+      vid = localStorage.getItem('mh-vid');
+      if (!vid) { vid = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)); localStorage.setItem('mh-vid', vid); }
+    } catch {}
+    if (navigator.webdriver) off = true;
+    return (ev) => {
+      if (off) return;
+      const body = JSON.stringify({ ...ev, vid });
+      try {
+        if (navigator.sendBeacon && navigator.sendBeacon(STAR_API + '/api/track', new Blob([body], { type: 'text/plain' }))) return;
+      } catch {}
+      fetch(STAR_API + '/api/track', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+    };
+  })();
+  track({ type: 'visit' });
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('.card a.btn'); if (!a) return;
+    track({ type: 'download', app: a.closest('.card')?.dataset.app || '', file: a.title || '' });
   });
 
   let filter = 'all';

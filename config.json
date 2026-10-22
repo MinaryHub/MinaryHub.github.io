@@ -1,15 +1,39 @@
 {
   "title": "MinaryHub",
   "tagline": "MinaryHub에서 만드는 도구들을 소개하고, 최신 빌드를 바로 내려받을 수 있는 곳입니다.",
-  "hide": ["Kerminal.Release", "DeskCue.Release", "VirtualDesktopIndicator"],
+  "hide": [
+    "Kerminal.Release",
+    "DeskCue.Release",
+    "VirtualDesktopIndicator"
+  ],
   "order": [],
   "overrides": {
-    "Kreate": { "icon": "apps/kreate/assets/kreate.png" },
-    "Curvo": { "icon": "ProjectorWarp/packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png" },
-    "DeskCue": { "icon": "packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png" },
-    "Kerminal": { "icon": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png" },
-    "HanEng": { "icon": "assets/icon-256.png" },
-    "NetworkScanner": { "icon": "assets/app.png" },
-    "Kite": { "icon": "build/png/256.png" }
+    "Kreate": {
+      "icon": "apps/kreate/assets/kreate.png"
+    },
+    "Curvo": {
+      "icon": "ProjectorWarp/packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png"
+    },
+    "DeskCue": {
+      "icon": "packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png"
+    },
+    "Kerminal": {
+      "icon": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png"
+    },
+    "HanEng": {
+      "icon": "assets/icon-256.png"
+    },
+    "NetworkScanner": {
+      "icon": "assets/app.png",
+      "screenshots": [
+        "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/01-ip-list.png",
+        "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/02-settings.png",
+        "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/03-ref-ports.png",
+        "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/04-user-guide.png"
+      ]
+    },
+    "Kite": {
+      "icon": "build/png/256.png"
+    }
   }
 }

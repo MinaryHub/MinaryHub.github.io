@@ -34,7 +34,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/data
-          cp index.html config.json logo.webp _site/
+          cp index.html stats.html config.json logo.webp _site/
           cp data/repos.json _site/data/
           if [ -d screenshots ]; then cp -r screenshots _site/; fi
           touch _site/.nojekyll

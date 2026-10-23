@@ -37,7 +37,10 @@ jobs:
           cp index.html stats.html config.json logo.webp _site/
           cp data/repos.json _site/data/
           if [ -d screenshots ]; then cp -r screenshots _site/; fi
+          if [ -f og.png ]; then cp og.png _site/; fi
           touch _site/.nojekyll
+      - name: Prerender for search engines (SEO)
+        run: node scripts/prerender.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

@@ -1,6 +1,18 @@
 {
   "title": "Kimserv",
+  "siteUrl": "https://kimserv.com",
   "tagline": "MinaryHub에서 만드는 도구들을 소개하고, 최신 빌드를 바로 내려받을 수 있는 곳입니다.",
+  "keywords": [
+    "Kimserv",
+    "MinaryHub",
+    "무료 프로그램",
+    "윈도우 프로그램 다운로드",
+    "데스크톱 앱"
+  ],
+  "verification": {
+    "google": "",
+    "naver": ""
+  },
   "hide": [
     "Kerminal.Release",
     "DeskCue.Release",

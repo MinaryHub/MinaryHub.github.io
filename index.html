@@ -233,7 +233,7 @@
           if (!r || r.private || r.fork || r.archived) return;
           const o = (cfg.overrides || {})[r.name] || {};
           d.add.push({ name: r.name, displayName: o.displayName || r.name, description: o.description ?? r.description ?? '',
-            url: r.html_url, homepage: o.homepage || r.homepage || '', language: r.language, topics: r.topics || [],
+            url: r.html_url, homepage: o.homepage || r.homepage || '', web: o.web || '', language: r.language, topics: r.topics || [],
             stars: r.stargazers_count, pushedAt: r.pushed_at, icon: o.icon && /^https?:/.test(o.icon) ? o.icon : null,
             screenshots: [], release: await latest(r.name).catch(() => null) });
         } catch {}

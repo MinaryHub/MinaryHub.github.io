@@ -19,6 +19,22 @@
     "VirtualDesktopIndicator"
   ],
   "order": [],
+  "apps": [
+    {
+      "name": "Dotty",
+      "description": "LED 전광판처럼 문구·시계·이미지를 도트(점)로 보여 주는 전광판 앱. 플립 도트 모드와 장면 순차 재생을 지원하며 설치 없이 브라우저에서 바로 실행됩니다.",
+      "web": "https://apps.kimserv.com/dotty/",
+      "icon": "icons/dotty.png",
+      "language": "Dart",
+      "topics": [
+        "flutter",
+        "led-display",
+        "flip-dot",
+        "web-app"
+      ],
+      "updated": "2026-10-24"
+    }
+  ],
   "overrides": {
     "Kreate": {
       "icon": "apps/kreate/assets/kreate.png"

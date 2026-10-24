@@ -156,7 +156,8 @@
     mac: '<svg class="os-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8s-1.8-.8-3-.8c-1.6 0-3 .9-3.8 2.3-1.6 2.8-.4 6.9 1.2 9.2.8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.6zM14.1 5.6c.6-.8 1.1-1.8 1-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3z"/></svg>',
     linux: '<svg class="os-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.2 0-3.6 1.9-3.6 4.6 0 1.4.4 2.4-.6 4-1 1.5-2.6 3.6-2.6 6 0 .8.2 1.4.5 1.9-.6.4-1.2.9-1.2 1.6 0 1.1 1.6 1.4 3.4 1.9 1.1.3 1.7 0 2.2-.4.5.1 1 .2 1.9.2s1.4-.1 1.9-.2c.5.4 1.1.7 2.2.4 1.8-.5 3.4-.8 3.4-1.9 0-.7-.6-1.2-1.2-1.6.3-.5.5-1.1.5-1.9 0-2.4-1.6-4.5-2.6-6-1-1.6-.6-2.6-.6-4C15.6 3.9 14.2 2 12 2zm-1.5 4.5c.4 0 .7.5.7 1.1s-.3 1.1-.7 1.1-.7-.5-.7-1.1.3-1.1.7-1.1zm3 0c.4 0 .7.5.7 1.1s-.3 1.1-.7 1.1-.7-.5-.7-1.1.3-1.1.7-1.1zM12 9.3c.9 0 2 .6 2 1s-1.1 1.2-2 1.2-2-.8-2-1.2 1.1-1 2-1z"/></svg>',
     android: '<svg class="os-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M7 9h10v8a1 1 0 0 1-1 1h-1v3h-2v-3h-2v3H9v-3H8a1 1 0 0 1-1-1zM4.5 9a1 1 0 0 1 1 1v5a1 1 0 0 1-2 0v-5a1 1 0 0 1 1-1zm15 0a1 1 0 0 1 1 1v5a1 1 0 0 1-2 0v-5a1 1 0 0 1 1-1zM7.2 8a4.9 4.9 0 0 1 2.4-3.6l-.9-1.5.5-.3 1 1.6a5 5 0 0 1 3.6 0l1-1.6.5.3-.9 1.5A4.9 4.9 0 0 1 16.8 8z"/></svg>',
-    other: '<svg class="os-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>'
+    other: '<svg class="os-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>',
+    web: '<svg class="os-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>'
   };
 
   const $ = (s) => document.querySelector(s);
@@ -322,6 +323,8 @@
     const rel = r.release;
     const color = LANG_COLORS[r.language] || '#999';
     let dl = '';
+    const web = r.web ? `<div class="dl"><a class="btn primary" href="${esc(r.web)}" title="웹 앱 실행" target="_blank" rel="noopener">
+      <span class="l">${ICONS.web}<span class="fname">웹에서 바로 실행</span></span><span class="sz">설치 없음</span></a></div>` : '';
     if (rel && rel.assets.length) {
       const scored = rel.assets.map((a) => { const c = classify(a.name);
         const archScore = userOS === 'mac'
@@ -339,9 +342,10 @@
       }
     } else if (rel) {
       dl = `<div class="norel">첨부 파일이 없는 릴리스입니다. <a href="${esc(rel.url)}">릴리스 노트 보기</a></div>`;
-    } else {
+    } else if (!web) {
       dl = `<div class="norel">아직 공개된 빌드가 없습니다.</div>`;
     }
+    dl = web + dl;
     return `<article class="card" data-app="${esc(r.name)}" data-rel="${rel ? 1 : 0}" data-q="${esc((r.displayName + ' ' + r.name + ' ' + r.description + ' ' + (r.language||'') + ' ' + r.topics.join(' ')).toLowerCase())}">
       <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((r.displayName || '?')[0])}</span>`}<h2>${esc(r.displayName)}</h2></div>
         ${rel ? `<a class="ver${rel.prerelease ? ' pre' : ''}" href="${esc(rel.url)}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</a>` : ''}</div>
@@ -350,7 +354,7 @@
       ${shotsHtml(r)}
       ${dl}
       <div class="foot"><span>${rel ? '릴리스 ' + fmtDate(rel.publishedAt) : '최근 업데이트 ' + fmtDate(r.pushedAt)}</span>
-        <button class="star" type="button" data-repo="${esc(r.name)}" aria-pressed="false" title="GitHub 별 주기"><span class="si">☆</span><span class="sn">${Number(r.stars) || 0}</span></button></div>
+        ${r.external ? '' : `<button class="star" type="button" data-repo="${esc(r.name)}" aria-pressed="false" title="GitHub 별 주기"><span class="si">☆</span><span class="sn">${Number(r.stars) || 0}</span></button>`}</div>
     </article>`;
   }
 
@@ -465,6 +469,15 @@
       $('#tagline').textContent = cfg.tagline || '';
       const data = await loadData();
       const repos = data.repos;
+      // config.apps(저장소 없이 직접 등록한 앱): repos.json에 이미 들어 있지 않을 때(API 직접 호출 등)만 보충
+      for (const a of cfg.apps || []) {
+        if (!a.name || repos.some((r) => r.name.toLowerCase() === a.name.toLowerCase()) ||
+          (cfg.hide || []).some((h) => h.toLowerCase() === a.name.toLowerCase())) continue;
+        repos.push({ name: a.name, displayName: a.displayName || a.name, description: a.description || '',
+          url: a.url || a.web || '', homepage: a.homepage || a.web || '', web: a.web || '', language: a.language || null,
+          topics: a.topics || [], stars: null, pushedAt: a.updated || data.generatedAt, external: true,
+          icon: a.icon || null, screenshots: a.screenshots || [], release: null });
+      }
       const render = (nLive) => {
         const nRel = repos.filter((r) => r.release).length;
         $('#meta').innerHTML = `공개 프로젝트 <b>${repos.length}</b>개 · 다운로드 가능 <b>${nRel}</b>개 · 정보 갱신 ${ago(data.generatedAt)}${nLive ? ` · 새 소식 ${nLive}건 실시간 반영` : ''}` +

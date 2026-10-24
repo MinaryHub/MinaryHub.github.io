@@ -109,6 +109,7 @@ for (const r of repos) {
     description: o.description ?? r.description ?? '',
     url: r.html_url,
     homepage: o.homepage || r.homepage || '',
+    web: o.web || '',
     language: r.language,
     topics: r.topics || [],
     stars: r.stargazers_count,
@@ -129,6 +130,27 @@ for (const r of repos) {
           url: a.browser_download_url,
         })),
     },
+  });
+}
+
+// config.apps: GitHub 공개 저장소 없이 직접 등록하는 앱 (웹 앱, 비공개 저장소의 앱 등)
+for (const a of config.apps || []) {
+  if (!a.name || hidden.has(a.name.toLowerCase()) || result.some((r) => r.name.toLowerCase() === a.name.toLowerCase())) continue;
+  result.push({
+    name: a.name,
+    displayName: a.displayName || a.name,
+    description: a.description || '',
+    url: a.url || a.web || a.homepage || '',
+    homepage: a.homepage || a.web || '',
+    web: a.web || '',
+    language: a.language || null,
+    topics: a.topics || [],
+    stars: null,
+    pushedAt: a.updated ? new Date(a.updated).toISOString() : new Date().toISOString(),
+    external: true,
+    icon: a.icon || null,
+    screenshots: a.screenshots || [],
+    release: null,
   });
 }
 

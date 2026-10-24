@@ -35,7 +35,28 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
 |---|---|
 | `hide` | 목록에서 숨길 저장소 이름 (`.github`, 이 저장소는 자동 제외) |
 | `order` | 맨 앞에 고정할 순서. 나머지는 "릴리스 있음 → 최신순" |
-| `overrides` | 표시 이름·설명·홈페이지 덮어쓰기 |
+| `overrides` | 표시 이름·설명·홈페이지·아이콘·스크린샷·`web`(웹 앱 주소) 덮어쓰기 |
+| `apps` | GitHub 공개 저장소 없이 직접 등록하는 앱 (웹 앱, 비공개 저장소의 앱 등) |
+
+### 저장소 없이 앱 추가하기 (`apps`)
+
+```json
+"apps": [
+  {
+    "name": "Dotty",
+    "description": "앱 설명",
+    "web": "https://apps.kimserv.com/dotty/",
+    "icon": "icons/dotty.png",
+    "language": "Dart",
+    "topics": ["flutter"],
+    "updated": "2026-10-24"
+  }
+]
+```
+
+- `web`이 있으면 카드에 **웹에서 바로 실행** 버튼이 나옵니다.
+- `icon`·`screenshots`는 URL 또는 이 저장소 안의 경로(`icons/`, `screenshots/<이름>/`)를 씁니다.
+- `updated`는 정렬(릴리스 없는 항목 사이 최신순)에 쓰입니다. GitHub 별 버튼은 표시되지 않습니다.
 
 저장소 설명/토픽은 각 저장소의 About(⚙)에서 고치면 자동 반영됩니다.
 

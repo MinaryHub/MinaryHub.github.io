@@ -52,6 +52,12 @@
       "description": "LED 전광판처럼 문구·시계·이미지를 도트(점)로 보여 주는 전광판 앱. 플립 도트 모드와 장면 순차 재생을 지원하며 설치 없이 브라우저에서 바로 실행됩니다.",
       "web": "https://apps.kimserv.com/dotty/",
       "icon": "web/icons/Icon-512.png"
+    },
+    "DoNotDisturb": {
+      "displayName": "방해 금지 모드",
+      "description": "세상은 너무 시끄럽고, 나의 에너지는 한정되어 있다. 내향적인 사람이 하루의 의무를 마치고 사회적 배터리가 바닥나기 전에 집 침대로 돌아가는 2D 탑다운 심리 스텔스 게임. 설치 없이 브라우저에서 바로 플레이할 수 있습니다.",
+      "web": "https://apps.kimserv.com/donotdisturb/",
+      "icon": "public/icon-512.png"
     }
   }
 }

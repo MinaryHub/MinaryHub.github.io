@@ -117,7 +117,9 @@
   .auth { font-size: 13px; color: var(--muted); margin-top: 6px; }
   .auth button { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; }
   .state { text-align: center; color: var(--muted); padding: 60px 0; }
-  footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--border); }
+  footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+  footer .credit { color: var(--muted); white-space: nowrap; }
   @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 26px; } header { padding-top: 36px; } }
 </style>
 </head>
@@ -141,7 +143,8 @@
   <main class="grid" id="grid"><div class="state">불러오는 중…</div></main>
 
   <footer>
-    <a href="https://github.com/MinaryHub" id="orgLink">github.com/MinaryHub</a> · 이 페이지는 GitHub Actions가 주기적으로 릴리스 정보를 갱신합니다.
+    <span><a href="https://github.com/MinaryHub" id="orgLink">github.com/MinaryHub</a> · 이 페이지는 GitHub Actions가 주기적으로 릴리스 정보를 갱신합니다.</span>
+    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a>
   </footer>
 </div>
 

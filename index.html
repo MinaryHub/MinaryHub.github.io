@@ -363,8 +363,17 @@
     const KEY = 'mh-shots-v1', TTL = 10*60*1000, IMG = /\.(png|jpe?g|webp|gif)$/i;
     let cache = {};
     try { cache = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
-    const api = (p) => fetch('https://api.github.com' + p, { headers: { Accept: 'application/vnd.github+json' } })
-      .then((r) => r.status === 404 ? null : r.ok ? r.json() : Promise.reject(new Error('GitHub API ' + r.status)));
+    // GitHub는 로그인하지 않은 방문자에게 시간당 60번까지만 답한다. 한도에 걸리면 풀리는 시각까지 다시 묻지 않는다
+    const BLOCK = 'mh-gh-block';
+    try { if (Date.now() < Number(localStorage.getItem(BLOCK) || 0)) return cache; } catch {}
+    const api = (p) => fetch('https://api.github.com' + p, { headers: { Accept: 'application/vnd.github+json' } }).then((r) => {
+      if (r.status === 404) return null;
+      if (r.ok) return r.json();
+      if ((r.status === 403 || r.status === 429) && r.headers.get('x-ratelimit-remaining') === '0') {
+        try { localStorage.setItem(BLOCK, String(Number(r.headers.get('x-ratelimit-reset')) * 1000 || Date.now() + 30*60*1000)); } catch {}
+      }
+      return Promise.reject(new Error('GitHub API ' + r.status));
+    });
     const images = (items) => (Array.isArray(items) ? items : []).filter((f) => f.type === 'file' && IMG.test(f.name))
       .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).map((f) => f.download_url);
     await Promise.all(repos.filter((r) => !r.external && !r.shotsFixed).map(async (r) => {
@@ -389,7 +398,7 @@
       const s = c.lang[lang]?.length ? c.lang[lang] : c.all.length ? c.all : other;
       if (s && s.length) return s;
     }
-    return r.screenshots || [];
+    return r.screenshotsByLang?.[lang] || r.screenshots || [];
   }
 
   function shotsHtml(r) {

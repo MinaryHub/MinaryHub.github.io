@@ -88,6 +88,20 @@
     "Kite-Writer": {
       "descriptionEn": "A desktop word processor centred on Hangul (HWP/HWPX) documents that also opens and edits Word, PDF and Markdown files.",
       "category": "BusinessApplication"
+    },
+    "GridDisplay": {
+      "displayName": "Grid Display",
+      "description": "여러 브라우저와 프로그램을 한 모니터에 격자로 띄워 두는 Windows용 디스플레이 월 프로그램. 칸을 누르면 화면 전체로 확대해 바로 조작하고, 칸마다 띄운 주소와 프로그램을 기억해 다시 켜면 그대로 복원합니다.",
+      "descriptionEn": "A Windows display-wall app that tiles browsers and programs into a grid on one monitor. Click a cell to zoom it full-screen and use it right away; every cell remembers its page or program and comes back the same on the next launch.",
+      "icon": "packaging/Assets/Square310x310Logo.png",
+      "category": "UtilitiesApplication"
+    },
+    "Kynex": {
+      "displayName": "KYNEX",
+      "description": "로봇·공장 시뮬레이터. Kreate의 공동 편집 세션에 참여해 장면을 실시간으로 받아 보여 주고, CAD·메시 모델과 로봇(URDF)을 가져와 배치·조그·프로그래밍할 수 있습니다. 브라우저에서 보는 3D 뷰어를 내장했습니다.",
+      "descriptionEn": "A robot and factory simulator. It joins Kreate's shared session to show the scene live, imports CAD/mesh models and robots (URDF) to place, jog and program, and comes with a 3D viewer that runs in your browser.",
+      "icon": "apps/kynex/assets/kynex-256.png",
+      "category": "DesignApplication"
     }
   }
 }

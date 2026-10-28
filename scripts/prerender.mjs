@@ -31,6 +31,8 @@ const clip = (s, n = 158) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/
 const fmtDate = (d, lang) => (d ? new Date(d).toLocaleDateString(lang === 'en' ? 'en-US' : 'ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '');
 const fmtSize = (b) => (b >= 1 << 30 ? (b / (1 << 30)).toFixed(1) + ' GB' : b >= 1 << 20 ? (b / (1 << 20)).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB');
 
+// 언어별 스크린샷 폴더(screenshots/en, /ko)가 있으면 그 언어 것을
+const shotsFor = (r, lang) => r.screenshotsByLang?.[lang] || r.screenshots || [];
 const osOfAsset = (name) => {
   const n = name.toLowerCase();
   if (/\.apk$|android/.test(n)) return 'Android';
@@ -85,7 +87,7 @@ const appLd = (r, lang) => ({
   downloadUrl: r.release?.url || undefined,
   installUrl: r.web || undefined,
   image: abs(r.icon) || undefined,
-  screenshot: (r.screenshots || []).slice(0, 5).map(abs),
+  screenshot: shotsFor(r, lang).slice(0, 5).map(abs),
   author: { '@id': siteUrl + '#org' },
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 });
@@ -212,7 +214,7 @@ function appPage(r, lang) {
   const desc = loc(r, 'description', lang);
   const alt = { en: appPath(r, 'en'), ko: appPath(r, 'ko') };
   const pageTitle = `${name} — ${t.kind(r)} | ${title}`;
-  const shots = r.screenshots || [];
+  const shots = shotsFor(r, lang);
   const image = abs(shots[0]) || abs(r.icon) || ogImage;
   const rel = r.release;
   const actions = [

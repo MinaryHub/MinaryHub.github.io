@@ -262,10 +262,12 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </main>
   <footer>
     <span><a href="https://github.com/MinaryHub">github.com/MinaryHub</a></span>
-    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a>
+    <span class="foot-r"><button type="button" class="contact-link" data-contact data-app="${esc(r.name)}">${lang === 'ko' ? '문의하기' : 'Contact'}</button>
+    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
   </footer>
 </div>
 ${appScript(lang, alt)}
+<script src="contact.js" defer></script>
 </body>
 </html>
 `;

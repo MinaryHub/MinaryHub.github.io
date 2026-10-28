@@ -102,6 +102,12 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
   (schema.org `applicationCategory`: `GameApplication`, `DeveloperApplication`, `SecurityApplication` …)
 - 방문자가 고른 언어는 브라우저에 기억되어, 다음에 다른 언어 주소로 들어와도 고른 언어 페이지로 옮겨 줍니다.
 
+## 문의하기
+
+하단 **Contact / 문의하기**를 누르면 문의 창이 열리고(`contact.js`), 내용은 `minaryhub-star` 서버의 `/api/contact`가
+Brevo로 보냅니다. 받는 메일 주소와 Brevo 키는 그 서버의 Vercel 환경 변수(`CONTACT_TO`, `BREVO_API_KEY`, `CONTACT_FROM`)에만
+있어 사이트에는 드러나지 않습니다. 받은 메일에서 답장하면 방문자에게 갑니다.
+
 ## 릴리스 파일 이름 규칙 (권장)
 
 OS·아키텍처를 파일명에 넣으면 버튼이 자동 분류됩니다.

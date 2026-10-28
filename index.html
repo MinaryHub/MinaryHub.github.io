@@ -123,6 +123,24 @@
   footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--border);
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
   footer .credit { color: var(--muted); white-space: nowrap; }
+  footer .foot-r { display: flex; gap: 16px; align-items: center; }
+  .contact-link { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
+  /* 문의하기 창 (contact.js) */
+  dialog.contact { width: min(520px, calc(100vw - 32px)); border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--surface); color: var(--text); padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+  dialog.contact::backdrop { background: rgba(0,0,0,.45); }
+  dialog.contact h2 { margin: 0 0 16px; font-size: 20px; }
+  dialog.contact label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  dialog.contact input, dialog.contact select, dialog.contact textarea { font: inherit; font-size: 15px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; width: 100%; }
+  dialog.contact textarea { resize: vertical; min-height: 120px; }
+  dialog.contact small { font-size: 12px; }
+  dialog.contact .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  dialog.contact .row { display: flex; justify-content: flex-end; gap: 8px; }
+  dialog.contact .btn { cursor: pointer; font: inherit; font-size: 14px; }
+  dialog.contact .btn.ghost { background: none; }
+  dialog.contact .status { min-height: 1.2em; margin: 0 0 12px; font-size: 14px; }
+  dialog.contact .status.err { color: #d14343; } dialog.contact .status.ok { color: var(--ok); }
   @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 26px; } header { padding-top: 36px; } }
 </style>
 </head>
@@ -148,7 +166,8 @@
 
   <footer>
     <span><a href="https://github.com/MinaryHub" id="orgLink">github.com/MinaryHub</a> · <span id="footNote">This page refreshes release info periodically via GitHub Actions.</span></span>
-    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a>
+    <span class="foot-r"><button type="button" class="contact-link" data-contact>Contact</button>
+    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
   </footer>
 </div>
 
@@ -578,6 +597,7 @@
     const ld = $('#loading'); if (ld) ld.textContent = t('loading');
     document.querySelectorAll('#langSw a').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang));
     lbLabels();
+    document.dispatchEvent(new CustomEvent('mh:lang'));
   }
   // 배포된 페이지에서는 언어별 주소로 이동하고, 미리보기(사전 렌더링 전)에서는 그 자리에서 바꾼다
   $('#langSw').addEventListener('click', (e) => {
@@ -657,5 +677,6 @@
   })();
 })();
 </script>
+<script src="contact.js" defer></script>
 </body>
 </html>

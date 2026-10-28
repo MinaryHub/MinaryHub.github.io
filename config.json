@@ -1,5 +1,7 @@
 {
   "title": "Kimserv",
+  "headline": "MinaryHub 공작소의 무료 데스크톱·웹 앱",
+  "headlineEn": "Free desktop & web apps from the MinaryHub workshop",
   "siteUrl": "https://kimserv.com",
   "tagline": "MinaryHub 공작소에서 만드는 도구들을 소개하고, 최신 빌드를 바로 내려받을 수 있는 곳입니다.",
   "taglineEn": "A showcase of the tools built at the MinaryHub workshop, where you can download the latest builds right away.",
@@ -28,24 +30,29 @@
     "Kreate": {
       "icon": "apps/kreate/assets/kreate.png",
       "descriptionEn": "A 3D modelling, sculpting and animation app written from scratch in Rust, with a built-in connector that lets Claude drive it.",
-      "descriptionKo": "Rust로 처음부터 만든 3D 모델링·스컬프팅·애니메이션 앱. Claude가 직접 조작할 수 있는 커넥터를 내장했습니다."
+      "descriptionKo": "Rust로 처음부터 만든 3D 모델링·스컬프팅·애니메이션 앱. Claude가 직접 조작할 수 있는 커넥터를 내장했습니다.",
+      "category": "DesignApplication"
     },
     "Curvo": {
       "icon": "ProjectorWarp/packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
-      "descriptionEn": "A Windows utility that pre-warps the screen in real time so projections onto curved walls, pillars and arches look straight."
+      "descriptionEn": "A Windows utility that pre-warps the screen in real time so projections onto curved walls, pillars and arches look straight.",
+      "category": "MultimediaApplication"
     },
     "DeskCue": {
       "icon": "packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
       "descriptionEn": "A tray app that always shows your current Windows virtual desktop as a translucent overlay and lets you jump to any desktop with hotkeys.",
-      "descriptionKo": "지금 Windows 가상 데스크톱을 반투명 오버레이로 늘 보여 주고, 단축키로 원하는 데스크톱에 바로 이동하는 트레이 앱."
+      "descriptionKo": "지금 Windows 가상 데스크톱을 반투명 오버레이로 늘 보여 주고, 단축키로 원하는 데스크톱에 바로 이동하는 트레이 앱.",
+      "category": "UtilitiesApplication"
     },
     "Kerminal": {
       "icon": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
-      "descriptionEn": "A cross-platform SSH/terminal client for Windows, macOS, Linux, iOS, Android and the web, built from a single Flutter codebase."
+      "descriptionEn": "A cross-platform SSH/terminal client for Windows, macOS, Linux, iOS, Android and the web, built from a single Flutter codebase.",
+      "category": "DeveloperApplication"
     },
     "HanEng": {
       "icon": "assets/icon-256.png",
-      "descriptionEn": "A Windows utility that shows a Korean/English input-mode badge next to your text caret, so you know the mode before you type."
+      "descriptionEn": "A Windows utility that shows a Korean/English input-mode badge next to your text caret, so you know the mode before you type.",
+      "category": "UtilitiesApplication"
     },
     "NetworkScanner": {
       "icon": "assets/app.png",
@@ -56,7 +63,8 @@
         "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/04-user-guide.png"
       ],
       "descriptionEn": "A cross-platform network inventory and security scanner: finds live hosts, open ports, MAC vendors and service banners, flags risky ports and tracks changes between scans.",
-      "descriptionKo": "크로스플랫폼 네트워크 인벤토리·보안 스캐너. 살아 있는 호스트·열린 포트·MAC 제조사·서비스 배너를 기록하고, 위험한 포트와 스캔 사이의 변화를 알려 줍니다."
+      "descriptionKo": "크로스플랫폼 네트워크 인벤토리·보안 스캐너. 살아 있는 호스트·열린 포트·MAC 제조사·서비스 배너를 기록하고, 위험한 포트와 스캔 사이의 변화를 알려 줍니다.",
+      "category": "SecurityApplication"
     },
     "Kite": {
       "icon": "build/png/256.png"
@@ -65,7 +73,8 @@
       "description": "LED 전광판처럼 문구·시계·이미지를 도트(점)로 보여 주는 전광판 앱. 플립 도트 모드와 장면 순차 재생을 지원하며 설치 없이 브라우저에서 바로 실행됩니다.",
       "web": "https://apps.kimserv.com/dotty/",
       "icon": "web/icons/Icon-512.png",
-      "descriptionEn": "A dot-matrix sign app that turns text, clocks and images into LED dots, with a flip-dot mode and scene playlists. Runs right in your browser — no install."
+      "descriptionEn": "A dot-matrix sign app that turns text, clocks and images into LED dots, with a flip-dot mode and scene playlists. Runs right in your browser — no install.",
+      "category": "MultimediaApplication"
     },
     "DoNotDisturb": {
       "displayName": "방해 금지 모드",
@@ -73,10 +82,12 @@
       "web": "https://apps.kimserv.com/donotdisturb/",
       "icon": "public/icon-512.png",
       "displayNameEn": "Do Not Disturb",
-      "descriptionEn": "“The world is too loud, and my energy is limited.” A 2D top-down psychological stealth game about an introvert getting through the day and back to bed before their social battery runs out. Play in your browser — no install."
+      "descriptionEn": "“The world is too loud, and my energy is limited.” A 2D top-down psychological stealth game about an introvert getting through the day and back to bed before their social battery runs out. Play in your browser — no install.",
+      "category": "GameApplication"
     },
     "Kite-Writer": {
-      "descriptionEn": "A desktop word processor centred on Hangul (HWP/HWPX) documents that also opens and edits Word, PDF and Markdown files."
+      "descriptionEn": "A desktop word processor centred on Hangul (HWP/HWPX) documents that also opens and edits Word, PDF and Markdown files.",
+      "category": "BusinessApplication"
     }
   }
 }

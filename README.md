@@ -87,6 +87,27 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
    `screenshots/en/`, `screenshots/ko/`가 있으면 화면 언어에 맞는 폴더를 씁니다.
 3. 이 사이트의 `screenshots/<저장소>/`, 저장소의 `docs/images/` 등, README 이미지 (배포 때 수집)
 
+## 검색엔진 최적화 (배포 때 자동)
+
+`scripts/prerender.mjs`가 배포 때마다 언어·앱별 정적 페이지를 만듭니다.
+
+| 주소 | 내용 |
+|---|---|
+| `/`, `/ko/` | 첫 페이지 (영어 / 한국어) |
+| `/apps/<앱>/`, `/ko/apps/<앱>/` | 앱 소개 페이지: 설명·실행/다운로드 버튼·스크린샷·다운로드 파일·다른 앱 |
+
+- 페이지마다 제목·설명·canonical·hreflang(en/ko/x-default)·OG/트위터 카드(첫 스크린샷)·구조화 데이터
+  (Organization, WebSite, SoftwareApplication, BreadcrumbList)를 넣고, `sitemap.xml`에 언어 짝과 함께 올립니다.
+- 첫 페이지 제목 뒤에 붙는 한 줄은 `headline` / `headlineEn`, 앱 분류는 `overrides.<앱>.category`
+  (schema.org `applicationCategory`: `GameApplication`, `DeveloperApplication`, `SecurityApplication` …)
+- 방문자가 고른 언어는 브라우저에 기억되어, 다음에 다른 언어 주소로 들어와도 고른 언어 페이지로 옮겨 줍니다.
+
+## 문의하기
+
+하단 **Contact / 문의하기**를 누르면 문의 창이 열리고(`contact.js`), 내용은 `minaryhub-star` 서버의 `/api/contact`가
+Brevo로 보냅니다. 받는 메일 주소와 Brevo 키는 그 서버의 Vercel 환경 변수(`CONTACT_TO`, `BREVO_API_KEY`, `CONTACT_FROM`)에만
+있어 사이트에는 드러나지 않습니다. 받은 메일에서 답장하면 방문자에게 갑니다.
+
 ## 릴리스 파일 이름 규칙 (권장)
 
 OS·아키텍처를 파일명에 넣으면 버튼이 자동 분류됩니다.

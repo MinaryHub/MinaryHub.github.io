@@ -37,6 +37,23 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
 | `order` | 맨 앞에 고정할 순서. 나머지는 "릴리스 있음 → 최신순" |
 | `overrides` | 표시 이름·설명·홈페이지·아이콘·스크린샷·`web`(웹 앱 주소) 덮어쓰기 |
 | `apps` | GitHub 공개 저장소 없이 직접 등록하는 앱 (웹 앱, 비공개 저장소의 앱 등) |
+| `taglineEn` | 영어 화면의 소개 문구 (`tagline`은 한국어) |
+
+### 한/영 전환
+
+페이지 오른쪽 위 **EN / 한국어** 버튼으로 바꿉니다. 기본은 영어이고, 고른 언어는 브라우저에 기억됩니다.
+주소에 `?lang=ko` / `?lang=en`을 붙여 바로 열 수도 있습니다.
+
+`overrides`와 `apps` 항목에 언어별 값을 넣으면 그 언어에서 우선 쓰입니다. 없으면 기본 값(GitHub 설명 등)을 그대로 보여 줍니다.
+
+```json
+"DoNotDisturb": {
+  "displayName": "방해 금지 모드",
+  "displayNameEn": "Do Not Disturb",
+  "descriptionEn": "English description",
+  "descriptionKo": "한국어 설명 (GitHub 설명이 영어일 때)"
+}
+```
 
 ### 저장소 없이 앱 추가하기 (`apps`)
 

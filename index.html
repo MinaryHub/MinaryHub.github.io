@@ -331,8 +331,44 @@
       <span class="l">${ICONS[os]}<span class="fname">${esc(label)}</span></span><span class="sz">${fmtSize(a.size)}</span></a>`;
   }
 
+  // 앱 저장소의 screenshots/ 폴더를 방문할 때마다 다시 읽어, 빌드 뒤에 추가·교체한 이미지도 바로 보이게 한다.
+  // 언어 폴더(screenshots/en, screenshots/ko)가 있으면 지금 언어 것을 쓴다. 10분 캐시, 읽지 못하면 빌드 때 목록 그대로
+  let liveShots = {};
+  async function loadRepoShots(repos) {
+    const KEY = 'mh-shots-v1', TTL = 10*60*1000, IMG = /\.(png|jpe?g|webp|gif)$/i;
+    let cache = {};
+    try { cache = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
+    const api = (p) => fetch('https://api.github.com' + p, { headers: { Accept: 'application/vnd.github+json' } })
+      .then((r) => r.status === 404 ? null : r.ok ? r.json() : Promise.reject(new Error('GitHub API ' + r.status)));
+    const images = (items) => (Array.isArray(items) ? items : []).filter((f) => f.type === 'file' && IMG.test(f.name))
+      .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).map((f) => f.download_url);
+    await Promise.all(repos.filter((r) => !r.external && !r.shotsFixed).map(async (r) => {
+      if (cache[r.name] && Date.now() - cache[r.name].t < TTL) return;
+      try {
+        const ref = r.branch ? '?ref=' + encodeURIComponent(r.branch) : '';
+        const root = await api(`/repos/${ORG}/${r.name}/contents/screenshots${ref}`);
+        const v = { t: Date.now(), all: images(root), lang: {} };
+        for (const d of (Array.isArray(root) ? root : []).filter((f) => f.type === 'dir' && /^(en|ko)$/i.test(f.name)))
+          v.lang[d.name.toLowerCase()] = images(await api(`/repos/${ORG}/${r.name}/contents/${d.path}${ref}`));
+        cache[r.name] = v;
+      } catch {}
+    }));
+    try { localStorage.setItem(KEY, JSON.stringify(cache)); } catch {}
+    return cache;
+  }
+  // 우선순위: 지금 언어 폴더 → screenshots/ 바로 아래 → 다른 언어 폴더 → 빌드 때 목록
+  function shotsOf(r) {
+    const c = liveShots[r.name];
+    if (c) {
+      const other = Object.values(c.lang).find((l) => l.length);
+      const s = c.lang[lang]?.length ? c.lang[lang] : c.all.length ? c.all : other;
+      if (s && s.length) return s;
+    }
+    return r.screenshots || [];
+  }
+
   function shotsHtml(r) {
-    const s = r.screenshots || [];
+    const s = shotsOf(r);
     if (!s.length) return '';
     const n = s.length;
     return `<div class="shots" data-shots="${esc(JSON.stringify(s))}">
@@ -575,6 +611,9 @@
       };
       render(0);
       rerender = () => { applyHeader(); render(lastLive); paintAuth(); };
+      const shotsKey = () => JSON.stringify(repos.map(shotsOf));
+      const before = shotsKey();
+      loadRepoShots(repos).then((c) => { liveShots = c; if (shotsKey() !== before) render(lastLive); }).catch(() => {});
       paintAuth(); loadStarState();
       if (!data.live) liveReleases(data, cfg).then((d) => {
         let n = 0;

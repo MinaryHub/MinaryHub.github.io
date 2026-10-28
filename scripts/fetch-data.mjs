@@ -41,6 +41,8 @@ const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|c
 const IMG = /\.(png|jpe?g|webp|gif)$/i;
 const SHOT_PATH = /(^|\/)(screenshots?|docs\/(images|img|screenshots?)|\.github\/screenshots?)\/[^/]+$|(^|\/)screenshot[^/]*$/i;
 const ICON_GUESS = [/(^|\/)(app[_-]?)?icon(-?(512|256))?\.png$/i, /(^|\/)logo\.png$/i, /targetsize-256_altform-unplated\.png$/i, /Square310x310Logo\.png$/i];
+// 언어별 표시 이름·설명 (displayNameEn, descriptionKo …) — 페이지의 한/영 전환에서 사용
+const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|description)(En|Ko)$/.test(k)));
 const raw = (r, p) => `https://raw.githubusercontent.com/${ORG}/${r.name}/${r.default_branch}/${p.split('/').map(encodeURIComponent).join('/')}`;
 
 async function localShots(name) {
@@ -110,6 +112,7 @@ for (const r of repos) {
     url: r.html_url,
     homepage: o.homepage || r.homepage || '',
     web: o.web || '',
+    ...i18nFields(o),
     language: r.language,
     topics: r.topics || [],
     stars: r.stargazers_count,
@@ -143,6 +146,7 @@ for (const a of config.apps || []) {
     url: a.url || a.web || a.homepage || '',
     homepage: a.homepage || a.web || '',
     web: a.web || '',
+    ...i18nFields(a),
     language: a.language || null,
     topics: a.topics || [],
     stars: null,

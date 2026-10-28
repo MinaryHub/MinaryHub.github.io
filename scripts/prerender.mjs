@@ -12,9 +12,11 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const siteUrl = (cfg.siteUrl || 'https://kimserv.com').replace(/\/+$/, '') + '/';
 const title = cfg.title || 'Kimserv';
 const repos = data.repos || [];
-const names = repos.map((r) => r.displayName || r.name);
-const description = cfg.description || cfg.tagline || `${title} 공개 프로젝트 소개 및 최신 빌드 다운로드`;
-const keywords = [...new Set([title, ...(cfg.keywords || []), ...names])].join(', ');
+// 페이지 기본 언어는 영어 (방문자가 한국어로 바꾸면 JS가 다시 그린다). 영어 값이 없으면 기본 값을 쓴다
+const en = (o, k) => o[k + 'En'] || o[k];
+const names = repos.map((r) => en(r, 'displayName') || r.name);
+const description = cfg.descriptionEn || cfg.taglineEn || cfg.description || cfg.tagline || `${title} — open-source projects and their latest builds`;
+const keywords = [...new Set([title, ...(cfg.keywords || []), ...names, ...repos.map((r) => r.displayNameKo || r.displayName).filter(Boolean)])].join(', ');
 const ogImage = siteUrl + (cfg.ogImage || 'og.png');
 
 const osOf = (assets = []) => {
@@ -30,17 +32,18 @@ const osOf = (assets = []) => {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'WebSite', '@id': siteUrl + '#website', name: title, url: siteUrl, description, inLanguage: 'ko-KR' },
+    { '@type': 'WebSite', '@id': siteUrl + '#website', name: title, url: siteUrl, description, inLanguage: ['en', 'ko'] },
     {
       '@type': 'ItemList',
-      name: `${title} 프로젝트`,
+      name: `${title} projects`,
       itemListElement: repos.map((r, i) => ({
         '@type': 'ListItem',
         position: i + 1,
         item: {
           '@type': 'SoftwareApplication',
-          name: r.displayName || r.name,
-          description: r.description || undefined,
+          name: en(r, 'displayName') || r.name,
+          alternateName: r.displayNameKo || (r.displayNameEn && r.displayName !== r.displayNameEn ? r.displayName : undefined),
+          description: en(r, 'description') || undefined,
           url: r.homepage || r.url,
           sameAs: r.url,
           applicationCategory: 'UtilitiesApplication',
@@ -69,7 +72,8 @@ const head = [
   `<meta property="og:description" content="${esc(description)}">`,
   `<meta property="og:url" content="${esc(siteUrl)}">`,
   `<meta property="og:image" content="${esc(ogImage)}">`,
-  `<meta property="og:locale" content="ko_KR">`,
+  `<meta property="og:locale" content="en_US">`,
+  `<meta property="og:locale:alternate" content="ko_KR">`,
   `<meta name="twitter:card" content="summary_large_image">`,
   `<meta name="twitter:title" content="${esc(title)}">`,
   `<meta name="twitter:description" content="${esc(description)}">`,
@@ -84,14 +88,14 @@ const head = [
 html = html.replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/, head);
 // 본문 제목·소개문구를 정적으로 채움
 html = html.replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`);
-html = html.replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(cfg.tagline || '')}$2`);
+html = html.replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(en(cfg, 'tagline') || '')}$2`);
 // JS가 카드를 그리기 전(또는 JS 미실행 크롤러)에 보일 프로젝트 목록
 if (repos.length) {
   const list = repos.map((r) =>
-    `<li><a href="${esc(r.url)}"><strong>${esc(r.displayName || r.name)}</strong></a>${r.description ? ` — ${esc(r.description)}` : ''}` +
-    `${r.release ? ` (<a href="${esc(r.release.url)}">${esc(r.release.tag)} 다운로드</a>)` : ''}</li>`).join('');
-  html = html.replace(/<div class="state">불러오는 중…<\/div>/,
-    `<div class="state"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} 프로젝트 목록</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`);
+    `<li><a href="${esc(r.url)}"><strong>${esc(en(r, 'displayName') || r.name)}</strong></a>${en(r, 'description') ? ` — ${esc(en(r, 'description'))}` : ''}` +
+    `${r.release ? ` (<a href="${esc(r.release.url)}">Download ${esc(r.release.tag)}</a>)` : ''}</li>`).join('');
+  html = html.replace(/<div class="state" id="loading">Loading…<\/div>/,
+    `<div class="state"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} projects</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`);
 }
 await writeFile(`${SITE_DIR}/index.html`, html);
 

@@ -74,11 +74,19 @@ async function repoMedia(r, o) {
     if (f) { icon = raw(r, f.path); break; }
   }
   let screenshots = (o.screenshots || []).map(resolve);
+  // 저장소의 언어별 폴더 screenshots/en/, screenshots/ko/ — 페이지가 화면 언어에 맞는 쪽을 쓴다
+  const byLang = {};
+  if (!screenshots.length) for (const l of ['en', 'ko']) {
+    const list = files.filter((f) => new RegExp(`^screenshots/${l}/[^/]+$`, 'i').test(f.path)).map((f) => f.path)
+      .sort((a, b) => a.localeCompare(b, 'en', { numeric: true })).slice(0, 10).map((p) => raw(r, p));
+    if (list.length) byLang[l] = list;
+  }
   if (!screenshots.length) screenshots = await localShots(r.name);
+  if (!screenshots.length) screenshots = byLang.en || byLang.ko || [];
   if (!screenshots.length) screenshots = files.filter((f) => SHOT_PATH.test(f.path)).map((f) => f.path).sort().slice(0, 10).map((p) => raw(r, p));
   if (!screenshots.length) screenshots = await readmeImages(r);
   // shotsFixed: config에서 직접 고른 목록 → 페이지가 저장소 screenshots/ 폴더를 다시 읽어 바꾸지 않음
-  return { icon, screenshots, shotsFixed: !!(o.screenshots || []).length };
+  return { icon, screenshots, ...(Object.keys(byLang).length ? { screenshotsByLang: byLang } : {}), shotsFixed: !!(o.screenshots || []).length };
 }
 
 // GitHub의 "Latest" 표시(releases/latest)는 수동 지정·--latest=false 등으로 어긋날 수 있으므로

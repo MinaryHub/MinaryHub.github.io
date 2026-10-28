@@ -115,6 +115,7 @@ for (const r of repos) {
     web: o.web || '',
     ...i18nFields(o),
     branch: r.default_branch,
+    category: o.category || undefined,   // schema.org applicationCategory (검색엔진용 앱 소개 페이지)
     language: r.language,
     topics: r.topics || [],
     stars: r.stargazers_count,
@@ -149,6 +150,7 @@ for (const a of config.apps || []) {
     homepage: a.homepage || a.web || '',
     web: a.web || '',
     ...i18nFields(a),
+    category: a.category || undefined,
     language: a.language || null,
     topics: a.topics || [],
     stars: null,

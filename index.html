@@ -33,8 +33,8 @@
   header { padding: 56px 0 28px; }
   .brand { display: flex; align-items: center; gap: 12px; }
   .lang-sw { margin-left: auto; display: flex; gap: 2px; padding: 2px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
-  .lang-sw button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; padding: 3px 10px; border-radius: 999px; cursor: pointer; }
-  .lang-sw button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+  .lang-sw a { color: var(--muted); font-size: 12px; padding: 3px 10px; border-radius: 999px; text-decoration: none; }
+  .lang-sw a[aria-pressed="true"], .lang-sw a[aria-current="page"] { background: var(--text); color: var(--bg); }
   .logo { width: 48px; height: 48px; border-radius: 50%; flex: none; background: var(--logo-bg); padding: var(--logo-pad); }
   h1 { font-size: 30px; margin: 0; letter-spacing: -.02em; }
   .tagline { color: var(--muted); margin: 10px 0 0; max-width: 620px; }
@@ -130,7 +130,7 @@
 <div class="wrap">
   <header>
     <div class="brand"><img class="logo" src="logo.webp" alt="" width="48" height="48"><h1 id="title">MinaryHub</h1>
-      <div class="lang-sw" id="langSw" role="group" aria-label="Language"><button type="button" data-lang="en" lang="en">EN</button><button type="button" data-lang="ko" lang="ko">한국어</button></div></div>
+      <nav class="lang-sw" id="langSw" aria-label="Language"><a href="./" data-lang="en" lang="en" hreflang="en">EN</a><a href="ko/" data-lang="ko" lang="ko" hreflang="ko">한국어</a></nav></div>
     <p class="tagline" id="tagline"></p>
     <div class="meta" id="meta"></div>
     <div class="auth" id="auth" hidden></div>
@@ -157,11 +157,16 @@
   const ORG = 'MinaryHub';
   const LANG_COLORS = { Rust:'#dea584', 'C#':'#178600', TypeScript:'#3178c6', JavaScript:'#f1e05a',
     Dart:'#00B4AB', Python:'#3572A5', MDX:'#fcb32c', Go:'#00ADD8', 'C++':'#f34b7d', Kotlin:'#A97BFF', Swift:'#F05138' };
-  // 언어: 주소의 ?lang=en|ko → 이 브라우저에 기억한 선택 → 기본 영어
-  let lang = 'en';
+  // 언어: 주소의 ?lang=en|ko → 이 페이지의 언어(배포 때 / 는 영어, /ko/ 는 한국어로 만든다) → 기본 영어.
+  // 배포된 페이지에서 기억한 선택이 이 페이지와 다르면 그 언어 주소로 옮긴다 (검색엔진은 저장소가 없어 옮겨지지 않는다)
+  const prerendered = !!document.documentElement.dataset.prerendered;
+  const pageLang = document.documentElement.dataset.lang || 'en';
+  let lang = pageLang;
   try {
     const q = new URLSearchParams(location.search).get('lang'), saved = localStorage.getItem('mh-lang');
-    lang = ['en', 'ko'].includes(q) ? q : ['en', 'ko'].includes(saved) ? saved : 'en';
+    if (['en', 'ko'].includes(q)) lang = q;
+    else if (prerendered && ['en', 'ko'].includes(saved) && saved !== pageLang) location.replace(new URL(saved === 'ko' ? 'ko/' : './', document.baseURI).href);
+    else if (!prerendered && ['en', 'ko'].includes(saved)) lang = saved;
   } catch {}
   const I18N = {
     en: {
@@ -206,6 +211,7 @@
   const t = (k, ...a) => { const v = I18N[lang][k]; return typeof v === 'function' ? v(...a) : v; };
   // config·저장소 값의 언어별 덮어쓰기: descriptionEn / descriptionKo 처럼 이름 뒤에 En·Ko
   const loc = (o, k) => (o && o[k + (lang === 'en' ? 'En' : 'Ko')]) || (o && o[k]) || '';
+  const slugOf = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|description)(En|Ko)$/.test(k)));
   const OS_LABEL = { win: 'Windows', mac: 'macOS', linux: 'Linux', android: 'Android' };
   const osLabel = (os) => OS_LABEL[os] || t('other');
@@ -447,7 +453,7 @@
     const q = [name, r.name, r.displayName, r.displayNameEn, r.displayNameKo, desc, r.description, r.descriptionEn, r.descriptionKo,
       r.language, ...r.topics].filter(Boolean).join(' ').toLowerCase();
     return `<article class="card" data-app="${esc(r.name)}" data-rel="${rel ? 1 : 0}" data-q="${esc(q)}">
-      <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((name || '?')[0])}</span>`}<h2>${esc(name)}</h2></div>
+      <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((name || '?')[0])}</span>`}<h2>${r.page ? `<a href="${lang === 'ko' ? 'ko/' : ''}apps/${esc(slugOf(r.name))}/">${esc(name)}</a>` : esc(name)}</h2></div>
         ${rel ? `<a class="ver${rel.prerelease ? ' pre' : ''}" href="${esc(rel.url)}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</a>` : ''}</div>
       <p class="desc${desc ? '' : ' empty'}">${esc(desc || t('noDesc'))}</p>
       <div class="tags">${r.language ? `<span class="tag lang" style="--dot:${color}">${esc(r.language)}</span>` : ''}${r.topics.slice(0, 4).map((tp) => `<span class="tag">${esc(tp)}</span>`).join('')}</div>
@@ -570,13 +576,17 @@
     document.querySelectorAll('.chip').forEach((c) => (c.textContent = t(c.dataset.f)));
     $('#footNote').textContent = t('footNote');
     const ld = $('#loading'); if (ld) ld.textContent = t('loading');
-    document.querySelectorAll('#langSw button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+    document.querySelectorAll('#langSw a').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang));
     lbLabels();
   }
+  // 배포된 페이지에서는 언어별 주소로 이동하고, 미리보기(사전 렌더링 전)에서는 그 자리에서 바꾼다
   $('#langSw').addEventListener('click', (e) => {
-    const b = e.target.closest('button[data-lang]'); if (!b || b.dataset.lang === lang) return;
+    const b = e.target.closest('a[data-lang]'); if (!b) return;
+    try { localStorage.setItem('mh-lang', b.dataset.lang); } catch {}
+    if (prerendered && b.dataset.lang !== pageLang) return;
+    e.preventDefault();
+    if (b.dataset.lang === lang) return;
     lang = b.dataset.lang;
-    try { localStorage.setItem('mh-lang', lang); } catch {}
     applyLang(); rerender();
   });
   applyLang();
@@ -585,12 +595,15 @@
     try {
       const cfg = await fetch('config.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
       const applyHeader = () => {
-        const title = loc(cfg, 'title'); if (title) { $('#title').textContent = title; document.title = title; }
+        const title = loc(cfg, 'title'), headline = loc(cfg, 'headline');
+        if (title) { $('#title').textContent = title; document.title = headline ? `${title} · ${headline}` : title; }
         $('#tagline').textContent = loc(cfg, 'tagline');
       };
       applyHeader(); rerender = applyHeader;
       const data = await loadData();
       const repos = data.repos;
+      // 배포 때 앱 소개 페이지(apps/<앱>/)를 만든 앱 — 카드 제목을 그 페이지로 잇는다
+      if (prerendered && !data.live) for (const r of repos) r.page = true;
       // config.apps(저장소 없이 직접 등록한 앱): repos.json에 이미 들어 있지 않을 때(API 직접 호출 등)만 보충
       for (const a of cfg.apps || []) {
         if (!a.name || repos.some((r) => r.name.toLowerCase() === a.name.toLowerCase()) ||

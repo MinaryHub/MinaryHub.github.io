@@ -77,7 +77,8 @@ async function repoMedia(r, o) {
   if (!screenshots.length) screenshots = await localShots(r.name);
   if (!screenshots.length) screenshots = files.filter((f) => SHOT_PATH.test(f.path)).map((f) => f.path).sort().slice(0, 10).map((p) => raw(r, p));
   if (!screenshots.length) screenshots = await readmeImages(r);
-  return { icon, screenshots };
+  // shotsFixed: config에서 직접 고른 목록 → 페이지가 저장소 screenshots/ 폴더를 다시 읽어 바꾸지 않음
+  return { icon, screenshots, shotsFixed: !!(o.screenshots || []).length };
 }
 
 // GitHub의 "Latest" 표시(releases/latest)는 수동 지정·--latest=false 등으로 어긋날 수 있으므로
@@ -113,6 +114,7 @@ for (const r of repos) {
     homepage: o.homepage || r.homepage || '',
     web: o.web || '',
     ...i18nFields(o),
+    branch: r.default_branch,
     language: r.language,
     topics: r.topics || [],
     stars: r.stargazers_count,

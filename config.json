@@ -88,6 +88,13 @@
     "Kite-Writer": {
       "descriptionEn": "A desktop word processor centred on Hangul (HWP/HWPX) documents that also opens and edits Word, PDF and Markdown files.",
       "category": "BusinessApplication"
+    },
+    "GridDisplay": {
+      "displayName": "Grid Display",
+      "description": "여러 브라우저와 프로그램을 한 모니터에 격자로 띄워 두는 Windows용 디스플레이 월 프로그램. 칸을 누르면 화면 전체로 확대해 바로 조작하고, 칸마다 띄운 주소와 프로그램을 기억해 다시 켜면 그대로 복원합니다.",
+      "descriptionEn": "A Windows display-wall app that tiles browsers and programs into a grid on one monitor. Click a cell to zoom it full-screen and use it right away; every cell remembers its page or program and comes back the same on the next launch.",
+      "icon": "packaging/Assets/Square310x310Logo.png",
+      "category": "UtilitiesApplication"
     }
   }
 }

@@ -40,7 +40,6 @@
       dlg = document.createElement('dialog');
       dlg.className = 'contact';
       document.body.appendChild(dlg);
-      dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
     }
     apps = null;
     const list = await appList();

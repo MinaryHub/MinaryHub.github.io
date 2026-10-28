@@ -95,6 +95,13 @@
       "descriptionEn": "A Windows display-wall app that tiles browsers and programs into a grid on one monitor. Click a cell to zoom it full-screen and use it right away; every cell remembers its page or program and comes back the same on the next launch.",
       "icon": "packaging/Assets/Square310x310Logo.png",
       "category": "UtilitiesApplication"
+    },
+    "Kynex": {
+      "displayName": "KYNEX",
+      "description": "로봇·공장 시뮬레이터. Kreate의 공동 편집 세션에 참여해 장면을 실시간으로 받아 보여 주고, CAD·메시 모델과 로봇(URDF)을 가져와 배치·조그·프로그래밍할 수 있습니다. 브라우저에서 보는 3D 뷰어를 내장했습니다.",
+      "descriptionEn": "A robot and factory simulator. It joins Kreate's shared session to show the scene live, imports CAD/mesh models and robots (URDF) to place, jog and program, and comes with a 3D viewer that runs in your browser.",
+      "icon": "apps/kynex/assets/kynex-256.png",
+      "category": "DesignApplication"
     }
   }
 }

@@ -125,6 +125,8 @@ const baseFor = (path) => (path ? '../'.repeat(path.split('/').filter(Boolean).l
 const pages = [];   // sitemap: { alt: {en, ko}, lastmod }
 const ogImage = siteUrl + (cfg.ogImage || 'og.png');
 const generated = (data.generatedAt || new Date().toISOString()).slice(0, 10);
+// 배포마다 바뀌는 버전 — 브라우저가 예전 contact.js를 캐시에서 쓰지 않게
+const ver = Date.now().toString(36);
 
 // ── 첫 페이지 (영어 /, 한국어 /ko/) ──
 for (const lang of LANGS) {
@@ -142,6 +144,7 @@ for (const lang of LANGS) {
     .replace('<meta charset="utf-8">', `<meta charset="utf-8">${baseFor(path) ? `\n<base href="${baseFor(path)}">` : ''}`)
     .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
       headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: home('en'), ko: home('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
+    .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
     .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
     .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`);
   if (repos.length) {
@@ -267,7 +270,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </footer>
 </div>
 ${appScript(lang, alt)}
-<script src="contact.js" defer></script>
+<script src="contact.js?v=${ver}" defer></script>
 </body>
 </html>
 `;

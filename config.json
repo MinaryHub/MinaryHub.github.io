@@ -102,6 +102,13 @@
       "descriptionEn": "A robot and factory simulator. It joins Kreate's shared session to show the scene live, imports CAD/mesh models and robots (URDF) to place, jog and program, and comes with a 3D viewer that runs in your browser.",
       "icon": "apps/kynex/assets/kynex-256.png",
       "category": "DesignApplication"
+    },
+    "ScreenDeck": {
+      "displayName": "ScreenDeck",
+      "description": "멀티 모니터를 위한 Windows 앱. 한 화면을 제어 모니터로 두고 모든 모니터를 실시간으로 보면서, 프로그램 카드를 끌어다 다른 모니터로 옮기거나 다른 모니터를 제어 모니터에서 직접 조작할 수 있습니다.",
+      "descriptionEn": "A Windows app for multi-monitor setups. Keep one screen as your control monitor, see every monitor live, drag programs between monitors, or work on another monitor from where you sit.",
+      "icon": "icons/screendeck.png",
+      "category": "UtilitiesApplication"
     }
   }
 }

@@ -67,7 +67,8 @@ async function readmeImages(r) {
 async function repoMedia(r, o) {
   const tree = (await gh(`/repos/${ORG}/${r.name}/git/trees/${r.default_branch}?recursive=1`))?.tree || [];
   const files = tree.filter((f) => f.type === 'blob' && IMG.test(f.path) && !/node_modules|tests?\/|fixtures|goldens/i.test(f.path));
-  const resolve = (p) => (/^https?:|^screenshots\//.test(p) ? p : raw(r, p));
+  // https 주소, 이 사이트 안의 파일(screenshots/, icons/)은 그대로, 나머지는 앱 저장소 안의 경로
+  const resolve = (p) => (/^https?:|^(screenshots|icons)\//.test(p) ? p : raw(r, p));
   let icon = o.icon ? resolve(o.icon) : null;
   if (!icon) for (const re of ICON_GUESS) {
     const f = files.filter((x) => re.test(x.path) && x.size > 1500).sort((a, b) => a.size - b.size)[0];

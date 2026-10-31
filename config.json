@@ -31,28 +31,114 @@
       "icon": "apps/kreate/assets/kreate.png",
       "descriptionEn": "A 3D modelling, sculpting and animation app written from scratch in Rust, with a built-in connector that lets Claude drive it.",
       "descriptionKo": "Rust로 처음부터 만든 3D 모델링·스컬프팅·애니메이션 앱. Claude가 직접 조작할 수 있는 커넥터를 내장했습니다.",
-      "category": "DesignApplication"
+      "category": "DesignApplication",
+      "featuresEn": [
+        "Model — Mesh editing with extrude, bevel, loop cut and more, modifiers, and undo for everything.",
+        "Sculpt — A full brush set (Clay Strips, Crease, Flatten, Snake Hook, Mask, Face Sets…), symmetry, pen pressure, Voxel Remesh and dynamic topology.",
+        "Shade and render — Node-based materials with procedural textures, and a path-traced render that runs the same node graphs as the viewport.",
+        "Rig and animate — Armatures, IK, bone constraints, a timeline and rigid bodies. A robot read from URDF can be posed and exported moving.",
+        "Files — glTF, OBJ, STL, FBX, 3MF, PLY, OFF and STEP in; glTF, OBJ, STL, STEP and URDF out.",
+        "Assets — Models, materials and HDRIs from your own folders or Poly Haven.",
+        "AI connector — An MCP server lets Claude inspect and edit a running Kreate: add assets, sculpt to a reference, rig a character.",
+        "Shared editing — Several people can edit one scene live through a relay."
+      ],
+      "featuresKo": [
+        "모델링 — 돌출·모따기·루프 컷 등 메시 편집, 모디파이어, 모든 작업 되돌리기.",
+        "스컬프팅 — 클레이 스트립, 크리스, 플래튼, 스네이크 훅, 마스크, 페이스 세트 등 전체 브러시, 대칭, 펜 압력, 복셀 리메시, 동적 토폴로지.",
+        "셰이딩·렌더 — 절차적 텍스처를 쓰는 노드 기반 재질, 뷰포트와 같은 노드 그래프를 쓰는 패스 트레이싱 렌더.",
+        "리깅·애니메이션 — 아마추어, IK, 본 제약, 타임라인, 리지드 바디. URDF 로봇을 불러와 포즈를 잡고 움직임까지 내보낼 수 있습니다.",
+        "파일 — glTF, OBJ, STL, FBX, 3MF, PLY, OFF, STEP 가져오기 / glTF, OBJ, STL, STEP, URDF 내보내기.",
+        "에셋 — 내 폴더나 Poly Haven의 모델·재질·HDRI.",
+        "AI 연동 — MCP 서버로 Claude가 실행 중인 Kreate를 보고 편집합니다(에셋 추가, 참고 이미지에 맞춰 스컬프팅, 캐릭터 리깅).",
+        "공동 편집 — 릴레이를 통해 여러 사람이 한 장면을 실시간으로 함께 편집합니다."
+      ]
     },
     "Curvo": {
       "icon": "ProjectorWarp/packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
       "descriptionEn": "A Windows utility that pre-warps the screen in real time so projections onto curved walls, pillars and arches look straight.",
-      "category": "MultimediaApplication"
+      "category": "MultimediaApplication",
+      "featuresEn": [
+        "Straight lines on curved walls — Pre-warps the picture in real time with a Bézier surface and corner pins, so lines look straight on columns, arches and curved walls.",
+        "Built-in playback — Plays videos, PowerPoint, PDF and images inside the app, with no separate player or PowerPoint needed.",
+        "Window capture — Or capture a window that is already running and project it.",
+        "Colour and blending — Colour correction and edge blending.",
+        "Smooth on the GPU — Decoding, capture and rendering all stay on the GPU (Direct3D 11).",
+        "Straight to the projector — Full-screen output on the display the projector is connected to."
+      ],
+      "featuresKo": [
+        "굴곡진 벽에서도 직선 — 베지어 곡면과 코너 핀으로 화면을 실시간 역왜곡해 기둥·아치·굴곡진 벽에서 직선이 직선으로 보이게 합니다.",
+        "내장 재생 — 동영상, PPT, PDF, 이미지를 앱에서 바로 재생합니다. 외부 플레이어나 PowerPoint가 필요 없습니다.",
+        "창 캡처 — 이미 실행 중인 창을 캡처해 투사할 수도 있습니다.",
+        "색보정·블렌딩 — 색 보정과 가장자리 블렌딩.",
+        "GPU로 부드럽게 — 디코딩·캡처·렌더링이 모두 GPU(Direct3D 11)에서 이뤄집니다.",
+        "프로젝터로 바로 출력 — 프로젝터가 연결된 디스플레이에 전체 화면으로 내보냅니다."
+      ]
     },
     "DeskCue": {
       "icon": "packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
       "descriptionEn": "A tray app that always shows your current Windows virtual desktop as a translucent overlay and lets you jump to any desktop with hotkeys.",
       "descriptionKo": "지금 Windows 가상 데스크톱을 반투명 오버레이로 늘 보여 주고, 단축키로 원하는 데스크톱에 바로 이동하는 트레이 앱.",
-      "category": "UtilitiesApplication"
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Always-visible desktop number — Shows “current / total  desktop name” as a translucent, click-through overlay at the top of the screen.",
+        "Follows you — The overlay stays visible across every virtual desktop.",
+        "Jump with hotkeys — Ctrl+Alt+1 to 9 by default, and you can change them.",
+        "Make it yours — Position, opacity, font size and colors are adjustable.",
+        "Quiet tray app — Per-user install without admin rights, optional start with Windows.",
+        "Stays up to date — Checks GitHub Releases and updates with one click. A Linux (X11) build is available too."
+      ],
+      "featuresKo": [
+        "늘 보이는 데스크톱 번호 — “현재 / 전체  데스크톱 이름”을 화면 위쪽에 반투명·클릭 통과 오버레이로 표시합니다.",
+        "따라다니는 표시 — 어느 가상 데스크톱으로 옮겨도 오버레이가 보입니다.",
+        "단축키로 바로 이동 — 기본은 Ctrl+Alt+1~9이고 바꿀 수 있습니다.",
+        "내 취향대로 — 위치, 투명도, 글자 크기, 색을 조절합니다.",
+        "조용한 트레이 앱 — 관리자 권한 없이 사용자별로 설치되고, Windows 시작 시 자동 실행을 고를 수 있습니다.",
+        "최신 상태 유지 — GitHub 릴리스를 확인해 한 번에 업데이트합니다. Linux(X11) 버전도 있습니다."
+      ]
     },
     "Kerminal": {
       "icon": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
       "descriptionEn": "A cross-platform SSH/terminal client for Windows, macOS, Linux, iOS, Android and the web, built from a single Flutter codebase.",
-      "category": "DeveloperApplication"
+      "category": "DeveloperApplication",
+      "featuresEn": [
+        "SSH client — Sign in with a password or an SSH key, with a terminal that keeps 10,000 lines of scrollback.",
+        "Saved hosts — Name, address, port, user and group; search the list and connect in one tap.",
+        "Tabs — Several sessions at once, each with its own reconnect.",
+        "Host key checks — Verifies the server's fingerprint and warns you if it changes.",
+        "Secrets kept safe — Passwords and private keys live in the system's secure storage, never in the host database.",
+        "Handy on phones — A toolbar for Esc, Tab, Ctrl-C and arrow keys, light and dark themes, adjustable font size.",
+        "Everywhere — Windows, macOS, Linux, iOS and Android from one codebase."
+      ],
+      "featuresKo": [
+        "SSH 클라이언트 — 비밀번호 또는 SSH 키로 접속하며, 터미널은 1만 줄 스크롤백을 유지합니다.",
+        "저장된 호스트 — 이름·주소·포트·사용자·그룹을 저장하고, 목록을 검색해 한 번에 접속합니다.",
+        "탭 — 여러 세션을 동시에 열고 세션마다 다시 연결할 수 있습니다.",
+        "호스트 키 확인 — 서버 지문을 확인하고 바뀌면 경고합니다.",
+        "비밀 정보 보호 — 비밀번호와 개인 키는 호스트 정보와 따로 시스템 보안 저장소에 보관합니다.",
+        "휴대폰에서도 편하게 — Esc·Tab·Ctrl-C·방향키 도구 모음, 라이트·다크 테마, 글자 크기 조절.",
+        "어디서나 — 하나의 코드로 Windows, macOS, Linux, iOS, Android를 지원합니다."
+      ]
     },
     "HanEng": {
       "icon": "assets/icon-256.png",
       "descriptionEn": "A Windows utility that shows a Korean/English input-mode badge next to your text caret, so you know the mode before you type.",
-      "category": "UtilitiesApplication"
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Know the mode before you type — A small badge next to the text caret: blue “한” for Korean, gray “a” for English, orange “A” when Caps Lock is on.",
+        "Follows the caret — Appears where you are typing, not at the mouse, including in Chrome and Electron apps.",
+        "Doesn't watch your keyboard — No input hooks; it only reads the caret position and the input mode.",
+        "Doesn't touch your text — It never types or erases anything.",
+        "Offline — No network use except when you press the update check button.",
+        "Simple install — A Windows installer that starts it right away and at sign-in."
+      ],
+      "featuresKo": [
+        "치기 전에 상태 확인 — 입력 커서 옆에 작은 배지가 뜹니다. 파란 “한”은 한글, 회색 “a”는 영문, 주황 “A”는 Caps Lock이 켜진 영문입니다.",
+        "커서를 따라다님 — 마우스가 아니라 입력 중인 자리에 나타나며, 크롬·Electron 앱에서도 동작합니다.",
+        "키보드를 지켜보지 않음 — 입력 훅이 없고, 커서 위치와 입력 상태만 읽습니다.",
+        "글자를 건드리지 않음 — 글자를 입력하거나 지우지 않습니다.",
+        "오프라인 — 업데이트 확인 버튼을 누를 때만 네트워크를 씁니다.",
+        "간단한 설치 — 설치 즉시 실행되고 로그인 때 자동 시작하는 Windows 설치 파일."
+      ]
     },
     "NetworkScanner": {
       "icon": "assets/app.png",
@@ -64,7 +150,25 @@
       ],
       "descriptionEn": "A cross-platform network inventory and security scanner: finds live hosts, open ports, MAC vendors and service banners, flags risky ports and tracks changes between scans.",
       "descriptionKo": "크로스플랫폼 네트워크 인벤토리·보안 스캐너. 살아 있는 호스트·열린 포트·MAC 제조사·서비스 배너를 기록하고, 위험한 포트와 스캔 사이의 변화를 알려 줍니다.",
-      "category": "SecurityApplication"
+      "category": "SecurityApplication",
+      "featuresEn": [
+        "Range scan — Pings an IP range, then records each live host's MAC address and vendor, host name, open TCP ports, service banner and a guess at its OS.",
+        "Deep discovery — SMB, SSH and HTTP fingerprints, SSDP/mDNS names and models, and router tables that show which switch port each host is on.",
+        "Security flags — Marks ports commonly used by backdoors and alerts you when hosts appear, disappear or change.",
+        "History — Past scans, a per-host timeline and a device inventory with first and last seen.",
+        "Reports and upload — CSV, HTML and JSON, and secure upload over FTPS, SFTP or HTTPS.",
+        "Notifications and scheduling — Webhook (Slack, Teams, Discord), syslog or email; hourly scans or continuous monitoring.",
+        "Three ways to run — A desktop app, the netscan command line, and a background service, on Windows, macOS and Linux."
+      ],
+      "featuresKo": [
+        "대역 스캔 — IP 범위에 핑을 보내 살아 있는 호스트의 MAC 주소·제조사, 호스트 이름, 열린 TCP 포트, 서비스 배너, 운영체제 추정을 기록합니다.",
+        "심층 탐색 — SMB·SSH·HTTP 지문, SSDP/mDNS 이름과 모델, 호스트가 어느 스위치 포트에 연결됐는지 보여 주는 라우터 테이블.",
+        "보안 표시 — 백도어에 흔히 쓰이는 포트를 표시하고, 호스트가 생기거나 사라지거나 바뀌면 알립니다.",
+        "이력 — 지난 스캔, 호스트별 타임라인, 처음·마지막 확인 시각이 있는 장비 목록.",
+        "보고서·전송 — CSV·HTML·JSON 보고서, FTPS·SFTP·HTTPS 보안 전송.",
+        "알림·예약 — 웹훅(Slack·Teams·Discord), syslog, 이메일 알림, 매시간 스캔 또는 상시 모니터링.",
+        "세 가지 실행 방식 — 데스크톱 앱, netscan 명령줄, 백그라운드 서비스 (Windows·macOS·Linux)."
+      ]
     },
     "Kite": {
       "icon": "build/png/256.png"
@@ -74,7 +178,27 @@
       "web": "https://apps.kimserv.com/dotty/",
       "icon": "web/icons/Icon-512.png",
       "descriptionEn": "A dot-matrix sign app that turns text, clocks and images into LED dots, with a flip-dot mode and scene playlists. Runs right in your browser — no install.",
-      "category": "MultimediaApplication"
+      "category": "MultimediaApplication",
+      "featuresEn": [
+        "Scenes in order — Build a show from as many scenes as you like; it plays them one after another and loops.",
+        "Text, images and a live clock — Hangul, English and symbols become dots; PNG, JPG, GIF and WebP images are converted; a clock scene shows the current time.",
+        "Make each scene yours — Dot color and rainbow, scroll direction and speed, blinking, bold text, text size and multiple lines.",
+        "Entrance effects — Cut, fade, slide, slide up, diagonal and flip.",
+        "LED or flip-dot — A glowing LED sign, or a mechanical flip-dot board with 3D discs and a synthesized flip sound.",
+        "Still-scene tricks — Flip every dot now and then, or bring the same screen in again after a set time.",
+        "Fullscreen sign — Fills the whole screen and keeps it awake; the sign takes the shape of your screen.",
+        "Yours alone — Everything you add is saved on your own device only; it runs in the browser with no install."
+      ],
+      "featuresKo": [
+        "장면을 순서대로 — 장면을 원하는 만큼 만들면 차례로 재생하고 처음부터 반복합니다.",
+        "문구·이미지·실시간 시계 — 한글·영문·기호를 도트로 바꾸고, PNG·JPG·GIF·WebP 이미지를 변환하며, 시계 장면은 현재 시간을 보여 줍니다.",
+        "장면마다 꾸미기 — 점 색상과 무지개 효과, 스크롤 방향·속도, 깜빡임, 굵은 글씨, 글자 크기, 여러 줄.",
+        "나타나는 효과 — 바로, 페이드, 옆으로 밀기, 위로 밀기, 사선, 플립.",
+        "LED 또는 플립 도트 — 빛나는 LED 전광판, 또는 3D 원판과 합성한 뒤집힘 소리가 있는 기계식 플립 도트 전광판.",
+        "고정 장면 효과 — 가끔 모든 점을 뒤집거나, 정한 시간이 지나면 같은 화면이 다시 나타납니다.",
+        "전체 화면 전광판 — 화면을 가득 채우고 꺼지지 않게 하며, 기기 화면 모양에 맞춥니다.",
+        "내 기기에만 저장 — 추가한 내용은 내 기기에만 저장되고, 설치 없이 브라우저에서 실행됩니다."
+      ]
     },
     "DoNotDisturb": {
       "displayName": "방해 금지 모드",
@@ -83,32 +207,118 @@
       "icon": "public/icon-512.png",
       "displayNameEn": "Do Not Disturb",
       "descriptionEn": "“The world is too loud, and my energy is limited.” A 2D top-down psychological stealth game about an introvert getting through the day and back to bed before their social battery runs out. Play in your browser — no install.",
-      "category": "GameApplication"
+      "category": "GameApplication",
+      "featuresEn": [
+        "One week, one city — A six-day campaign, Monday to Saturday, in a single connected city.",
+        "Your goal — Finish the day's duties and get home to bed before your social battery runs out.",
+        "The enemy is stimulation — Small talk, phone calls, stares, notifications, crowds and awkward silences, not monsters.",
+        "Ways to cope — Noise-cancelling earbuds, pretending to look at your phone, a hat or mask, a bathroom stall; recover with food, hobbies and people you trust.",
+        "Avoiding everything has a cost — Income, housing, daily essentials and your relationships slip if you dodge every call.",
+        "You feel it, not read it — The screen, sound and controls change as you get tired or tense.",
+        "Accessibility — Adjustable distortion, options to turn off shake, colour fringing and flicker, and separate volumes for heartbeat and ringing.",
+        "Play in the browser — Progress is saved on your device only."
+      ],
+      "featuresKo": [
+        "일주일, 하나의 도시 — 하나로 이어진 도시에서 월요일부터 토요일까지 6일간의 캠페인.",
+        "목표 — 사회적 배터리가 바닥나기 전에 하루의 의무를 마치고 집 침대로 돌아가기.",
+        "적은 ‘자극’ — 괴물이 아니라 스몰토크, 전화, 시선, 알림, 군중, 어색한 침묵입니다.",
+        "버티는 방법 — 노이즈 캔슬링 이어폰, 폰 보는 척, 모자·마스크, 화장실 칸. 음식·취미·내 사람으로 회복합니다.",
+        "회피에는 대가가 있음 — 전화를 다 피하면 소득, 주거, 생활 필수, 관계가 무너집니다.",
+        "읽는 게 아니라 느끼기 — 지치고 긴장할수록 화면, 소리, 조작감이 달라집니다.",
+        "접근성 — 왜곡 강도 조절, 화면 흔들림·색 번짐·깜빡임 끄기, 심박음·이명 볼륨 따로 조절.",
+        "브라우저에서 바로 플레이 — 진행 상황은 내 기기에만 저장됩니다."
+      ]
     },
     "Kite-Writer": {
       "descriptionEn": "A desktop word processor centred on Hangul (HWP/HWPX) documents that also opens and edits Word, PDF and Markdown files.",
-      "category": "BusinessApplication"
+      "category": "BusinessApplication",
+      "featuresEn": [
+        "Hangul-first — Opens and saves HWP and HWPX documents, and also Word (DOCX), PDF, Markdown, HTML and plain text.",
+        "Page-by-page editing — Shows real paper pages with paper size, margins, headers, footers and page numbers.",
+        "Familiar formatting — Character and paragraph shapes, styles, bullets and numbering, tables with merged cells, pictures, footnotes and equations.",
+        "Document templates — Official letters, reports, minutes, quotes, leave requests, résumés and more, ready to fill in.",
+        "Find and replace — With regular expressions and whole-word matching.",
+        "Safe to use — Multiple document tabs, autosave with crash recovery, print and save as PDF, dark theme."
+      ],
+      "featuresKo": [
+        "한글 중심 — HWP·HWPX 문서를 열고 저장하며, Word(DOCX)·PDF·Markdown·HTML·TXT도 다룹니다.",
+        "쪽 단위 편집 — 실제 용지 모양으로 쪽을 나눠 보여 주고, 용지·여백·머리말·꼬리말·쪽 번호를 지원합니다.",
+        "익숙한 서식 — 글자·문단 모양, 스타일, 글머리표·문단 번호, 셀 병합 표, 그림, 각주, 수식.",
+        "서식 문서 — 기안문, 보고서, 회의록, 견적서, 휴가 신청서, 이력서 등을 바로 채워 쓸 수 있습니다.",
+        "찾기·찾아 바꾸기 — 정규식과 온전한 낱말 검색.",
+        "안심하고 쓰기 — 여러 문서 탭, 자동 저장과 비정상 종료 복구, 인쇄·PDF 저장, 어두운 테마."
+      ]
     },
     "GridDisplay": {
       "displayName": "Grid Display",
       "description": "여러 브라우저와 프로그램을 한 모니터에 격자로 띄워 두는 Windows용 디스플레이 월 프로그램. 칸을 누르면 화면 전체로 확대해 바로 조작하고, 칸마다 띄운 주소와 프로그램을 기억해 다시 켜면 그대로 복원합니다.",
       "descriptionEn": "A Windows display-wall app that tiles browsers and programs into a grid on one monitor. Click a cell to zoom it full-screen and use it right away; every cell remembers its page or program and comes back the same on the next launch.",
       "icon": "packaging/Assets/Square310x310Logo.png",
-      "category": "UtilitiesApplication"
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Grid of cells — Three columns by two rows by default, anything from 1×1 to 12×12.",
+        "Browsers and programs — Each cell holds a web page (built-in browser) or any Windows program.",
+        "Click to zoom — Click a cell to fill the whole monitor and type or click right away; press Esc to return to the grid.",
+        "Programs stay in their cell — Even maximized or full-screen windows cannot leave their cell.",
+        "Remembers everything — Each cell's program and web address come back the next time you start.",
+        "Sets — Save combinations by name and switch with Ctrl+1 to 9."
+      ],
+      "featuresKo": [
+        "격자 배치 — 기본 3열×2행, 1×1부터 12×12까지 지정할 수 있습니다.",
+        "브라우저와 프로그램 — 칸마다 웹 페이지(내장 브라우저) 또는 임의의 Windows 프로그램을 띄웁니다.",
+        "클릭하면 확대 — 칸을 누르면 모니터 전체를 채우고 바로 입력할 수 있으며, Esc로 격자로 돌아옵니다.",
+        "프로그램은 칸 안에 — 최대화·전체 화면을 해도 칸을 벗어나지 못합니다.",
+        "기억과 복원 — 각 칸의 프로그램과 웹 주소를 기억해 다시 켜면 그대로 복원합니다.",
+        "세트 — 조합을 이름으로 저장하고 Ctrl+1~9로 바로 전환합니다."
+      ]
     },
     "Kynex": {
       "displayName": "KYNEX",
       "description": "로봇·공장 시뮬레이터. Kreate의 공동 편집 세션에 참여해 장면을 실시간으로 받아 보여 주고, CAD·메시 모델과 로봇(URDF)을 가져와 배치·조그·프로그래밍할 수 있습니다. 브라우저에서 보는 3D 뷰어를 내장했습니다.",
       "descriptionEn": "A robot and factory simulator. It joins Kreate's shared session to show the scene live, imports CAD/mesh models and robots (URDF) to place, jog and program, and comes with a 3D viewer that runs in your browser.",
       "icon": "apps/kynex/assets/kynex-256.png",
-      "category": "DesignApplication"
+      "category": "DesignApplication",
+      "featuresEn": [
+        "Live from Kreate — Joins Kreate's shared session and shows the scene as it changes, read-only: it can't alter your scene.",
+        "Works on its own — A 3D viewer that runs in your browser with projects of its own; Kreate is only needed to show a Kreate scene.",
+        "Import models — STEP, STL, OBJ, FBX, glTF/GLB, 3MF and PLY, with the unit chosen or detected.",
+        "Bring in robots — From a URDF description (a zip of its folder or a single file), then place, jog and program them.",
+        "Whole layouts — Import a layout exported from Visual Components as FBX or STEP.",
+        "Ready to install — Windows installer and MSI, plus Linux and macOS builds."
+      ],
+      "featuresKo": [
+        "Kreate에서 실시간으로 — Kreate의 공동 편집 세션에 참여해 장면이 바뀌는 대로 보여 줍니다. 읽기 전용이라 장면을 바꾸지 않습니다.",
+        "혼자서도 동작 — 브라우저에서 보는 3D 뷰어와 자체 프로젝트가 있어, Kreate 장면을 볼 때만 Kreate가 필요합니다.",
+        "모델 가져오기 — STEP, STL, OBJ, FBX, glTF/GLB, 3MF, PLY를 단위를 고르거나 자동으로 판별해 가져옵니다.",
+        "로봇 가져오기 — URDF(폴더 zip 또는 파일 하나)로 가져와 배치·조그·프로그래밍합니다.",
+        "배치 전체 가져오기 — Visual Components에서 FBX나 STEP으로 내보낸 레이아웃을 그대로 가져옵니다.",
+        "바로 설치 — Windows 설치 프로그램과 MSI, Linux·macOS 빌드."
+      ]
     },
     "ScreenDeck": {
       "displayName": "ScreenDeck",
       "description": "멀티 모니터를 위한 Windows 앱. 한 화면을 제어 모니터로 두고 모든 모니터를 실시간으로 보면서, 프로그램 카드를 끌어다 다른 모니터로 옮기거나 다른 모니터를 제어 모니터에서 직접 조작할 수 있습니다.",
       "descriptionEn": "A Windows app for multi-monitor setups. Keep one screen as your control monitor, see every monitor live, drag programs between monitors, or work on another monitor from where you sit.",
       "icon": "icons/screendeck.png",
-      "category": "UtilitiesApplication"
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "See every monitor — Shows all monitors in their real arrangement, each with a live preview.",
+        "Drag to move — Drag a program card onto another monitor's preview to move it there (maximized by default).",
+        "Live view and control — Open another monitor enlarged on your control monitor; clicks, scrolling and typing go to it.",
+        "Monitor names — Name each monitor; names are saved.",
+        "Full-screen windows too — Borderless full-screen windows such as video players and games are moved to fill the target monitor.",
+        "Quick keys — Press 1 to 9 to send the selected program to a monitor.",
+        "Easy to try — An installer or a portable exe, plus a demo mode that touches nothing on your PC."
+      ],
+      "featuresKo": [
+        "모든 모니터를 한눈에 — 실제 배치 그대로 각 모니터의 화면을 실시간 미리보기로 보여 줍니다.",
+        "끌어서 이동 — 프로그램 카드를 다른 모니터의 미리보기에 놓으면 그 모니터로 옮겨집니다(기본은 최대화).",
+        "확대 보기와 조작 — 다른 모니터를 제어 모니터에 크게 띄우고, 클릭·스크롤·키보드 입력을 그쪽으로 보냅니다.",
+        "모니터 이름 — 모니터마다 이름을 붙이면 저장됩니다.",
+        "전체 화면 창도 이동 — 영상 플레이어·게임처럼 테두리 없는 전체 화면 창도 대상 모니터를 채우도록 옮깁니다.",
+        "빠른 이동 키 — 카드를 고르고 1~9를 누르면 해당 모니터로 보냅니다.",
+        "부담 없이 써 보기 — 설치 프로그램 또는 설치 없는 실행 파일, 내 PC를 건드리지 않는 데모 모드."
+      ]
     }
   }
 }

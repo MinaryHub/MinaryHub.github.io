@@ -6,7 +6,8 @@
 <title>MinaryHub</title>
 <meta name="description" content="MinaryHub open-source projects and their latest builds">
 <link rel="icon" type="image/webp" href="logo.webp">
-<link rel="apple-touch-icon" href="logo.webp">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -622,6 +623,8 @@
 
   (async () => {
     try {
+      const dataPromise = loadData();   // 설정과 동시에 받는다 (차례로 받으면 첫 화면이 그만큼 늦어진다)
+      dataPromise.catch(() => {});
       const cfg = await fetch('config.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
       const applyHeader = () => {
         const title = loc(cfg, 'title'), headline = loc(cfg, 'headline');
@@ -629,7 +632,7 @@
         $('#tagline').textContent = loc(cfg, 'tagline');
       };
       applyHeader(); rerender = applyHeader;
-      const data = await loadData();
+      const data = await dataPromise;
       const repos = data.repos;
       // 배포 때 앱 소개 페이지(apps/<앱>/)를 만든 앱 — 카드 제목을 그 페이지로 잇는다
       if (prerendered && !data.live) for (const r of repos) r.page = true;

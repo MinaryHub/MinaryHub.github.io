@@ -92,7 +92,11 @@ const appLd = (r, lang) => ({
   featureList: featuresFor(r, lang).length ? featuresFor(r, lang) : undefined,
   screenshot: shotsFor(r, lang).slice(0, 5).map(abs),
   author: { '@id': siteUrl + '#org' },
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@id': siteUrl + '#org' },
+  inLanguage: lang,
+  isAccessibleForFree: true,
+  mainEntityOfPage: siteUrl + appPath(r, lang),
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
 });
 
 // 공통 <head>: 제목·설명·canonical·hreflang·OG·트위터
@@ -113,12 +117,18 @@ function headTags({ lang, path, pageTitle, desc, image, type = 'website', alt })
     `<meta property="og:description" content="${esc(desc)}">`,
     `<meta property="og:url" content="${esc(url)}">`,
     `<meta property="og:image" content="${esc(image)}">`,
+    image === ogImage && `<meta property="og:image:width" content="1200">`,
+    image === ogImage && `<meta property="og:image:height" content="630">`,
+    `<meta property="og:image:alt" content="${esc(pageTitle)}">`,
     `<meta property="og:locale" content="${LOCALE[lang]}">`,
     ...LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${LOCALE[l]}">`),
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${esc(pageTitle)}">`,
     `<meta name="twitter:description" content="${esc(desc)}">`,
     `<meta name="twitter:image" content="${esc(image)}">`,
+    `<meta name="twitter:image:alt" content="${esc(pageTitle)}">`,
+    `<meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">`,
+    `<meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">`,
     v.google && `<meta name="google-site-verification" content="${esc(v.google)}">`,
     v.naver && `<meta name="naver-site-verification" content="${esc(v.naver)}">`,
     v.bing && `<meta name="msvalidate.01" content="${esc(v.bing)}">`,
@@ -219,12 +229,19 @@ function appPage(r, lang) {
   const desc = loc(r, 'description', lang);
   const alt = { en: appPath(r, 'en'), ko: appPath(r, 'ko') };
   const pageTitle = `${name} — ${t.kind(r)} | ${title}`;
+  // A very short description (e.g. a few words from the repo's About box) is filled out with the first feature.
+  const first = featuresFor(r, lang)[0];
+  const metaDesc = clip(
+    desc && desc.length >= 40 ? desc : [desc, first].filter(Boolean).join(desc ? ' — ' : '') || `${name} — ${t.kind(r)}`,
+  );
   const shots = shotsFor(r, lang);
-  const image = abs(shots[0]) || abs(r.icon) || ogImage;
+  // Share previews: a PNG/JPEG/GIF screenshot, else a PNG icon, else the site image (WebP is not read by every chat app).
+  const common = (u) => /\.(png|jpe?g|gif)(\?|$)/i.test(u || '');
+  const image = abs(shots.find(common)) || (common(r.icon) ? abs(r.icon) : '') || ogImage;
   const rel = r.release;
   const actions = [
     r.web && `<a class="btn primary" href="${esc(r.web)}" data-app="${esc(r.name)}" title="web" target="_blank" rel="noopener"><span class="l">${esc(t.run)}</span><span class="sz">${esc(t.noInstall)}</span></a>`,
-    rel?.assets?.length && `<a class="btn${r.web ? '' : ' primary'}" href="#downloads"><span class="l">${esc(t.dl(rel.tag))}</span></a>`,
+    rel?.assets?.length && `<a class="btn${r.web ? '' : ' primary'}" href="${path}#downloads"><span class="l">${esc(t.dl(rel.tag))}</span></a>`,
   ].filter(Boolean).join('');
   const facts = [rel ? t.latest(rel.tag, fmtDate(rel.publishedAt, lang)) : t.updated(fmtDate(r.pushedAt, lang)),
     osList(r).length && `${t.platforms}: ${osList(r).join(', ')}`, r.language].filter(Boolean).join(' · ');
@@ -251,10 +268,11 @@ function appPage(r, lang) {
 <meta charset="utf-8">
 <base href="${baseFor(path)}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-${headTags({ lang, path, pageTitle, desc: clip(desc || `${name} — ${t.kind(r)}`), image, alt })}
+${headTags({ lang, path, pageTitle, desc: metaDesc, image, alt })}
 ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 <link rel="icon" type="image/webp" href="logo.webp">
-<link rel="apple-touch-icon" href="logo.webp">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -269,7 +287,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   <nav class="crumbs" aria-label="Breadcrumb"><a href="${home(lang) || './'}">${esc(t.allApps)}</a> › ${esc(name)}</nav>
   <main class="app">
     <div class="app-head">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="${esc(name)}" width="72" height="72">` : ''}<div><h1>${esc(name)}</h1><p class="kind">${esc(t.kind(r))}</p></div></div>
-    <p class="lead">${esc(desc)}</p>
+    ${desc ? `<p class="lead">${esc(desc)}</p>` : ''}
     <div class="actions">${actions}</div>
     <p class="facts">${esc(facts)}</p>
     ${featuresHtml}
@@ -296,7 +314,12 @@ for (const r of repos) {
     await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
     await writeFile(`${SITE_DIR}/${path}index.html`, appPage(r, lang));
   }
-  pages.push({ alt: { en: appPath(r, 'en'), ko: appPath(r, 'ko') }, lastmod: (r.release?.publishedAt || r.pushedAt || generated).slice(0, 10), priority: '0.8' });
+  pages.push({
+    alt: { en: appPath(r, 'en'), ko: appPath(r, 'ko') },
+    lastmod: (r.release?.publishedAt || r.pushedAt || generated).slice(0, 10),
+    priority: '0.8',
+    images: Object.fromEntries(LANGS.map((l) => [l, shotsFor(r, l).slice(0, 5).map(abs)])),
+  });
 }
 
 // ── sitemap.xml (언어별 주소를 hreflang으로 묶음) / robots.txt ──
@@ -305,10 +328,38 @@ const urls = pages.flatMap((p) => LANGS.map((lang) => `  <url>
 ${LANGS.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${esc(siteUrl + p.alt[l])}"/>`).join('\n')}
     <xhtml:link rel="alternate" hreflang="x-default" href="${esc(siteUrl + p.alt.en)}"/>
     <lastmod>${p.lastmod}</lastmod>
-    <priority>${p.priority}</priority>
+    <priority>${p.priority}</priority>${(p.images?.[lang] || []).map((u) => `
+    <image:image><image:loc>${esc(u)}</image:loc></image:image>`).join('')}
   </url>`)).join('\n');
 await writeFile(`${SITE_DIR}/sitemap.xml`,
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls}\n</urlset>\n`);
 await writeFile(`${SITE_DIR}/robots.txt`, `User-agent: *\nAllow: /\nDisallow: /stats.html\n\nSitemap: ${siteUrl}sitemap.xml\n`);
+
+// ── 404.html (GitHub Pages가 없는 주소에서 보여 줌) — 검색에 넣지 않고 홈으로 안내 ──
+await writeFile(`${SITE_DIR}/404.html`, `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · ${esc(title)}</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<style>${style}
+  .nf { text-align: center; padding: 120px 0 80px; }
+  .nf h1 { font-size: 28px; margin: 0 0 12px; }
+  .nf p { color: var(--muted); margin: 6px 0; }
+  .nf a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap"><main class="nf">
+  <h1>Page not found</h1>
+  <p>That page doesn't exist. <a href="./">See all apps</a></p>
+  <p lang="ko">페이지를 찾을 수 없습니다. <a href="ko/">전체 앱 보기</a></p>
+</main></div>
+</body>
+</html>
+`);
 
 console.log(`✓ prerender: ${repos.length} apps × ${LANGS.length} languages, ${pages.length * LANGS.length} URLs, canonical ${siteUrl}`);

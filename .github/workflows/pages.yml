@@ -34,7 +34,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/data
-          cp index.html stats.html config.json logo.webp contact.js _site/
+          cp index.html stats.html config.json logo.webp contact.js favicon-32.png apple-touch-icon.png _site/
           cp data/repos.json _site/data/
           if [ -d screenshots ]; then cp -r screenshots _site/; fi
           if [ -d icons ]; then cp -r icons _site/; fi

@@ -33,6 +33,8 @@ const fmtSize = (b) => (b >= 1 << 30 ? (b / (1 << 30)).toFixed(1) + ' GB' : b >=
 
 // 언어별 스크린샷 폴더(screenshots/en, /ko)가 있으면 그 언어 것을
 const shotsFor = (r, lang) => r.screenshotsByLang?.[lang] || r.screenshots || [];
+// 앱 소개 페이지의 '주요 기능' 목록: 그 언어 값, 없으면 다른 언어 값
+const featuresFor = (r, lang) => (lang === 'en' ? r.featuresEn || r.featuresKo : r.featuresKo || r.featuresEn) || [];
 const osOfAsset = (name) => {
   const n = name.toLowerCase();
   if (/\.apk$|android/.test(n)) return 'Android';
@@ -51,7 +53,7 @@ const T = {
   en: {
     headline: loc(cfg, 'headline', 'en') || 'Free desktop & web apps',
     projects: 'Projects', allApps: 'All apps', run: 'Run in browser', noInstall: 'No install',
-    source: 'Source code on GitHub', shots: 'Screenshots', downloads: 'Downloads', noBuild: 'No public build yet.',
+    features: 'Features', shots: 'Screenshots', downloads: 'Downloads', noBuild: 'No public build yet.',
     latest: (tag, d) => `Latest release ${tag} · ${d}`, updated: (d) => `Updated ${d}`, more: 'More apps',
     platforms: 'Platforms', shotAlt: (n, i) => `${n} screenshot ${i}`, dl: (v) => `Download ${v}`,
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? 'Free browser game' : 'Free game')
@@ -60,7 +62,7 @@ const T = {
   ko: {
     headline: loc(cfg, 'headline', 'ko') || '무료 데스크톱·웹 앱',
     projects: '프로젝트', allApps: '전체 앱', run: '웹에서 바로 실행', noInstall: '설치 없음',
-    source: 'GitHub 소스 코드', shots: '스크린샷', downloads: '다운로드', noBuild: '아직 공개된 빌드가 없습니다.',
+    features: '주요 기능', shots: '스크린샷', downloads: '다운로드', noBuild: '아직 공개된 빌드가 없습니다.',
     latest: (tag, d) => `최신 릴리스 ${tag} · ${d}`, updated: (d) => `최근 업데이트 ${d}`, more: '다른 앱',
     platforms: '지원 환경', shotAlt: (n, i) => `${n} 스크린샷 ${i}`, dl: (v) => `${v} 다운로드`,
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? '무료 웹 게임' : '무료 게임')
@@ -87,6 +89,7 @@ const appLd = (r, lang) => ({
   downloadUrl: r.release?.url || undefined,
   installUrl: r.web || undefined,
   image: abs(r.icon) || undefined,
+  featureList: featuresFor(r, lang).length ? featuresFor(r, lang) : undefined,
   screenshot: shotsFor(r, lang).slice(0, 5).map(abs),
   author: { '@id': siteUrl + '#org' },
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -179,6 +182,8 @@ const APP_CSS = `
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 8px; }
   .actions .btn { display: inline-flex; }
   .facts { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+  .features { margin: 0; padding-left: 20px; max-width: 760px; display: grid; gap: 8px; }
+  .features li::marker { color: var(--accent); }
   .app h2 { font-size: 18px; margin: 36px 0 12px; }
   .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
   .gallery a { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); aspect-ratio: 16 / 10; }
@@ -220,13 +225,19 @@ function appPage(r, lang) {
   const actions = [
     r.web && `<a class="btn primary" href="${esc(r.web)}" data-app="${esc(r.name)}" title="web" target="_blank" rel="noopener"><span class="l">${esc(t.run)}</span><span class="sz">${esc(t.noInstall)}</span></a>`,
     rel?.assets?.length && `<a class="btn${r.web ? '' : ' primary'}" href="#downloads"><span class="l">${esc(t.dl(rel.tag))}</span></a>`,
-    `<a class="btn" href="${esc(r.url)}" rel="noopener"><span class="l">${esc(t.source)}</span></a>`,
   ].filter(Boolean).join('');
   const facts = [rel ? t.latest(rel.tag, fmtDate(rel.publishedAt, lang)) : t.updated(fmtDate(r.pushedAt, lang)),
     osList(r).length && `${t.platforms}: ${osList(r).join(', ')}`, r.language].filter(Boolean).join(' · ');
   const files = rel?.assets?.length ? `<h2 id="downloads">${esc(t.downloads)} · ${esc(rel.tag)}</h2><ul class="files">${rel.assets.map((a) =>
     `<li><a class="btn" href="${esc(a.url)}" data-app="${esc(r.name)}" title="${esc(a.name)}" rel="nofollow"><span class="l"><span class="fname">${esc(a.name)}</span></span><span class="sz">${esc([osOfAsset(a.name), fmtSize(a.size)].filter(Boolean).join(' · '))}</span></a></li>`).join('')}</ul>`
     : r.web ? '' : `<p class="norel">${esc(t.noBuild)}</p>`;
+  // 'Head — body' items show their head in bold.
+  const featureItems = featuresFor(r, lang).map((f) => {
+    const [head, ...rest] = String(f).split(' — ');
+    return rest.length ? `<li><strong>${esc(head)}</strong> — ${esc(rest.join(' — '))}</li>` : `<li>${esc(f)}</li>`;
+  });
+  const featuresHtml = featureItems.length
+    ? `<h2>${esc(t.features)}</h2><ul class="features">${featureItems.join('')}</ul>` : '';
   const gallery = shots.length ? `<h2>${esc(t.shots)}</h2><div class="gallery">${shots.map((s, i) =>
     `<a href="${esc(s)}" target="_blank" rel="noopener"><img src="${esc(s)}" alt="${esc(t.shotAlt(name, i + 1))}" loading="${i ? 'lazy' : 'eager'}"></a>`).join('')}</div>` : '';
   const others = repos.filter((x) => x !== r).map((x) => `<li><a href="${esc(appPath(x, lang))}">${x.icon ? `<img src="${esc(x.icon)}" alt="" loading="lazy">` : ''}${esc(nameOf(x, lang))}</a></li>`).join('');
@@ -261,6 +272,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
     <p class="lead">${esc(desc)}</p>
     <div class="actions">${actions}</div>
     <p class="facts">${esc(facts)}</p>
+    ${featuresHtml}
     ${gallery}
     ${files}
     ${others ? `<h2>${esc(t.more)}</h2><ul class="others">${others}</ul>` : ''}

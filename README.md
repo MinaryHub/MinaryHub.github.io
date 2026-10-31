@@ -87,6 +87,19 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
    `screenshots/en/`, `screenshots/ko/`가 있으면 화면 언어에 맞는 폴더를 씁니다.
 3. 이 사이트의 `screenshots/<저장소>/`, 저장소의 `docs/images/` 등, README 이미지 (배포 때 수집)
 
+## 앱 소개 페이지의 '주요 기능'
+
+`overrides.<앱>`(또는 `apps` 항목)에 `featuresEn`·`featuresKo`로 목록을 적으면 앱 소개 페이지(`/apps/<앱>/`)에
+"Features / 주요 기능" 목록이 나옵니다. 항목을 `"제목 — 설명"` 모양으로 쓰면 제목이 굵게 보입니다.
+검색엔진용 정보(`featureList`)에도 같이 들어갑니다. 목록이 없는 앱은 이 부분이 생략됩니다.
+
+```json
+"Dotty": {
+  "featuresEn": ["Scenes in order — Build a show from as many scenes as you like…"],
+  "featuresKo": ["장면을 순서대로 — 장면을 원하는 만큼 만들면 차례로 재생하고…"]
+}
+```
+
 ## 검색엔진 최적화 (배포 때 자동)
 
 `scripts/prerender.mjs`가 배포 때마다 언어·앱별 정적 페이지를 만듭니다.

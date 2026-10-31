@@ -231,7 +231,7 @@
   // config·저장소 값의 언어별 덮어쓰기: descriptionEn / descriptionKo 처럼 이름 뒤에 En·Ko
   const loc = (o, k) => (o && o[k + (lang === 'en' ? 'En' : 'Ko')]) || (o && o[k]) || '';
   const slugOf = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|description)(En|Ko)$/.test(k)));
+  const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|description|features)(En|Ko)$/.test(k)));
   const OS_LABEL = { win: 'Windows', mac: 'macOS', linux: 'Linux', android: 'Android' };
   const osLabel = (os) => OS_LABEL[os] || t('other');
   const ICONS = {

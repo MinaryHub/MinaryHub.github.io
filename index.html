@@ -256,8 +256,9 @@
     const n = name.toLowerCase();
     let os = 'other';
     if (/\.apk$|\.aab$|android/.test(n)) os = 'android';
-    else if (/win|windows|\.exe$|\.msi$|\.msix|\.appx/.test(n)) os = 'win';
+    // macOS first: "darwin" contains "win"
     else if (/mac|darwin|osx|\.dmg$|\.pkg$/.test(n)) os = 'mac';
+    else if (/win|windows|\.exe$|\.msi$|\.msix|\.appx/.test(n)) os = 'win';
     else if (/linux|\.appimage$|\.deb$|\.rpm$|\.flatpak$|\.snap$/.test(n)) os = 'linux';
     const arch = /arm64|aarch64/.test(n) ? 'arm64' : /x64|amd64|x86_64/.test(n) ? 'x64' : /x86|i[36]86|win32/.test(n) ? 'x86' : /universal/.test(n) ? 'universal' : '';
     return { os, arch };
@@ -287,7 +288,7 @@
   // (조직 이벤트 1회 + 바뀐 저장소 수만큼 호출, 5분 캐시 → 방문자 IP당 60회 제한에 여유)
   const relOf = (rel) => rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
     publishedAt: rel.published_at, prerelease: rel.prerelease,
-    assets: (rel.assets || []).filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
+    assets: (rel.assets || []).filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?|sha\d+sums?/i.test(a.name))
       .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) };
   const pickLatest = (list) => { list = (list || []).filter((x) => !x.draft)
     .sort((a, b) => new Date(b.published_at) - new Date(a.published_at)); return list.find((x) => !x.prerelease) || list[0] || null; };
@@ -340,7 +341,7 @@
         homepage: r.homepage || '', language: r.language, topics: r.topics || [], pushedAt: r.pushed_at, stars: r.stargazers_count,
         release: rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
           publishedAt: rel.published_at, prerelease: rel.prerelease,
-          assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
+          assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?|sha\d+sums?/i.test(a.name))
             .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) } };
     }));
     repos.sort((a, b) => (!!b.release - !!a.release) || new Date(b.release?.publishedAt || b.pushedAt) - new Date(a.release?.publishedAt || a.pushedAt));

@@ -38,8 +38,8 @@ const featuresFor = (r, lang) => (lang === 'en' ? r.featuresEn || r.featuresKo :
 const osOfAsset = (name) => {
   const n = name.toLowerCase();
   if (/\.apk$|android/.test(n)) return 'Android';
+  if (/mac|darwin|osx|\.dmg$|\.pkg$/.test(n)) return 'macOS';   // before Windows: "darwin" contains "win"
   if (/win|\.exe$|\.msi$|\.msix|\.appx/.test(n)) return 'Windows';
-  if (/mac|darwin|osx|\.dmg$|\.pkg$/.test(n)) return 'macOS';
   if (/linux|\.appimage$|\.deb$|\.rpm$|\.flatpak$|\.snap$/.test(n)) return 'Linux';
   return '';
 };

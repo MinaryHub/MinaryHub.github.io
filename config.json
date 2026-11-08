@@ -319,6 +319,34 @@
         "빠른 이동 키 — 카드를 고르고 1~9를 누르면 해당 모니터로 보냅니다.",
         "부담 없이 써 보기 — 설치 프로그램 또는 설치 없는 실행 파일, 내 PC를 건드리지 않는 데모 모드."
       ]
+    },
+    "BangDB": {
+      "displayName": "BangDB",
+      "description": "Go로 작성한 경량 임베디드 관계형 데이터베이스. 외부 의존성 없이 단일 파일에 저장하며, SQL·트랜잭션·인덱스와 서버 모드, 웹 콘솔, 온라인 백업·복제를 지원합니다.",
+      "descriptionEn": "A lightweight embedded relational database written in Go. No dependencies and a single data file, with full SQL, transactions and indexes, plus a server mode, web console, online backup and replication.",
+      "category": "DeveloperApplication",
+      "featuresEn": [
+        "Embedded and dependency-free — Pure Go with only the standard library: one data file plus a write-ahead log, or in-memory mode. Use it as a library, the way you would SQLite.",
+        "Real SQL — Joins, subqueries, window functions, JSON functions, triggers, views, UPSERT, foreign keys, constraints and query parameters.",
+        "Fast, cost-aware queries — B+tree tables and indexes, a cost-based planner you can inspect with EXPLAIN and EXPLAIN ANALYZE, hash joins, covering indexes and caches.",
+        "Safe by design — Atomic, durable commits with crash recovery, page checksums, an integrity check, and snapshot reads so readers and writers never wait for each other.",
+        "Different kinds of table — The default B+tree, in-memory tables (USING memory) and time-series tables (USING timeseries) with compression and automatic retention.",
+        "Server mode — Share one database over TCP/TLS or an HTTP/JSON API, with accounts and read, write and admin roles.",
+        "Web console and CLI — Run SQL, browse tables and check status in the browser, or use the interactive command-line shell.",
+        "Built for operations — Online and scheduled backups, primary-to-replica mirroring with failover, point-in-time recovery, AES-256 encryption at rest and Prometheus metrics.",
+        "Use it anywhere — A database/sql driver for Go, an Android library, and ready-made command-line/server programs for Windows, macOS and Linux."
+      ],
+      "featuresKo": [
+        "내장형, 의존성 없음 — 표준 라이브러리만 쓰는 순수 Go. 데이터 파일 하나와 쓰기 로그, 또는 인메모리 모드로 SQLite처럼 라이브러리로 넣어 씁니다.",
+        "본격적인 SQL — 조인, 서브쿼리, 윈도우 함수, JSON 함수, 트리거, 뷰, UPSERT, 외래 키, 제약 조건, 파라미터.",
+        "빠르고 비용을 따지는 쿼리 — B+트리 테이블·인덱스, EXPLAIN·EXPLAIN ANALYZE로 확인하는 비용 기반 실행 계획, 해시 조인, 커버링 인덱스, 캐시.",
+        "안전하게 설계 — 원자적이고 내구성 있는 커밋과 크래시 복구, 페이지 체크섬, 무결성 검사, 읽기와 쓰기가 서로 기다리지 않는 스냅샷 읽기.",
+        "여러 종류의 테이블 — 기본 B+트리, 인메모리 테이블(USING memory), 압축과 자동 보존 기간이 있는 시계열 테이블(USING timeseries).",
+        "서버 모드 — TCP/TLS 또는 HTTP/JSON API로 데이터베이스 하나를 공유하며, 읽기·쓰기·관리자 역할의 계정을 둘 수 있습니다.",
+        "웹 콘솔과 CLI — 브라우저에서 SQL을 실행하고 테이블과 상태를 보거나, 대화형 명령줄 셸을 씁니다.",
+        "운영을 위한 기능 — 온라인·정기 백업, primary→replica 미러링과 장애 조치, 특정 시점 복구, AES-256 저장 데이터 암호화, Prometheus 지표.",
+        "어디서나 — Go용 database/sql 드라이버, 안드로이드 라이브러리, Windows·macOS·Linux용 명령줄/서버 실행 파일."
+      ]
     }
   }
 }

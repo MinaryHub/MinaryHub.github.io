@@ -35,7 +35,7 @@ async function listRepos() {
   return all;
 }
 
-const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i;
+const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?|sha\d+sums?/i;
 
 // 아이콘·스크린샷: config.overrides → 이 사이트의 screenshots/<저장소>/ → 앱 저장소의 screenshots/, docs/images/ 등
 const IMG = /\.(png|jpe?g|webp|gif)$/i;

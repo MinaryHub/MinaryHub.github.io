@@ -113,6 +113,11 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
   (Organization, WebSite, SoftwareApplication, BreadcrumbList)를 넣고, `sitemap.xml`에 언어 짝과 함께 올립니다.
 - 첫 페이지 제목 뒤에 붙는 한 줄은 `headline` / `headlineEn`, 앱 분류는 `overrides.<앱>.category`
   (schema.org `applicationCategory`: `GameApplication`, `DeveloperApplication`, `SecurityApplication` …)
+- 공유 미리보기 이미지는 앱의 첫 PNG/JPEG 스크린샷 → PNG 아이콘 → 사이트 기본 이미지(`og.png`) 순으로 고릅니다
+  (WebP는 일부 메신저가 읽지 못해 건너뜁니다). 사이트맵에는 앱 스크린샷도 이미지 정보로 들어갑니다.
+- 앱 설명이 너무 짧으면(40자 미만) 검색 설명에 첫 번째 주요 기능을 이어 붙입니다.
+- 없는 주소는 `404.html`(검색 제외)이 홈으로 안내합니다. 아이콘은 `favicon-32.png`, `apple-touch-icon.png`(PNG)도 함께 씁니다.
+- 배포 후 Google Search Console·네이버 서치어드바이저에 `https://kimserv.com/sitemap.xml`을 한 번 등록해 두세요.
 - 방문자가 고른 언어는 브라우저에 기억되어, 다음에 다른 언어 주소로 들어와도 고른 언어 페이지로 옮겨 줍니다.
 
 ## 문의하기

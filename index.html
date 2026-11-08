@@ -6,7 +6,8 @@
 <title>MinaryHub</title>
 <meta name="description" content="MinaryHub open-source projects and their latest builds">
 <link rel="icon" type="image/webp" href="logo.webp">
-<link rel="apple-touch-icon" href="logo.webp">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -255,8 +256,9 @@
     const n = name.toLowerCase();
     let os = 'other';
     if (/\.apk$|\.aab$|android/.test(n)) os = 'android';
-    else if (/win|windows|\.exe$|\.msi$|\.msix|\.appx/.test(n)) os = 'win';
+    // macOS first: "darwin" contains "win"
     else if (/mac|darwin|osx|\.dmg$|\.pkg$/.test(n)) os = 'mac';
+    else if (/win|windows|\.exe$|\.msi$|\.msix|\.appx/.test(n)) os = 'win';
     else if (/linux|\.appimage$|\.deb$|\.rpm$|\.flatpak$|\.snap$/.test(n)) os = 'linux';
     const arch = /arm64|aarch64/.test(n) ? 'arm64' : /x64|amd64|x86_64/.test(n) ? 'x64' : /x86|i[36]86|win32/.test(n) ? 'x86' : /universal/.test(n) ? 'universal' : '';
     return { os, arch };
@@ -286,7 +288,7 @@
   // (조직 이벤트 1회 + 바뀐 저장소 수만큼 호출, 5분 캐시 → 방문자 IP당 60회 제한에 여유)
   const relOf = (rel) => rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
     publishedAt: rel.published_at, prerelease: rel.prerelease,
-    assets: (rel.assets || []).filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
+    assets: (rel.assets || []).filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?|sha\d+sums?/i.test(a.name))
       .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) };
   const pickLatest = (list) => { list = (list || []).filter((x) => !x.draft)
     .sort((a, b) => new Date(b.published_at) - new Date(a.published_at)); return list.find((x) => !x.prerelease) || list[0] || null; };
@@ -339,7 +341,7 @@
         homepage: r.homepage || '', language: r.language, topics: r.topics || [], pushedAt: r.pushed_at, stars: r.stargazers_count,
         release: rel && { tag: rel.tag_name, name: rel.name || rel.tag_name, url: rel.html_url,
           publishedAt: rel.published_at, prerelease: rel.prerelease,
-          assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?/i.test(a.name))
+          assets: rel.assets.filter((a) => !/\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|checksums?|sha\d+sums?/i.test(a.name))
             .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count, url: a.browser_download_url })) } };
     }));
     repos.sort((a, b) => (!!b.release - !!a.release) || new Date(b.release?.publishedAt || b.pushedAt) - new Date(a.release?.publishedAt || a.pushedAt));
@@ -622,6 +624,8 @@
 
   (async () => {
     try {
+      const dataPromise = loadData();   // 설정과 동시에 받는다 (차례로 받으면 첫 화면이 그만큼 늦어진다)
+      dataPromise.catch(() => {});
       const cfg = await fetch('config.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
       const applyHeader = () => {
         const title = loc(cfg, 'title'), headline = loc(cfg, 'headline');
@@ -629,7 +633,7 @@
         $('#tagline').textContent = loc(cfg, 'tagline');
       };
       applyHeader(); rerender = applyHeader;
-      const data = await loadData();
+      const data = await dataPromise;
       const repos = data.repos;
       // 배포 때 앱 소개 페이지(apps/<앱>/)를 만든 앱 — 카드 제목을 그 페이지로 잇는다
       if (prerendered && !data.live) for (const r of repos) r.page = true;

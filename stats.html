@@ -59,6 +59,26 @@
   .meter span { display: block; height: 100%; background: var(--accent); }
   .files { color: var(--muted); font-size: 12px; margin-top: 2px; }
   .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  /* 앱·버전별 다운로드 */
+  .rel-app { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; background: var(--surface); }
+  .rel-app > summary { cursor: pointer; padding: 12px 14px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; list-style: none; }
+  .rel-app > summary::-webkit-details-marker { display: none; }
+  .rel-app > summary::before { content: "▸"; color: var(--muted); width: 12px; }
+  .rel-app[open] > summary::before { content: "▾"; }
+  .rel-app .nm { font-weight: 600; }
+  .rel-app .tot { margin-left: auto; font: 600 16px "JetBrains Mono", monospace; }
+  .rel-body { padding: 0 14px 12px; overflow-x: auto; }
+  .rel-body table { min-width: 560px; table-layout: fixed; }
+  .rel-body th:nth-child(1) { width: 24%; } .rel-body th:nth-child(2) { width: 24%; }
+  .chip { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); margin: 0 4px 2px 0; white-space: nowrap; }
+  .chip b { color: var(--text); font-weight: 600; }
+  .pre { color: #c98a12; font-size: 12px; margin-left: 4px; }
+  .rel-files { font-size: 12px; color: var(--muted); }
+  .rel-files summary { cursor: pointer; }
+  .rel-files li { display: flex; justify-content: space-between; gap: 12px; }
+  .rel-files ul { list-style: none; margin: 4px 0 0; padding: 0; }
+  .more { font: inherit; font-size: 13px; color: var(--accent); background: none; border: 0; cursor: pointer; padding: 8px 0 0; }
+  .zero { color: var(--muted); }
   .state { text-align: center; color: var(--muted); padding: 60px 0; }
   footer { color: var(--muted); font-size: 12px; margin-top: 8px; }
   @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .two { grid-template-columns: 1fr; } .two .panel { margin-bottom: 16px; } }
@@ -79,7 +99,8 @@
     </div>
   </header>
   <main id="main"><div class="state">불러오는 중…</div></main>
-  <footer>방문자는 브라우저별 익명 ID로 셉니다(IP 미저장). 국가는 접속 IP로 서버가 판별한 값입니다. 다운로드는 사이트의 다운로드 버튼 클릭 수입니다. · <a href="./">MinaryHub로 돌아가기</a></footer>
+  <section class="panel" id="rel" style="margin-top:16px"><h2>앱 버전별 다운로드</h2><div class="state" style="padding:24px 0">불러오는 중…</div></section>
+  <footer>방문자는 브라우저별 익명 ID로 셉니다(IP 미저장). 국가는 접속 IP로 서버가 판별한 값입니다. 위의 다운로드 클릭은 이 사이트의 다운로드 버튼을 누른 횟수이고, 아래 버전별 다운로드는 GitHub 릴리스 파일의 누적 다운로드 수입니다. · <a href="./">MinaryHub로 돌아가기</a></footer>
 </div>
 <script>
 (() => {
@@ -150,12 +171,66 @@
     }
   }
 
+  // ── 앱·버전별 다운로드: GitHub 릴리스 파일의 누적 다운로드 수 (data/downloads.json, 배포 때 갱신) ──
+  const OS = { win: 'Windows', mac: 'macOS', linux: 'Linux', android: 'Android', other: '기타' };
+  function osOf(name) {
+    const n = name.toLowerCase();
+    if (/\.apk$|\.aab$|android/.test(n)) return 'android';
+    if (/mac|darwin|osx|\.dmg$|\.pkg$/.test(n)) return 'mac';   // "darwin"에 "win"이 들어 있어 macOS를 먼저
+    if (/win|\.exe$|\.msi$|\.msix|\.appx/.test(n)) return 'win';
+    if (/linux|\.appimage$|\.deb$|\.rpm$|\.flatpak$|\.snap$/.test(n)) return 'linux';
+    return 'other';
+  }
+  const SHOWN = 10;   // 버전이 많은 앱은 최근 몇 개만 먼저 보여 줌
+  const ago = (d) => { const s = (Date.now() - new Date(d)) / 1000;
+    return s < 3600 ? Math.max(1, Math.round(s / 60)) + '분 전' : s < 86400 ? Math.round(s / 3600) + '시간 전' : Math.round(s / 86400) + '일 전'; };
+  const day = (d) => d ? new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+
+  function versionRow(v, max) {
+    const by = {};
+    for (const a of v.assets) by[osOf(a.name)] = (by[osOf(a.name)] || 0) + a.downloads;
+    const chips = Object.keys(OS).filter((k) => by[k]).map((k) => `<span class="chip">${OS[k]} <b>${num(by[k])}</b></span>`).join('');
+    const files = v.assets.length ? `<details class="rel-files"><summary>파일 ${v.assets.length}개</summary><ul>${
+      [...v.assets].sort((a, b) => b.downloads - a.downloads).map((a) => `<li><span>${esc(a.name)}</span><span>${num(a.downloads)}</span></li>`).join('')}</ul></details>` : '';
+    return `<tr><td><a href="${esc(v.url)}" rel="noopener">${esc(v.tag)}</a>${v.prerelease ? '<span class="pre">pre</span>' : ''}<div class="files">${day(v.publishedAt)}</div></td>
+      <td class="n${v.total ? '' : ' zero'}">${num(v.total)}<div class="meter"><span style="width:${v.total / max * 100}%"></span></div></td>
+      <td>${chips || '<span class="zero">—</span>'}${files}</td></tr>`;
+  }
+  function releasesPanel(d) {
+    const apps = [...d.apps].sort((a, b) => b.total - a.total || a.displayName.localeCompare(b.displayName));
+    const grand = apps.reduce((n, a) => n + a.total, 0);
+    if (!apps.length) return '<div class="empty">릴리스가 있는 앱이 아직 없습니다.</div>';
+    return `<div class="sub" style="margin:-6px 0 12px">총 <b>${num(grand)}</b>회 · 앱 ${apps.length}개 · ${ago(d.generatedAt)} 갱신(1시간마다). GitHub는 누적 값만 알려 주므로 기간 선택은 적용되지 않습니다. 사이트 밖에서 받은 것과 앱의 자동 업데이트 다운로드도 포함되고, 체크섬·업데이트 정보 파일은 뺐습니다.</div>` +
+      apps.map((a, i) => {
+        const max = Math.max(1, ...a.releases.map((v) => v.total));
+        const head = a.releases.slice(0, SHOWN), rest = a.releases.slice(SHOWN);
+        return `<details class="rel-app"${i === 0 ? ' open' : ''}><summary><span class="nm">${esc(a.displayName)}</span><span class="sub">버전 ${a.releases.length}개</span><span class="tot">${num(a.total)}</span></summary>
+          <div class="rel-body"><table><thead><tr><th>버전</th><th class="n">다운로드</th><th>플랫폼 · 파일</th></tr></thead>
+            <tbody>${head.map((v) => versionRow(v, max)).join('')}</tbody>
+            ${rest.length ? `<tbody hidden>${rest.map((v) => versionRow(v, max)).join('')}</tbody></table><button class="more" type="button">이전 버전 ${rest.length}개 더 보기</button>` : '</table>'}</div></details>`;
+      }).join('');
+  }
+  async function loadReleases() {
+    const box = $('#rel');
+    try {
+      const d = await fetch('data/downloads.json', { cache: 'no-cache' }).then((r) => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)));
+      box.innerHTML = '<h2>앱 버전별 다운로드</h2>' + releasesPanel(d);
+    } catch (e) {
+      box.innerHTML = `<h2>앱 버전별 다운로드</h2><div class="empty">버전별 다운로드를 불러오지 못했습니다. (${esc(e.message)}) 다음 배포 뒤에 나타납니다.</div>`;
+    }
+  }
+  $('#rel').addEventListener('click', (e) => {
+    const b = e.target.closest('.more'); if (!b) return;
+    b.previousElementSibling.querySelector('tbody[hidden]')?.removeAttribute('hidden'); b.remove();
+  });
+
   $('#range').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
     document.querySelectorAll('#range button').forEach((x) => x.setAttribute('aria-pressed', x === b));
     load(+b.dataset.d);
   });
   load(30);
+  loadReleases();
 })();
 </script>
 </body>

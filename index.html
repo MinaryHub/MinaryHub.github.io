@@ -455,7 +455,7 @@
     const rel = r.release;
     const color = LANG_COLORS[r.language] || '#999';
     let dl = '';
-    const web = r.web ? `<div class="dl"><a class="btn primary" href="${esc(r.web)}" title="${t('webTitle')}" target="_blank" rel="noopener">
+    const web = r.web ? `<div class="dl"><a class="btn primary" href="${esc(r.web)}" title="${t('webTitle')}" data-file="web" target="_blank" rel="noopener">
       <span class="l">${ICONS.web}<span class="fname">${t('webRun')}</span></span><span class="sz">${t('noInstall')}</span></a></div>` : '';
     if (rel && rel.assets.length) {
       const scored = rel.assets.map((a) => { const c = classify(a.name);
@@ -583,7 +583,7 @@
   track({ type: 'visit' });
   document.addEventListener('click', (e) => {
     const a = e.target.closest('.card a.btn'); if (!a) return;
-    track({ type: 'download', app: a.closest('.card')?.dataset.app || '', file: a.title || '' });
+    track({ type: 'download', app: a.closest('.card')?.dataset.app || '', file: a.dataset.file || a.title || '' });
   });
 
   let filter = 'all';

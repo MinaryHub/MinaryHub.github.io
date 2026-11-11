@@ -120,6 +120,15 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
 - 배포 후 Google Search Console·네이버 서치어드바이저에 `https://kimserv.com/sitemap.xml`을 한 번 등록해 두세요.
 - 방문자가 고른 언어는 브라우저에 기억되어, 다음에 다른 언어 주소로 들어와도 고른 언어 페이지로 옮겨 줍니다.
 
+## 통계 페이지 (`/stats.html`, 검색 제외)
+
+- 방문자·방문·국가·다운로드 **클릭** 수는 `minaryhub-star` 서버가 모읍니다(이 사이트의 다운로드 버튼을 누른 횟수).
+- **앱 버전별 다운로드**는 GitHub 릴리스 파일의 누적 `download_count`입니다. 배포 때 `scripts/fetch-data.mjs`가
+  릴리스 전체를 읽어 `data/downloads.json`을 만들고(1시간마다 갱신), 통계 페이지가 앱별 합계 → 버전별 합계·플랫폼별(Windows·macOS·Linux·Android)
+  → 파일별 수로 보여 줍니다. 사이트 밖에서 받은 것과 앱의 자동 업데이트 다운로드도 포함되고, 체크섬·`latest.json` 같은
+  부가 파일은 뺍니다. GitHub는 누적 값만 알려 주므로 기간 선택(7일·30일…)은 이 표에 적용되지 않습니다.
+- 버전이 많은 앱(예: 커밋마다 릴리스를 만드는 앱)은 최근 10개만 먼저 보이고 "이전 버전 N개 더 보기"로 펼칩니다.
+
 ## 문의하기
 
 하단 **Contact / 문의하기**를 누르면 문의 창이 열리고(`contact.js`), 내용은 `minaryhub-star` 서버의 `/api/contact`가

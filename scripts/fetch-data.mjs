@@ -93,9 +93,13 @@ async function repoMedia(r, o) {
 
 // GitHub의 "Latest" 표시(releases/latest)는 수동 지정·--latest=false 등으로 어긋날 수 있으므로
 // 발행일 기준 가장 최근 정식 릴리스를 직접 고른다 (정식이 없으면 최신 프리릴리스)
-async function latestRelease(name) {
-  const list = ((await gh(`/repos/${ORG}/${name}/releases?per_page=30`)) || []).filter((x) => !x.draft);
+// 릴리스 전체(최신순). 최신 릴리스 고르기와 버전별 다운로드 통계(data/downloads.json)가 함께 쓴다
+async function releasesOf(name) {
+  const list = ((await gh(`/repos/${ORG}/${name}/releases?per_page=100`)) || []).filter((x) => !x.draft);
   list.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+  return list;
+}
+function pickLatest(list) {
   // 설치 파일이 붙은 정식 릴리스를 우선 (파일 없는 릴리스·빌드 중인 릴리스는 건너뜀)
   const hasFiles = (x) => (x.assets || []).some((a) => !SKIP_ASSET.test(a.name));
   return list.find((x) => !x.prerelease && hasFiles(x)) || list.find((x) => !x.prerelease) || list[0] || null;
@@ -112,10 +116,20 @@ const repos = (await listRepos()).filter(
 );
 
 const result = [];
+const downloads = [];   // 앱별·버전별 누적 다운로드 (GitHub 릴리스 파일의 download_count)
 for (const r of repos) {
-  const rel = await latestRelease(r.name);
+  const all = await releasesOf(r.name);
+  const rel = pickLatest(all);
   const o = overrides[r.name] || {};
   const media = await repoMedia(r, o);
+  const versions = all.map((x) => {
+    const assets = (x.assets || []).filter((a) => !SKIP_ASSET.test(a.name))
+      .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count || 0 }));
+    return { tag: x.tag_name, name: x.name || x.tag_name, publishedAt: x.published_at, prerelease: !!x.prerelease,
+      url: x.html_url, total: assets.reduce((n, a) => n + a.downloads, 0), assets };
+  });
+  if (versions.length) downloads.push({ name: r.name, displayName: o.displayName || r.name, url: r.html_url,
+    total: versions.reduce((n, v) => n + v.total, 0), releases: versions });
   result.push({
     name: r.name,
     displayName: o.displayName || r.name,
@@ -182,9 +196,10 @@ result.sort((a, b) => {
   return new Date(db) - new Date(da);
 });
 
+const generatedAt = new Date().toISOString();
 await mkdir(OUT.split('/').slice(0, -1).join('/') || '.', { recursive: true });
-await writeFile(
-  OUT,
-  JSON.stringify({ org: ORG, generatedAt: new Date().toISOString(), repos: result }, null, 2)
-);
-console.log(`✓ ${result.length} repos → ${OUT} (releases: ${result.filter((r) => r.release).length})`);
+await writeFile(OUT, JSON.stringify({ org: ORG, generatedAt, repos: result }, null, 2));
+// 통계 페이지용: 체크섬·업데이트 정보 같은 부가 파일은 사용자가 받은 것이 아니므로 뺀다
+const DL_OUT = OUT.replace(/[^/]*$/, 'downloads.json');
+await writeFile(DL_OUT, JSON.stringify({ org: ORG, generatedAt, apps: downloads }, null, 2));
+console.log(`✓ ${result.length} repos → ${OUT} (releases: ${result.filter((r) => r.release).length}), downloads → ${DL_OUT}`);

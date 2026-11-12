@@ -203,10 +203,7 @@
       noAssets: 'This release has no attached files.', notes: 'View release notes', noBuild: 'No public build yet.',
       noDesc: 'No description yet.', released: (d) => `Released ${d}`, updated: (d) => `Updated ${d}`,
       starGive: 'Star on GitHub', starSet: 'Star', starUnset: 'Unstar', starLogin: 'Sign in to GitHub to star',
-      downloads: 'Downloads', launches: 'Web launches',
-      dlTip: (gh, clicks) => `Total downloads: GitHub releases ${gh} + via this site ${clicks}`,
-      dlTipGh: (gh) => `Total downloads: GitHub releases ${gh}`, dlTipClicks: (n) => `Downloads via this site: ${n}`,
-      runTip: (n) => `Launched in the browser ${n} time${n === 1 ? '' : 's'}`,
+      dlTip: (n) => `${n} download${n === '1' ? '' : 's'} in total (all versions, GitHub releases)`,
       signedIn: 'signed in', logout: 'Sign out', starFail: (m) => `Couldn't update the star: ${m}`,
       loginFail: (m) => `GitHub sign-in failed: ${m}`, popup: 'The popup was blocked. Please allow popups for this site.',
       noMatch: 'No projects match.', none: 'No public projects yet.',
@@ -226,10 +223,7 @@
       noAssets: '첨부 파일이 없는 릴리스입니다.', notes: '릴리스 노트 보기', noBuild: '아직 공개된 빌드가 없습니다.',
       noDesc: '설명이 아직 없습니다.', released: (d) => `릴리스 ${d}`, updated: (d) => `최근 업데이트 ${d}`,
       starGive: 'GitHub 별 주기', starSet: '별 주기', starUnset: '별 취소', starLogin: 'GitHub 로그인 후 별 주기',
-      downloads: '다운로드', launches: '웹 실행',
-      dlTip: (gh, clicks) => `최종 다운로드: GitHub 릴리스 ${gh} + 이 사이트 클릭 ${clicks}`,
-      dlTipGh: (gh) => `최종 다운로드: GitHub 릴리스 ${gh}`, dlTipClicks: (n) => `이 사이트를 거친 다운로드: ${n}`,
-      runTip: (n) => `브라우저에서 ${n}회 실행됨`,
+      dlTip: (n) => `누적 다운로드 ${n}회 (모든 버전, GitHub 릴리스 기준)`,
       signedIn: '로그인됨', logout: '로그아웃', starFail: (m) => `별을 바꾸지 못했습니다: ${m}`,
       loginFail: (m) => `GitHub 로그인 실패: ${m}`, popup: '팝업이 차단되었습니다. 이 사이트의 팝업을 허용해 주세요.',
       noMatch: '조건에 맞는 프로젝트가 없습니다.', none: '공개된 프로젝트가 없습니다.',
@@ -504,36 +498,21 @@
     </article>`;
   }
 
-  // ⬇ 앱별 최종 다운로드 수 = GitHub 릴리스 파일 누적 + 이 사이트를 거친 클릭(수집 시작 이후 전체).
-  // 릴리스 파일이 없는 웹 앱은 '웹 실행' 횟수를 보여 준다. 둘 중 하나만 불러와도 있는 값으로 보여 주고, 둘 다 없으면 숨긴다.
+  // ⬇ 앱별 누적 다운로드 수 = GitHub 릴리스 파일의 누적 다운로드(모든 버전, 사이트 밖 직접 다운로드·자동 업데이트 포함).
+  // 배포 때 만든 data/downloads.json에서 읽는다. 릴리스 파일이 없는 앱(웹 앱 등)이나 불러오지 못했을 때는 숨긴다.
   let dlCounts = {};
-  const WEB_FILE = /^(web|웹 앱 실행|open the web app)$/i;
   const fmtN = (n) => Number(n || 0).toLocaleString(lang === 'ko' ? 'ko-KR' : 'en-US');
   function paintCounts() {
     document.querySelectorAll('.dcount').forEach((el) => {
-      const c = dlCounts[el.dataset.app];
-      let text = '', tip = '';
-      if (c && c.hasFiles) {
-        if (c.gh != null && c.clicks != null) { text = '⬇ ' + fmtN(c.gh + c.clicks); tip = t('dlTip', fmtN(c.gh), fmtN(c.clicks)); }
-        else if (c.gh != null) { text = '⬇ ' + fmtN(c.gh); tip = t('dlTipGh', fmtN(c.gh)); }
-        else if (c.clicks != null) { text = '⬇ ' + fmtN(c.clicks); tip = t('dlTipClicks', fmtN(c.clicks)); }
-      } else if (c && c.web) { text = '▶ ' + fmtN(c.web); tip = t('runTip', fmtN(c.web)); }
-      el.hidden = !text; el.textContent = text; el.title = tip;
+      const gh = dlCounts[el.dataset.app];
+      el.hidden = gh == null;
+      el.textContent = gh == null ? '' : '⬇ ' + fmtN(gh);
+      el.title = gh == null ? '' : t('dlTip', fmtN(gh));
     });
   }
   async function loadCounts() {
-    const json = (u) => fetch(u).then((r) => r.ok ? r.json() : null).catch(() => null);
-    const [d, st] = await Promise.all([json('data/downloads.json'), json(STAR_API + '/api/stats?days=365')]);
-    const out = {};
-    for (const a of d?.apps || []) out[a.name] = { gh: a.total, clicks: st ? 0 : null, web: 0, hasFiles: a.releases.length > 0 };
-    for (const a of st?.apps || []) {
-      if (!a.app) continue;
-      const c = (out[a.app] ||= { gh: d ? 0 : null, clicks: 0, web: 0, hasFiles: false });
-      const web = (a.files || []).reduce((n, f) => n + (WEB_FILE.test(f.file) ? f.n : 0), 0);
-      c.web = web; c.clicks = Math.max(0, (a.downloads || 0) - web);
-      if (!d) c.hasFiles = c.clicks > 0;   // 릴리스 정보가 없으면 파일 클릭이 있는 앱만 다운로드 앱으로 본다
-    }
-    dlCounts = out;
+    const d = await fetch('data/downloads.json').then((r) => r.ok ? r.json() : null).catch(() => null);
+    dlCounts = Object.fromEntries((d?.apps || []).filter((a) => a.releases.length).map((a) => [a.name, a.total]));
     paintCounts();
   }
 

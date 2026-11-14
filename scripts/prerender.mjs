@@ -14,8 +14,8 @@ const indexSrc = await readFile(`${SITE_DIR}/index.html`, 'utf8');
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ld = (o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`;
-const siteUrl = (cfg.siteUrl || 'https://kimserv.com').replace(/\/+$/, '') + '/';
-const title = cfg.title || 'Kimserv';
+const siteUrl = (cfg.siteUrl || 'https://minaryhub.github.io').replace(/\/+$/, '') + '/';
+const title = cfg.title || 'MinaryHub';
 const repos = data.repos || [];
 const LANGS = ['en', 'ko'];
 const LOCALE = { en: 'en_US', ko: 'ko_KR' };

@@ -70,8 +70,10 @@ const T = {
   },
 };
 
-const org = { '@type': 'Organization', '@id': siteUrl + '#org', name: 'MinaryHub', url: siteUrl, logo: siteUrl + 'logo.webp', sameAs: ['https://github.com/MinaryHub'] };
-const website = { '@type': 'WebSite', '@id': siteUrl + '#website', name: title, url: siteUrl, inLanguage: LANGS, publisher: { '@id': siteUrl + '#org' } };
+// Google asks for an organization logo of at least 112 px: logo.webp is 96 px, so the 180 px icon stands in
+const org = { '@type': 'Organization', '@id': siteUrl + '#org', name: 'MinaryHub', alternateName: cfg.alternateNames || undefined, url: siteUrl, logo: siteUrl + 'apple-touch-icon.png', sameAs: ['https://github.com/MinaryHub'] };
+// name / alternateName feed the "site name" Google shows above the result
+const website = { '@type': 'WebSite', '@id': siteUrl + '#website', name: title, alternateName: cfg.alternateNames || undefined, url: siteUrl, inLanguage: LANGS, publisher: { '@id': siteUrl + '#org' } };
 
 const appLd = (r, lang) => ({
   '@type': 'SoftwareApplication',

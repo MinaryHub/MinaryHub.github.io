@@ -117,6 +117,11 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
   (WebP는 일부 메신저가 읽지 못해 건너뜁니다). 사이트맵에는 앱 스크린샷도 이미지 정보로 들어갑니다.
 - 앱 설명이 너무 짧으면(40자 미만) 검색 설명에 첫 번째 주요 기능을 이어 붙입니다.
 - 없는 주소는 `404.html`(검색 제외)이 홈으로 안내합니다. 아이콘은 `favicon-32.png`, `apple-touch-icon.png`(PNG)도 함께 씁니다.
+- 사이트 이름은 구조화 데이터의 `name`(`title`)과 `alternateName`(`config.json`의 `alternateNames`, 예: "MinaryHub 공작소")로 알립니다. 조직 로고는 112px 이상이어야 해서 180px `apple-touch-icon.png`를 씁니다.
+- 주소(`siteUrl`)를 바꾸면 대표 주소·사이트맵·hreflang·공유 미리보기가 모두 따라 바뀝니다. 바꾼 뒤에는 새 주소로 Search Console·서치어드바이저를 다시 등록하고
+  (소유 확인 코드는 `config.json`의 `verification.google` / `naver` / `bing`에 넣으면 `<meta>`로 들어갑니다), 아래 사이트맵을 제출합니다.
+- 옛 주소(kimserv.com)에서 새 주소로의 자동 이동(301)은 GitHub Pages로는 만들 수 없습니다. 옛 주소의 검색 가치를 넘기려면 옛 도메인을
+  리다이렉트가 되는 곳(예: Vercel 프로젝트의 `redirects`)에 연결해 새 주소로 301 이동시키세요.
 - 배포 후 Google Search Console·네이버 서치어드바이저에 `https://minaryhub.github.io/sitemap.xml`을 한 번 등록해 두세요.
 - 방문자가 고른 언어는 브라우저에 기억되어, 다음에 다른 언어 주소로 들어와도 고른 언어 페이지로 옮겨 줍니다.
 

@@ -352,6 +352,28 @@
         "운영을 위한 기능 — 온라인·정기 백업, primary→replica 미러링과 장애 조치, 특정 시점 복구, AES-256 저장 데이터 암호화, Prometheus 지표.",
         "어디서나 — Go용 database/sql 드라이버, 안드로이드 라이브러리, Windows·macOS·Linux용 명령줄/서버 실행 파일."
       ]
+    },
+    "ezBoard": {
+      "displayName": "ezBoard",
+      "description": "초보자를 위한 AI PCB 설계 웹 앱. 말로 설명하면 AI(Claude·Gemini·GPT)가 회로를 설계하고, 부품 배치·자동 배선·검사·주문용 거버 파일까지 만들어 줍니다.",
+      "descriptionEn": "An AI PCB design app for beginners. Describe a circuit in plain words and the AI (Claude, Gemini or GPT) designs it, then places parts, routes traces, checks the board and exports Gerber files ready to order.",
+      "category": "DesignApplication",
+      "featuresEn": [
+        "Describe it, get a circuit — Type something like “an LED that lights when I press a button” and the AI draws the circuit (add your API key in settings, or try the built-in examples without one).",
+        "Schematic view — Symbols and right-angle wires you can drag, rotate and tidy up automatically.",
+        "Auto placement and routing — Parts are placed for you; a 2-layer A* router connects them, with thicker power traces.",
+        "Beginner-friendly checks — Catches overlaps, parts off the board, unrouted nets, copper clearance and a missing LED resistor.",
+        "Order files — Exports Gerber (RS-274X), drill and BOM in one zip for JLCPCB or PCBWay.",
+        "Private keys — API keys stay in your browser and go straight to the AI provider."
+      ],
+      "featuresKo": [
+        "말로 회로 만들기 — “버튼 누르면 LED 켜지는 회로”처럼 입력하면 AI가 회로를 그려 줍니다 (설정에 API 키 입력, 키 없이 예제로도 체험 가능).",
+        "회로도 화면 — 기호와 직각 전선을 끌어서 옮기고 회전하고 자동으로 정리할 수 있습니다.",
+        "자동 배치·배선 — 부품을 자동으로 배치하고 2층 A* 라우터로 연결하며, 전원선은 굵게 그립니다.",
+        "초보자 실수 검사 — 겹침, 보드 밖 부품, 미배선, 구리 간격, LED 저항 누락을 찾아 줍니다.",
+        "주문 파일 — 거버(RS-274X)·드릴·BOM을 zip 하나로 만들어 JLCPCB/PCBWay에 올릴 수 있습니다.",
+        "키는 내 브라우저에만 — API 키는 브라우저에만 저장되고 각 AI 회사로 직접 전송됩니다."
+      ]
     }
   }
 }

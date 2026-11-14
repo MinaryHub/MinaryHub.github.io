@@ -78,10 +78,27 @@ async function repoMedia(r, o) {
   let screenshots = (o.screenshots || []).map(resolve);
   // 저장소의 언어별 폴더 screenshots/en/, screenshots/ko/ — 페이지가 화면 언어에 맞는 쪽을 쓴다
   const byLang = {};
-  if (!screenshots.length) for (const l of ['en', 'ko']) {
-    const list = files.filter((f) => new RegExp(`^screenshots/${l}/[^/]+$`, 'i').test(f.path)).map((f) => f.path)
-      .sort((a, b) => a.localeCompare(b, 'en', { numeric: true })).slice(0, 10).map((p) => raw(r, p));
-    if (list.length) byLang[l] = list;
+  const NUM = (a, b) => a.localeCompare(b, 'en', { numeric: true });
+  // 폴더 안에 하위 폴더(desktop-1920x1080/, android-phone-…/)로 나뉜 경우: 데스크톱 1920x1080 → 데스크톱 → 가장 많은 묶음 순으로 한 묶음만 쓴다
+  const pickSet = (paths) => {
+    const flat = paths.filter((p) => !p.includes('/')).filter((p) => !/feature-graphic|icon/i.test(p));
+    if (flat.length) return flat.sort(NUM);
+    const groups = {};
+    for (const p of paths) { const g = p.split('/')[0]; (groups[g] ||= []).push(p); }
+    const names = Object.keys(groups).filter((g) => groups[g].some((p) => !/feature-graphic|icon/i.test(p)));
+    const best = names.find((g) => /1920x1080/.test(g)) || names.find((g) => /desktop/i.test(g)) || names.sort((a, b) => groups[b].length - groups[a].length)[0];
+    return best ? groups[best].sort(NUM) : [];
+  };
+  if (!screenshots.length) {
+    const under = files.map((f) => f.path).filter((p) => /^screenshots\//i.test(p)).map((p) => p.slice('screenshots/'.length));
+    const langs = ['en', 'ko'];
+    for (const l of langs) {
+      const own = under.filter((p) => p.toLowerCase().startsWith(l + '/')).map((p) => p.slice(l.length + 1));
+      // 영어 폴더가 따로 없으면 screenshots/ 바로 아래(언어 폴더가 아닌 것)를 영어 기본 세트로 본다
+      const list = pickSet(l === 'en' && !own.length ? under.filter((p) => !langs.some((x) => p.toLowerCase().startsWith(x + '/'))) : own)
+        .slice(0, 10).map((p) => raw(r, `screenshots/${l === 'en' && !own.length ? '' : l + '/'}${p}`));
+      if (list.length) byLang[l] = list;
+    }
   }
   if (!screenshots.length) screenshots = await localShots(r.name);
   if (!screenshots.length) screenshots = byLang.en || byLang.ko || [];

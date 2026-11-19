@@ -62,7 +62,7 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
   {
     "name": "Dotty",
     "description": "앱 설명",
-    "web": "https://apps.kimserv.com/dotty/",
+    "web": "https://dotty-liart.vercel.app/",
     "icon": "icons/dotty.png",
     "language": "Dart",
     "topics": ["flutter"],

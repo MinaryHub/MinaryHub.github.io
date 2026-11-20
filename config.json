@@ -374,6 +374,41 @@
         "주문 파일 — 거버(RS-274X)·드릴·BOM을 zip 하나로 만들어 JLCPCB/PCBWay에 올릴 수 있습니다.",
         "키는 내 브라우저에만 — API 키는 브라우저에만 저장되고 각 AI 회사로 직접 전송됩니다."
       ]
+    },
+    "KStruct": {
+      "displayName": "KStruct",
+      "description": "기계 부품용 3D 유한요소해석(FEA) 프로그램. CAD 모델을 불러와 재료·고정·하중을 지정하면, 부품이 안전한지 색과 쉬운 말로 알려 줍니다. 전문가가 아니어도 7단계를 따라가면 됩니다.",
+      "descriptionEn": "A 3D finite element analysis (FEA) app for mechanical parts. Open a CAD model, set the material, supports and loads, and it tells you in colors and plain words whether the part is safe — seven guided steps, no expertise needed.",
+      "category": "DesignApplication",
+      "screenshots": [
+        "docs/screenshots/1920x1080/01_welcome.png",
+        "docs/screenshots/1920x1080/02_setup.png",
+        "docs/screenshots/1920x1080/03_stress.png",
+        "docs/screenshots/1920x1080/04_safety.png",
+        "docs/screenshots/1920x1080/05_bolts.png",
+        "docs/screenshots/1920x1080/06_modal.png",
+        "docs/screenshots/1920x1080/07_thermal.png",
+        "docs/screenshots/1920x1080/08_nonlinear.png",
+        "docs/screenshots/1920x1080/09_dark_theme.png"
+      ],
+      "featuresEn": [
+        "Open CAD models — STEP and IGES (recommended), plus STL, OBJ, FBX, glTF and 3MF. Assemblies are bonded automatically where parts touch.",
+        "Materials — 22 steels, stainless, aluminium, cast iron, titanium, copper and plastics, with ISO, EN, KS, JIS, ASTM and GB names, or your own.",
+        "Supports and loads — Fixed, sliding and pin supports; force, pressure, gravity, torque, bearing loads, centrifugal, temperature change, heat input and convection. Several load cases at once, with the worst one flagged.",
+        "Automatic meshing — Quadratic tetrahedra that keep enough elements across thin walls, with local refinement on chosen faces.",
+        "Three analyses — Strength (with thermal stress and fatigue), vibration (natural frequencies and resonance check) and heat transfer.",
+        "Clear results — Safe / caution / danger verdict with stress-singularity detection, color maps, deformation animation, section views, comparison with earlier runs, PDF reports and CSV/VTU export.",
+        "Help everywhere — Every button and field has a ? explanation."
+      ],
+      "featuresKo": [
+        "CAD 모델 열기 — STEP·IGES(권장), STL·OBJ·FBX·glTF·3MF. 여러 부품 어셈블리는 맞닿은 면을 자동으로 찾아 접합합니다.",
+        "재료 — 강·스테인리스·알루미늄·주철·티타늄·구리·플라스틱 22종과 사용자 정의 재료, ISO·EN·KS·JIS·ASTM·GB 명칭.",
+        "고정·하중 — 완전 고정·미끄럼·핀 지지, 힘·압력·자중·토크·베어링 하중·원심력·온도 변화·열 입력·대류 냉각. 하중 케이스 여러 개를 모두 계산해 가장 불리한 것을 알려 줍니다.",
+        "자동 메시 — 2차 사면체 요소, 얇은 벽은 두께 방향 요소 수를 맞추고 원하는 면만 더 세밀하게.",
+        "세 가지 해석 — 강도(열응력·반복 하중 피로 포함), 진동(고유진동수·공진 판정), 열전달.",
+        "알기 쉬운 결과 — 안전·주의·위험 판정(응력 특이점 자동 감지), 컬러맵, 변형 애니메이션, 단면 보기, 이전 해석과 비교, PDF 보고서, CSV·VTU 내보내기.",
+        "곳곳의 도움말 — 모든 버튼과 입력칸에 ? 도움말이 있습니다."
+      ]
     }
   }
 }

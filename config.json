@@ -25,7 +25,8 @@
   "hide": [
     "Kerminal.Release",
     "DeskCue.Release",
-    "VirtualDesktopIndicator"
+    "VirtualDesktopIndicator",
+    "uiwanginside"
   ],
   "order": [],
   "apps": [],

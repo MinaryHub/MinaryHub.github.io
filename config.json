@@ -437,6 +437,30 @@
         "Claude 내장 — 채팅으로 프로그램을 작성·컴파일·시험 실행하고, MCP 서버로도 쓸 수 있음.",
         "브라우저에서 실행 — Node.js 20 이상이면 Windows·macOS·Linux 모두 동작, 정보 창에서 한 번에 업데이트."
       ]
+    },
+    "BangDB.Manager": {
+      "displayName": "BangDB Manager",
+      "description": "BangDB와 PostgreSQL·MySQL/MariaDB·SQL Server·SQLite·MongoDB·Redis의 데이터베이스·테이블·데이터를 한 곳에서 관리하는 크로스플랫폼 앱. Windows·macOS·Linux 데스크톱, 브라우저(PWA), Android에서 같은 화면으로 씁니다.",
+      "descriptionEn": "A cross-platform manager for BangDB, PostgreSQL, MySQL/MariaDB, SQL Server, SQLite, MongoDB and Redis — browse and edit databases, tables and data from the desktop (Windows, macOS, Linux), the browser (PWA) or Android.",
+      "category": "DeveloperApplication",
+      "featuresEn": [
+        "Many databases, one app — BangDB (Go and 2.0 REST), PostgreSQL, MySQL/MariaDB, SQL Server, SQLite, MongoDB and Redis.",
+        "Saved connections — Several servers with password, API key or login-token auth, plus a connection test.",
+        "Tables and data — Create and drop databases and tables (column builder or SQL), edit rows in a grid, manage indexes and view table structure.",
+        "Import and export — JSON and CSV export, bulk JSON/JSONL import with progress.",
+        "Consoles — SQL console with history (Ctrl+Enter) and a REST console for any method and path.",
+        "MongoDB and Redis screens — Documents (Extended JSON), aggregation and indexes; key browser with per-type editors and a command console.",
+        "Everywhere — Desktop installers with a built-in gateway and LAN server for your phone, a browser/PWA version and an Android app. Connection details stay on your device."
+      ],
+      "featuresKo": [
+        "여러 DB를 한 앱에서 — BangDB(Go·2.0 REST), PostgreSQL, MySQL/MariaDB, SQL Server, SQLite, MongoDB, Redis.",
+        "연결 저장 — 서버 여러 개를 비밀번호·API 키·로그인 토큰 인증으로 저장하고 연결 테스트.",
+        "테이블·데이터 — DB·테이블 생성/삭제(컬럼 빌더 또는 SQL), 그리드에서 행 편집, 인덱스 관리, 테이블 구조 보기.",
+        "가져오기·내보내기 — JSON·CSV 내보내기, JSON/JSONL 대량 가져오기(진행률 표시).",
+        "콘솔 — 히스토리가 있는 SQL 콘솔(Ctrl+Enter), 임의 메서드·경로의 REST 콘솔.",
+        "MongoDB·Redis 전용 화면 — 문서(Extended JSON)·집계·인덱스, 키 브라우저·타입별 편집기·명령 콘솔.",
+        "어디서나 — 게이트웨이와 휴대폰용 LAN 서버가 내장된 데스크톱 설치 파일, 브라우저(PWA), Android 앱. 연결 정보는 기기에만 저장."
+      ]
     }
   }
 }

@@ -410,6 +410,33 @@
         "알기 쉬운 결과 — 안전·주의·위험 판정(응력 특이점 자동 감지), 컬러맵, 변형 애니메이션, 단면 보기, 이전 해석과 비교, PDF 보고서, CSV·VTU 내보내기.",
         "곳곳의 도움말 — 모든 버튼과 입력칸에 ? 도움말이 있습니다."
       ]
+    },
+    "RobotEmulator": {
+      "displayName": "RobotEmulator",
+      "displayNameKo": "산업용 로봇 에뮬레이터",
+      "description": "야스카와·카와사키·현대로보틱스·ABB·KUKA·두산로보틱스·Universal Robots 로봇을 하나의 가상 컨트롤러로 에뮬레이션합니다. 제조사 로봇 언어 프로그램을 그대로 실행해 3D로 확인하고, PLC·PC 상위 프로그램을 실제 로봇 없이 개발·시험할 수 있습니다.",
+      "descriptionEn": "A virtual robot controller that emulates Yaskawa, Kawasaki, Hyundai, ABB, KUKA, Doosan Robotics and Universal Robots arms. Run programs in each vendor's own language, watch them in 3D, and develop PLC or host-PC software without a real robot.",
+      "category": "DeveloperApplication",
+      "featuresEn": [
+        "93 robot models from 7 vendors — Yaskawa, Kawasaki, Hyundai, ABB, KUKA, Doosan and Universal Robots, checked against datasheets.",
+        "Vendor languages as they are — INFORM, AS, HRScript, RAPID, KRL, DRL and URScript, with a syntax-highlighting editor, breakpoints and a variable watch.",
+        "Talk to it like a real controller — Each vendor's external interface plus Modbus TCP and OPC UA, so PLC and host-PC software can be tested without hardware.",
+        "Realistic motion — Analytic inverse kinematics, joint/linear/circular moves, per-vendor blending, collision checks and cycle-time measurement.",
+        "Build a cell — Conveyors, feeders, sensors, 15 grippers, vision cameras and CAD models (STEP, IGES, STL, OBJ, GLB), with 6 ready-made presets.",
+        "Direct teach — Drag the tool or a link in 3D and record positions.",
+        "Claude built in — A chat that writes, compiles and test-runs programs, also available as an MCP server.",
+        "Runs in the browser — Windows, macOS and Linux with Node.js 20+; one-click updates from the About dialog."
+      ],
+      "featuresKo": [
+        "7개 제조사 93개 기종 — 야스카와·카와사키·현대·ABB·KUKA·두산·Universal Robots, 데이터시트와 대조한 사양.",
+        "제조사 로봇 언어 그대로 — INFORM·AS·HRScript·RAPID·KRL·DRL·URScript. 문법 강조 편집기, 중단점, 변수 감시.",
+        "실제 컨트롤러처럼 통신 — 제조사별 외부 인터페이스와 Modbus TCP·OPC UA로 PLC·PC 상위 프로그램을 로봇 없이 시험.",
+        "실제에 가까운 동작 — 해석적 역기구학, 관절·직선·원호 보간, 제조사별 블렌딩, 충돌 검사, 사이클 타임 측정.",
+        "셀 구성 — 컨베이어·피더·센서, 그리퍼 15종, 비전 카메라, CAD 모델(STEP·IGES·STL·OBJ·GLB) 배치, 프리셋 6종.",
+        "직접 교시 — 3D에서 툴이나 링크를 끌어 자세를 잡고 위치를 기록.",
+        "Claude 내장 — 채팅으로 프로그램을 작성·컴파일·시험 실행하고, MCP 서버로도 쓸 수 있음.",
+        "브라우저에서 실행 — Node.js 20 이상이면 Windows·macOS·Linux 모두 동작, 정보 창에서 한 번에 업데이트."
+      ]
     }
   }
 }

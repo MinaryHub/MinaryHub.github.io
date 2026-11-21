@@ -39,6 +39,8 @@ jobs:
           if [ -d screenshots ]; then cp -r screenshots _site/; fi
           if [ -d icons ]; then cp -r icons _site/; fi
           if [ -f og.png ]; then cp og.png _site/; fi
+          # search-engine ownership files (Google Search Console: google*.html, Naver: naver*.html, Bing: BingSiteAuth.xml)
+          for f in google*.html naver*.html BingSiteAuth.xml; do if [ -f "$f" ]; then cp "$f" _site/; fi; done
           touch _site/.nojekyll
       - name: Prerender for search engines (SEO)
         run: node scripts/prerender.mjs

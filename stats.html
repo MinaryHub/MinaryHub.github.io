@@ -247,7 +247,7 @@
     const files = v.assets.length ? `<details class="rel-files"><summary>파일 ${v.assets.length}개</summary><ul>${
       [...v.assets].sort((a, b) => b.downloads - a.downloads).map((a) => `<li><span>${esc(a.name)}</span><span>${num(a.downloads)}</span></li>`).join('')}</ul></details>` : '';
     const c = att.byTag[v.tag] || 0;
-    return `<tr><td><a href="${esc(v.url)}" rel="noopener">${esc(v.tag)}</a>${v.prerelease ? '<span class="pre">pre</span>' : ''}<div class="files">${day(v.publishedAt)}</div></td>
+    return `<tr><td>${esc(v.tag)}${v.prerelease ? '<span class="pre">pre</span>' : ''}<div class="files">${day(v.publishedAt)}</div></td>
       <td class="n${v.total ? '' : ' zero'}">${num(v.total)}<div class="meter"><span style="width:${v.total / max * 100}%"></span></div></td>
       <td class="n${c ? '' : ' zero'}">${att.approx.has(v.tag) && c ? '<span class="approx" title="같은 파일 이름을 쓰는 이전 버전의 클릭이 함께 들어 있을 수 있습니다">≈</span>' : ''}${num(c)}</td>
       <td>${chips || '<span class="zero">—</span>'}${files}</td></tr>`;

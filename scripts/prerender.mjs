@@ -298,7 +298,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
     ${others ? `<h2>${esc(t.more)}</h2><ul class="others">${others}</ul>` : ''}
   </main>
   <footer>
-    <span><a href="https://github.com/MinaryHub">github.com/MinaryHub</a></span>
+    <span></span>
     <span class="foot-r"><button type="button" class="contact-link" data-contact data-app="${esc(r.name)}">${lang === 'ko' ? '문의하기' : 'Contact'}</button>
     <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
   </footer>

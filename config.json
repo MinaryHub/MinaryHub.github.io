@@ -354,6 +354,34 @@
         "어디서나 — Go용 database/sql 드라이버, 안드로이드 라이브러리, Windows·macOS·Linux용 명령줄/서버 실행 파일."
       ]
     },
+    "BangDB.Manager": {
+      "displayName": "BangDB Manager",
+      "description": "BangDB·PostgreSQL·MySQL/MariaDB·SQL Server·SQLite·MongoDB·Redis를 한 앱에서 관리하는 데이터베이스 관리 도구. 테이블을 스프레드시트처럼 고치고 SQL을 실행하며, Windows·macOS·Linux·Android·웹에서 같은 화면으로 씁니다.",
+      "descriptionEn": "A database manager for BangDB, PostgreSQL, MySQL/MariaDB, SQL Server, SQLite, MongoDB and Redis. Edit tables like a spreadsheet and run SQL with the same app on Windows, macOS, Linux, Android and the web.",
+      "category": "DeveloperApplication",
+      "featuresEn": [
+        "Seven databases, one app — BangDB, PostgreSQL, MySQL/MariaDB, SQL Server and SQLite share the table and SQL screens; MongoDB gets collections, documents and aggregation; Redis a key browser with editors per type.",
+        "Edit like a spreadsheet — Click a cell to change it, add and delete rows, and save everything in one transaction (Ctrl+S). Search, filters, sorting and a form editor.",
+        "SQL console — Schema panel, run the statement at the cursor, EXPLAIN, parameters, history, sortable results and CSV/JSON export.",
+        "Schema tools — Create tables and views with a column builder; add, change, rename and drop columns; indexes, DDL, copy and rename tables.",
+        "Import, export and back up — CSV, TSV, JSON and JSON Lines in; CSV, JSON and SQL out; a full SQL dump and restore that stays fast on big tables.",
+        "Quick open — Ctrl/⌘+K jumps to any table, server or page; keyboard shortcuts throughout; dark, light or system theme.",
+        "Everywhere — Desktop apps for Windows, macOS and Linux with a built-in database gateway, an Android app and an installable web app, in English or Korean; the desktop app can serve itself to phones on the same Wi-Fi.",
+        "Always up to date — Background updates, an automatic-check switch, what's new after each update, and a version history with older versions to reinstall.",
+        "Feedback and sponsoring — Report bugs, request features and ask questions from the app through GitHub Issues; support development on GitHub Sponsors."
+      ],
+      "featuresKo": [
+        "7가지 DB, 한 앱 — BangDB·PostgreSQL·MySQL/MariaDB·SQL Server·SQLite는 같은 테이블·SQL 화면, MongoDB는 컬렉션·문서·집계, Redis는 타입별 편집기가 있는 키 브라우저.",
+        "스프레드시트처럼 편집 — 셀을 눌러 바로 고치고, 행 추가·삭제를 모아 한 트랜잭션으로 저장(Ctrl+S). 검색·필터·정렬·폼 편집기.",
+        "SQL 콘솔 — 스키마 패널, 커서 위치 문장만 실행, EXPLAIN, 파라미터, 기록, 결과 정렬과 CSV/JSON 저장.",
+        "구조 편집 — 컬럼 빌더로 테이블·뷰 만들기, 컬럼 추가·변경·이름 변경·삭제, 인덱스, DDL, 테이블 복제·이름 변경.",
+        "가져오기·내보내기·백업 — CSV·TSV·JSON·JSON Lines 가져오기, CSV·JSON·SQL 내보내기, 큰 테이블도 빠른 전체 SQL 덤프와 복원.",
+        "빠른 열기 — Ctrl/⌘+K로 테이블·서버·페이지 바로 이동, 곳곳의 단축키, 다크·라이트·시스템 테마.",
+        "어디서나 — DB 게이트웨이를 내장한 Windows·macOS·Linux 데스크톱 앱, Android 앱, 설치형 웹앱을 영어·한국어로. 데스크톱 앱이 같은 Wi-Fi의 휴대폰에 앱을 제공.",
+        "늘 최신 — 백그라운드 업데이트, 자동 확인 켜기·끄기, 업데이트 후 새로운 점, 이전 버전을 다시 설치할 수 있는 버전 기록.",
+        "문의·후원 — 앱에서 GitHub Issues로 버그 신고·기능 요청·질문, GitHub Sponsors로 개발 후원."
+      ]
+    },
     "ezBoard": {
       "displayName": "ezBoard",
       "description": "초보자를 위한 AI PCB 설계 웹 앱. 말로 설명하면 AI(Claude·Gemini·GPT)가 회로를 설계하고, 부품 배치·자동 배선·검사·주문용 거버 파일까지 만들어 줍니다.",

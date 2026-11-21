@@ -168,7 +168,7 @@
   <main class="grid" id="grid"><div class="state" id="loading">Loading…</div></main>
 
   <footer>
-    <span><a href="https://github.com/MinaryHub" id="orgLink">github.com/MinaryHub</a> · <span id="footNote">This page refreshes release info periodically via GitHub Actions.</span></span>
+    <span><span id="footNote">This page refreshes release info periodically via GitHub Actions.</span></span>
     <span class="foot-r"><button type="button" class="contact-link" data-contact>Contact</button>
     <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
   </footer>
@@ -477,7 +477,7 @@
         if (others.length) dl += `<details class="more"><summary>${t('more', others.length)}</summary><div class="dl">${others.map((a) => assetBtn(a)).join('')}</div></details>`;
       }
     } else if (rel) {
-      dl = `<div class="norel">${t('noAssets')} <a href="${esc(rel.url)}">${t('notes')}</a></div>`;
+      dl = `<div class="norel">${t('noAssets')}</div>`;
     } else if (!web) {
       dl = `<div class="norel">${t('noBuild')}</div>`;
     }
@@ -488,7 +488,7 @@
       r.language, ...r.topics].filter(Boolean).join(' ').toLowerCase();
     return `<article class="card" data-app="${esc(r.name)}" data-rel="${rel ? 1 : 0}" data-q="${esc(q)}">
       <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((name || '?')[0])}</span>`}<h2>${r.page ? `<a href="${lang === 'ko' ? 'ko/' : ''}apps/${esc(slugOf(r.name))}/">${esc(name)}</a>` : esc(name)}</h2></div>
-        ${rel ? `<a class="ver${rel.prerelease ? ' pre' : ''}" href="${esc(rel.url)}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</a>` : ''}</div>
+        ${rel ? `<span class="ver${rel.prerelease ? ' pre' : ''}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</span>` : ''}</div>
       <p class="desc${desc ? '' : ' empty'}">${esc(desc || t('noDesc'))}</p>
       <div class="tags">${r.language ? `<span class="tag lang" style="--dot:${color}">${esc(r.language)}</span>` : ''}${r.topics.slice(0, 4).map((tp) => `<span class="tag">${esc(tp)}</span>`).join('')}</div>
       ${shotsHtml(r)}
@@ -707,8 +707,7 @@
         applyFilter();
       });
     } catch (e) {
-      const fail = () => { $('#grid').innerHTML = `<div class="state">${esc(t('loadFail', e.message))}<br>
-        <a href="https://github.com/${ORG}">${t('viewGitHub')}</a></div>`; };
+      const fail = () => { $('#grid').innerHTML = `<div class="state">${esc(t('loadFail', e.message))}</div>`; };
       fail(); rerender = fail;
     }
   })();

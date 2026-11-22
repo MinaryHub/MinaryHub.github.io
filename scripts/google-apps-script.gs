@@ -29,16 +29,52 @@
  */
 
 const FOLDER_ID = '여기에_구글_드라이브_폴더_ID_입력';
+const FOLDER_PATH = ''; // 선택: FOLDER_ID 대신 '내 드라이브 기준 경로' (예: '06_개인프로젝트·집필/Publish')
 const SECRET_TOKEN = ''; // 선택: 비워 두면 토큰 검사 안 함. 설정 시 ?token=... 필요
 const INCLUDE_SUBFOLDERS = true;
-const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 이미지 1장 최대 4MB
+const MAX_IMAGE_BYTES = 12 * 1024 * 1024; // 이미지 1장 최대 12MB
 
 function getConfig_() {
   const props = PropertiesService.getScriptProperties();
   return {
     folderId: (props.getProperty('FOLDER_ID') || FOLDER_ID || '').trim(),
+    folderPath: (props.getProperty('FOLDER_PATH') || FOLDER_PATH || '').trim(),
     secretToken: (props.getProperty('SECRET_TOKEN') || SECRET_TOKEN || '').trim(),
   };
+}
+
+function normalizeName_(s) {
+  return String(s || '').trim().replace(/[·•∙ㆍ.]/g, '·').replace(/\s+/g, ' ');
+}
+
+function resolveFolder_(cfg) {
+  if (cfg.folderId && cfg.folderId !== '여기에_구글_드라이브_폴더_ID_입력') {
+    return DriveApp.getFolderById(cfg.folderId);
+  }
+  const parts = String(cfg.folderPath || '').split('/').map(function (s) { return s.trim(); }).filter(Boolean);
+  if (!parts.length) throw new Error('FOLDER_ID or FOLDER_PATH is not configured');
+  let cur = DriveApp.getRootFolder();
+  for (let i = 0; i < parts.length; i++) {
+    const target = parts[i];
+    const targetNorm = normalizeName_(target);
+    let found = null;
+    const exact = cur.getFoldersByName(target);
+    if (exact.hasNext()) {
+      found = exact.next();
+    } else {
+      const all = cur.getFolders();
+      while (all.hasNext()) {
+        const f = all.next();
+        if (!f.isTrashed() && normalizeName_(f.getName()) === targetNorm) {
+          found = f;
+          break;
+        }
+      }
+    }
+    if (!found) throw new Error('Folder not found: ' + target);
+    cur = found;
+  }
+  return cur;
 }
 
 function doGet(e) {
@@ -48,12 +84,10 @@ function doGet(e) {
   if (cfg.secretToken && reqToken !== cfg.secretToken) {
     return jsonResponse_({ error: 'Unauthorized' });
   }
-  if (!cfg.folderId || cfg.folderId === '여기에_구글_드라이브_폴더_ID_입력') {
-    return jsonResponse_({ error: 'FOLDER_ID is not configured' });
-  }
 
   try {
-    const posts = collectPosts_(cfg.folderId);
+    const folder = resolveFolder_(cfg);
+    const posts = collectPosts_(folder);
     return jsonResponse_({
       generatedAt: new Date().toISOString(),
       source: 'google-drive',
@@ -69,10 +103,18 @@ function doGet(e) {
  */
 function testRun() {
   const cfg = getConfig_();
-  const posts = collectPosts_(cfg.folderId);
+  const folder = resolveFolder_(cfg);
+  Logger.log('대상 폴더: ' + folder.getName() + ' (ID: ' + folder.getId() + ')');
+  const posts = collectPosts_(folder);
   Logger.log('수집된 글 수: ' + posts.length);
   posts.forEach(function (p) {
-    Logger.log('- ' + p.title + ' (' + p.format + ', ' + p.publishedAt + ', tags=' + (p.tags || []).join(',') + ')');
+    Logger.log(
+      '- ' + p.title +
+      ' (' + p.format +
+      ', images=' + (p.images ? p.images.length : 0) +
+      ', coverImage=' + (p.coverImage ? 'yes' : 'no') +
+      ', tags=' + (p.tags || []).join(',') + ')'
+    );
   });
 }
 
@@ -86,8 +128,7 @@ function isDraftName_(name) {
   return /^([_. ]|\[draft\]|\[초안\]|draft:)/i.test(String(name || '').trim());
 }
 
-function collectPosts_(folderId) {
-  const root = DriveApp.getFolderById(folderId);
+function collectPosts_(root) {
   const posts = [];
 
   scanFolder_(root, [], posts);
@@ -154,14 +195,16 @@ function readGoogleDoc_(file, folderTags) {
   const body = doc.getBody();
   const total = body.getNumChildren();
 
-  // 선택적 frontmatter (맨 앞 '---' ... '---') 파싱
+  // 선택적 frontmatter (맨 앞 '---' ... '---') 파싱 — 이미지가 있는 문단은 건너뛰지 않음
   const meta = {};
   let startIndex = 0;
   let firstNonEmpty = -1;
   for (let i = 0; i < total; i++) {
     const el = body.getChild(i);
     if (el.getType() === DocumentApp.ElementType.PARAGRAPH) {
-      const txt = el.asParagraph().getText().trim();
+      const p = el.asParagraph();
+      if (hasImages_(p)) break;
+      const txt = p.getText().trim();
       if (!txt) continue;
       firstNonEmpty = i;
       break;
@@ -264,6 +307,10 @@ function readGoogleDoc_(file, folderTags) {
       } else {
         htmlParts.push('<p>' + inner + '</p>');
       }
+    } else if (type === DocumentApp.ElementType.INLINE_IMAGE) {
+      flushCode();
+      const imgTag = renderImage_(el.asInlineImage(), images);
+      if (imgTag) htmlParts.push('<p>' + imgTag + '</p>');
     } else if (type === DocumentApp.ElementType.HORIZONTAL_RULE) {
       flushCode();
       htmlParts.push('<hr>');
@@ -275,6 +322,8 @@ function readGoogleDoc_(file, folderTags) {
 
   flushCode();
   closeLists(0);
+
+  const coverImage = images.length ? null : extractFallbackCover_(doc, body, file);
 
   const metaTags = meta.tags
     ? meta.tags.split(/[,，]/).map(function (s) { return s.trim(); }).filter(Boolean)
@@ -296,7 +345,89 @@ function readGoogleDoc_(file, folderTags) {
     format: 'html',
     html: htmlParts.join('\n'),
     images: images,
+    coverImage: coverImage,
   };
+}
+
+function hasImages_(p) {
+  if (typeof p.getPositionedImages === 'function' && p.getPositionedImages().length > 0) return true;
+  for (let i = 0; i < p.getNumChildren(); i++) {
+    if (p.getChild(i).getType() === DocumentApp.ElementType.INLINE_IMAGE) return true;
+  }
+  return false;
+}
+
+function blobToCover_(blob) {
+  if (!blob) return null;
+  try {
+    const bytes = blob.getBytes();
+    if (!bytes || !bytes.length || bytes.length > MAX_IMAGE_BYTES) return null;
+    return {
+      mimeType: blob.getContentType() || 'image/png',
+      data: Utilities.base64Encode(bytes),
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
+function extractFallbackCover_(doc, body, file) {
+  // 1) 본문 전체 InlineImage 직접 검색
+  try {
+    const bodyImgs = body.getImages();
+    if (bodyImgs && bodyImgs.length) {
+      const c = blobToCover_(bodyImgs[0].getBlob());
+      if (c) return c;
+    }
+  } catch (err) {}
+
+  // 2) 머리글(Header) 이미지 검색
+  try {
+    const header = doc.getHeader();
+    if (header) {
+      const hImgs = header.getImages();
+      if (hImgs && hImgs.length) {
+        const c = blobToCover_(hImgs[0].getBlob());
+        if (c) return c;
+      }
+    }
+  } catch (err) {}
+
+  // 3) 다중 탭 문서(Document Tabs)의 첫 번째 이미지 검색
+  try {
+    if (typeof doc.getTabs === 'function') {
+      const tabs = doc.getTabs();
+      for (let i = 0; i < tabs.length; i++) {
+        const dt = tabs[i].asDocumentTab();
+        if (!dt) continue;
+        const tb = dt.getBody();
+        const tImgs = tb.getImages();
+        if (tImgs && tImgs.length) {
+          const c = blobToCover_(tImgs[0].getBlob());
+          if (c) return c;
+        }
+        const ps = tb.getParagraphs();
+        for (let k = 0; k < ps.length; k++) {
+          const pos = ps[k].getPositionedImages();
+          if (pos && pos.length) {
+            const c = blobToCover_(pos[0].getBlob());
+            if (c) return c;
+          }
+        }
+      }
+    }
+  } catch (err) {}
+
+  // 4) 최종 폴백: Google Drive 첫 페이지 썸네일
+  try {
+    const thumb = file.getThumbnail();
+    if (thumb) {
+      const c = blobToCover_(thumb);
+      if (c) return c;
+    }
+  } catch (err) {}
+
+  return null;
 }
 
 function renderContainer_(container, images) {

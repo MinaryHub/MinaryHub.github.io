@@ -457,6 +457,17 @@ async function main() {
       }
     }
 
+    // 별도 표지 이미지(item.coverImage: 배치 이미지/머리글/Drive 첫 페이지 썸네일 등 폴백) 저장
+    let savedCover = '';
+    if (item.coverImage?.data) {
+      const postAssetDir = path.join(ASSETS_DIR, slug);
+      await mkdir(postAssetDir, { recursive: true });
+      const ext = MIME_EXT[String(item.coverImage.mimeType || '').toLowerCase()] || 'png';
+      const fileName = `cover.${ext}`;
+      await writeFile(path.join(postAssetDir, fileName), Buffer.from(item.coverImage.data, 'base64'));
+      savedCover = `thinks/assets/${encodeURIComponent(slug)}/${fileName}`;
+    }
+
     // 남아 있는 미치환 data-img-id 이미지 태그 정리 + HTML 안전화
     html = html.replace(/<img\b[^>]*data-img-id=[^>]*>/gi, '');
     html = sanitizeHtml(html);
@@ -467,7 +478,7 @@ async function main() {
 
     // 첫 번째 이미지를 커버/공유 미리보기용으로 추출
     const firstImgMatch = html.match(/<img\b[^>]*\bsrc="([^"]+)"/i);
-    const cover = item.cover || savedImages[0]?.src || firstImgMatch?.[1] || '';
+    const cover = item.cover || savedImages[0]?.src || savedCover || firstImgMatch?.[1] || '';
 
     fullPosts.push({
       id: item.id || slug,

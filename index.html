@@ -144,6 +144,80 @@
   dialog.contact .btn.ghost { background: none; color: var(--text); }
   dialog.contact .status { min-height: 1.2em; margin: 0 0 12px; font-size: 14px; }
   dialog.contact .status.err { color: #d14343; } dialog.contact .status.ok { color: var(--ok); }
+
+  /* Apps / Thinks 탭 네비게이션 */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 4px 0 20px; }
+  .tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; text-decoration: none;
+    font-size: 15px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px;
+    border-radius: 10px 10px 0 0; transition: color .18s, border-color .18s, background .18s; }
+  .tab:hover { color: var(--text); background: var(--surface-2); }
+  .tab[aria-selected="true"] { color: var(--text); font-weight: 700; border-bottom-color: var(--accent); }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .tab-cnt { font: 600 11px "JetBrains Mono", monospace; padding: 2px 7px; border-radius: 999px;
+    background: var(--surface-2); color: var(--muted); transition: background .18s, color .18s; }
+  .tab[aria-selected="true"] .tab-cnt { background: var(--accent-soft); color: var(--accent); }
+
+  /* Thinks 글 목록 */
+  .thinks-list { display: grid; gap: 14px; padding-bottom: 64px; }
+  .think-card { display: flex; gap: 20px; align-items: flex-start; justify-content: space-between;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px 24px; box-shadow: var(--shadow); text-decoration: none;
+    transition: border-color .18s, transform .18s; }
+  .think-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .think-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .think-body { flex: 1; min-width: 0; max-width: 72ch; }
+  .think-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .think-title { font-size: 20px; font-weight: 700; line-height: 1.38; letter-spacing: -.015em;
+    margin: 0 0 8px; color: var(--text); word-break: keep-all; transition: color .18s; }
+  .think-card:hover .think-title { color: var(--accent); }
+  .think-excerpt { color: var(--muted); margin: 0; line-height: 1.65;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .think-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; }
+  .think-thumb { width: 152px; height: 102px; flex: none; border-radius: 10px; object-fit: cover;
+    border: 1px solid var(--border); background: var(--surface-2); display: block; }
+
+  /* 글 본문 타이포그래피 (전용 페이지 및 로컬 미리보기 공용) */
+  .prose { font-size: 16px; line-height: 1.82; color: var(--text); word-break: keep-all; overflow-wrap: break-word; }
+  .prose > :first-child { margin-top: 0; }
+  .prose h2 { font-size: 23px; margin: 2em 0 .65em; letter-spacing: -.015em; line-height: 1.35; }
+  .prose h3 { font-size: 19px; margin: 1.7em 0 .5em; line-height: 1.4; }
+  .prose h4 { font-size: 16px; margin: 1.4em 0 .4em; line-height: 1.45; }
+  .prose p { margin: 0 0 1.2em; }
+  .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .prose ul, .prose ol { margin: 0 0 1.25em; padding-left: 1.5em; }
+  .prose li { margin: .35em 0; }
+  .prose blockquote { margin: 1.4em 0; padding: 12px 18px; border-left: 3px solid var(--accent);
+    background: var(--surface-2); border-radius: 0 10px 10px 0; color: var(--muted); }
+  .prose blockquote p:last-child { margin-bottom: 0; }
+  .prose code { font: 13.5px "JetBrains Mono", monospace; background: var(--surface-2); padding: 2px 6px; border-radius: 6px; }
+  .prose pre { margin: 1.4em 0; padding: 16px 18px; border-radius: 12px; background: var(--surface-2);
+    border: 1px solid var(--border); overflow-x: auto; line-height: 1.6; }
+  .prose pre code { background: none; padding: 0; font-size: 13px; }
+  .prose hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+  .prose img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border);
+    display: block; margin: 1.4em auto; cursor: zoom-in; }
+  .prose .tbl-wrap { overflow-x: auto; margin: 1.4em 0; }
+  .prose table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .prose th, .prose td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; }
+  .prose th { background: var(--surface-2); font-weight: 600; }
+
+  /* 비사전렌더링 로컬 미리보기용 글 읽기 창 */
+  dialog.reader-dlg { width: min(780px, calc(100vw - 24px)); max-height: calc(100vh - 32px);
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+    color: var(--text); padding: 0; box-shadow: 0 12px 48px rgba(0,0,0,.3); overflow: hidden; }
+  dialog.reader-dlg::backdrop { background: rgba(0,0,0,.55); }
+  dialog.reader-dlg .rd-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
+  dialog.reader-dlg .rd-top h2 { margin: 0 0 6px; font-size: 22px; line-height: 1.35; }
+  dialog.reader-dlg .rd-close { border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    width: 34px; height: 34px; border-radius: 50%; font-size: 20px; line-height: 1; cursor: pointer; flex: none; }
+  dialog.reader-dlg .rd-body { padding: 24px; overflow-y: auto; max-height: calc(100vh - 140px); }
+
+  @media (max-width: 600px) {
+    .think-card { flex-direction: column-reverse; padding: 18px; gap: 14px; }
+    .think-thumb { width: 100%; height: 170px; }
+  }
   @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 26px; } header { padding-top: 36px; } }
 </style>
 </head>
@@ -157,15 +231,35 @@
     <div class="auth" id="auth" hidden></div>
   </header>
 
-  <div class="toolbar">
-    <input class="search" id="q" type="search" placeholder="Search projects…" aria-label="Search projects">
-    <div class="chips" id="chips">
-      <button class="chip" data-f="all" aria-pressed="true">All</button>
-      <button class="chip" data-f="rel" aria-pressed="false">Downloadable</button>
-    </div>
-  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
+    <a class="tab" href="./" role="tab" id="tabApps" data-tab="apps" aria-controls="panelApps" aria-selected="true">
+      <span id="tabAppsLbl">Apps</span><span class="tab-cnt" id="cntApps" hidden></span>
+    </a>
+    <a class="tab" href="thinks/" role="tab" id="tabThinks" data-tab="thinks" aria-controls="panelThinks" aria-selected="false">
+      <span id="tabThinksLbl">Thinks</span><span class="tab-cnt" id="cntThinks" hidden></span>
+    </a>
+  </nav>
 
-  <main class="grid" id="grid"><div class="state" id="loading">Loading…</div></main>
+  <main>
+    <section id="panelApps" role="tabpanel" aria-labelledby="tabApps">
+      <div class="toolbar">
+        <input class="search" id="q" type="search" placeholder="Search projects…" aria-label="Search projects">
+        <div class="chips" id="chips">
+          <button class="chip" data-f="all" aria-pressed="true">All</button>
+          <button class="chip" data-f="rel" aria-pressed="false">Downloadable</button>
+        </div>
+      </div>
+      <div class="grid" id="grid"><div class="state" id="loading">Loading…</div></div>
+    </section>
+
+    <section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks" hidden>
+      <div class="toolbar">
+        <input class="search" id="tq" type="search" placeholder="Search posts…" aria-label="Search posts">
+        <div class="chips" id="tchips"></div>
+      </div>
+      <div class="thinks-list" id="thinksList"><div class="state" id="thinksLoading">Loading…</div></div>
+    </section>
+  </main>
 
   <footer>
     <span><span id="footNote">This page refreshes release info periodically via GitHub Actions.</span></span>
@@ -179,15 +273,35 @@
   const ORG = 'MinaryHub';
   const LANG_COLORS = { Rust:'#dea584', 'C#':'#178600', TypeScript:'#3178c6', JavaScript:'#f1e05a',
     Dart:'#00B4AB', Python:'#3572A5', MDX:'#fcb32c', Go:'#00ADD8', 'C++':'#f34b7d', Kotlin:'#A97BFF', Swift:'#F05138' };
-  // 언어: 주소의 ?lang=en|ko → 이 페이지의 언어(배포 때 / 는 영어, /ko/ 는 한국어로 만든다) → 기본 영어.
-  // 배포된 페이지에서 기억한 선택이 이 페이지와 다르면 그 언어 주소로 옮긴다 (검색엔진은 저장소가 없어 옮겨지지 않는다)
   const prerendered = !!document.documentElement.dataset.prerendered;
   const pageLang = document.documentElement.dataset.lang || 'en';
+  // 탭 전환 시 history.pushState 로 경로가 바뀌어도 상대 경로가 항상 사이트 루트 기준으로 유지되도록 <base> 고정
+  const ROOT_URL = new URL('./', document.baseURI).href;
+  if (prerendered) {
+    let baseEl = document.querySelector('base');
+    if (!baseEl) { baseEl = document.createElement('base'); document.head.prepend(baseEl); }
+    baseEl.href = ROOT_URL;
+  }
+  const detectTab = () => {
+    if (document.documentElement.dataset.tab === 'thinks') return 'thinks';
+    const qt = new URLSearchParams(location.search).get('tab');
+    if (qt === 'thinks' || location.hash === '#thinks') return 'thinks';
+    if (/\/thinks\/?$/.test(location.pathname)) return 'thinks';
+    return 'apps';
+  };
+  const tabHref = (l, tb) => ((l === 'ko' ? 'ko/' : '') + (tb === 'thinks' ? 'thinks/' : '')) || './';
+  let activeTab = detectTab();
+
+  // 언어: 주소의 ?lang=en|ko → 이 페이지의 언어(배포 때 / 는 영어, /ko/ 는 한국어로 만든다) → 기본 영어.
+  // 배포된 페이지에서 기억한 선택이 이 페이지와 다르면 같은 탭의 해당 언어 주소로 옮긴다 (검색엔진은 저장소가 없어 옮겨지지 않는다)
   let lang = pageLang;
   try {
     const q = new URLSearchParams(location.search).get('lang'), saved = localStorage.getItem('mh-lang');
     if (['en', 'ko'].includes(q)) lang = q;
-    else if (prerendered && ['en', 'ko'].includes(saved) && saved !== pageLang) location.replace(new URL(saved === 'ko' ? 'ko/' : './', document.baseURI).href);
+    else if (prerendered && ['en', 'ko'].includes(saved) && saved !== pageLang) {
+      location.replace(new URL(tabHref(saved, activeTab), ROOT_URL).href);
+      return;
+    }
     else if (!prerendered && ['en', 'ko'].includes(saved)) lang = saved;
   } catch {}
   const I18N = {
@@ -210,6 +324,11 @@
       meta: (n, nRel, ago, nLive, os) => `<b>${n}</b> public project${n === 1 ? '' : 's'} · <b>${nRel}</b> downloadable · updated ${ago}` +
         (nLive ? ` · ${nLive} live update${nLive === 1 ? '' : 's'}` : '') + (os ? ` · your system: <b>${os}</b>` : ''),
       loadFail: (m) => `Couldn't load project info. (${m})`, viewGitHub: 'View on GitHub →',
+      tabApps: 'Apps', tabThinks: 'Thinks',
+      thinksSearch: 'Search posts…', thinksAll: 'All',
+      thinksEmpty: 'No posts yet.', thinksNoMatch: 'No posts match your search.',
+      thinksMeta: (n, agoStr) => `<b>${n}</b> post${n === 1 ? '' : 's'}` + (agoStr ? ` · updated ${agoStr}` : ''),
+      readMin: (m) => `${m} min read`,
     },
     ko: {
       search: '프로젝트 검색…', all: '전체', rel: '다운로드 가능', loading: '불러오는 중…',
@@ -230,6 +349,11 @@
       meta: (n, nRel, ago, nLive, os) => `공개 프로젝트 <b>${n}</b>개 · 다운로드 가능 <b>${nRel}</b>개 · 정보 갱신 ${ago}` +
         (nLive ? ` · 새 소식 ${nLive}건 실시간 반영` : '') + (os ? ` · 내 환경: <b>${os}</b>` : ''),
       loadFail: (m) => `프로젝트 정보를 불러오지 못했습니다. (${m})`, viewGitHub: 'GitHub에서 직접 보기 →',
+      tabApps: 'Apps', tabThinks: 'Thinks',
+      thinksSearch: '글 검색…', thinksAll: '전체',
+      thinksEmpty: '아직 등록된 글이 없습니다.', thinksNoMatch: '조건에 맞는 글이 없습니다.',
+      thinksMeta: (n, agoStr) => `글 <b>${n}</b>편` + (agoStr ? ` · 정보 갱신 ${agoStr}` : ''),
+      readMin: (m) => `약 ${m}분`,
     },
   };
   const t = (k, ...a) => { const v = I18N[lang][k]; return typeof v === 'function' ? v(...a) : v; };
@@ -612,7 +736,7 @@
   function applyFilter() {
     const q = $('#q').value.trim().toLowerCase();
     let shown = 0;
-    document.querySelectorAll('.card').forEach((el) => {
+    document.querySelectorAll('#grid .card').forEach((el) => {
       const ok = (filter === 'all' || el.dataset.rel === '1') && (!q || el.dataset.q.includes(q));
       el.hidden = !ok; if (ok) shown++;
     });
@@ -620,15 +744,178 @@
     if (!shown) $('#grid').insertAdjacentHTML('beforeend', `<div class="state" id="empty">${t('noMatch')}</div>`);
   }
 
+  // ── Thinks 탭 상태·렌더링·필터·로컬 미리보기 읽기 창 ──
+  let thinksData = { generatedAt: null, posts: [] };
+  let thinkTag = 'all';
+  let fullThinksCache = null;
+  let readerDlg = null;
+
+  const postHref = (slug) => `${lang === 'ko' ? 'ko/' : ''}thinks/${encodeURIComponent(slug)}/`;
+
+  function thinkCard(p) {
+    const href = postHref(p.slug);
+    const meta = [fmtDate(p.publishedAt), p.readingMinutes ? t('readMin', p.readingMinutes) : ''].filter(Boolean).join(' · ');
+    const tags = (p.tags || []).map((tg) => `<span class="tag">${esc(tg)}</span>`).join('');
+    const q = (p.searchText || [p.title, ...(p.tags || []), p.excerpt].join(' ')).toLowerCase();
+    const tagAttr = (p.tags || []).map((x) => x.toLowerCase()).join('|');
+    return `<a class="think-card" href="${esc(href)}" data-slug="${esc(p.slug)}" data-tags="${esc(tagAttr)}" data-q="${esc(q)}">
+      <div class="think-body">
+        ${meta ? `<div class="think-meta">${esc(meta)}</div>` : ''}
+        <h2 class="think-title">${esc(p.title)}</h2>
+        ${p.excerpt ? `<p class="think-excerpt">${esc(p.excerpt)}</p>` : ''}
+        ${tags ? `<div class="think-tags">${tags}</div>` : ''}
+      </div>
+      ${p.cover ? `<img class="think-thumb" src="${esc(p.cover)}" alt="" loading="lazy">` : ''}
+    </a>`;
+  }
+
+  function renderThinkChips(posts) {
+    const counts = new Map();
+    for (const p of posts) {
+      for (const tg of p.tags || []) {
+        const key = tg.toLowerCase();
+        const prev = counts.get(key);
+        counts.set(key, { label: prev?.label || tg, n: (prev?.n || 0) + 1 });
+      }
+    }
+    const top = [...counts.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 10);
+    if (!top.length) {
+      $('#tchips').innerHTML = '';
+      thinkTag = 'all';
+      return;
+    }
+    if (thinkTag !== 'all' && !counts.has(thinkTag)) thinkTag = 'all';
+    $('#tchips').innerHTML =
+      `<button class="chip" type="button" data-tag="all" aria-pressed="${thinkTag === 'all'}">${esc(t('thinksAll'))}</button>` +
+      top.map(([k, v]) => `<button class="chip" type="button" data-tag="${esc(k)}" aria-pressed="${thinkTag === k}">${esc(v.label)}</button>`).join('');
+  }
+
+  function applyThinkFilter() {
+    const q = $('#tq').value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll('#thinksList .think-card').forEach((el) => {
+      const tags = el.dataset.tags ? el.dataset.tags.split('|') : [];
+      const ok = (thinkTag === 'all' || tags.includes(thinkTag)) && (!q || el.dataset.q.includes(q));
+      el.hidden = !ok; if (ok) shown++;
+    });
+    $('#thinksEmpty')?.remove();
+    if (!shown) $('#thinksList').insertAdjacentHTML('beforeend', `<div class="state" id="thinksEmpty">${t('thinksNoMatch')}</div>`);
+  }
+
+  function renderThinks() {
+    const posts = thinksData.posts || [];
+    const cntEl = $('#cntThinks');
+    cntEl.textContent = String(posts.length);
+    cntEl.hidden = !posts.length;
+    renderThinkChips(posts);
+    if (!posts.length) {
+      $('#thinksList').innerHTML = `<div class="state">${t('thinksEmpty')}</div>`;
+      return;
+    }
+    $('#thinksList').innerHTML = posts.map(thinkCard).join('');
+    applyThinkFilter();
+  }
+
+  async function openLocalReader(slug) {
+    if (!fullThinksCache) {
+      fullThinksCache = await fetch('data/thinks-full.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+    }
+    const post = (fullThinksCache?.posts || []).find((p) => p.slug === slug);
+    if (!post) return;
+    if (!readerDlg) {
+      readerDlg = document.createElement('dialog');
+      readerDlg.className = 'reader-dlg';
+      readerDlg.addEventListener('click', (e) => {
+        if (e.target === readerDlg || e.target.closest('.rd-close')) readerDlg.close();
+      });
+      document.body.appendChild(readerDlg);
+    }
+    const meta = [fmtDate(post.publishedAt), post.readingMinutes ? t('readMin', post.readingMinutes) : ''].filter(Boolean).join(' · ');
+    readerDlg.innerHTML = `<div class="rd-top">
+      <div><h2>${esc(post.title)}</h2><div class="think-meta">${esc(meta)}</div></div>
+      <button type="button" class="rd-close" aria-label="${esc(t('close'))}">×</button>
+    </div><div class="rd-body"><div class="prose">${post.html || ''}</div></div>`;
+    readerDlg.showModal();
+  }
+
+  // ── 탭 전환 & 주소·언어 링크 동기화 ──
+  let syncHeader = () => {};
+  function syncLinks() {
+    $('#tabApps').href = tabHref(lang, 'apps');
+    $('#tabThinks').href = tabHref(lang, 'thinks');
+    document.querySelectorAll('#langSw a[data-lang]').forEach((a) => {
+      a.href = tabHref(a.dataset.lang, activeTab);
+    });
+  }
+  function setTab(next, { push = true } = {}) {
+    activeTab = next === 'thinks' ? 'thinks' : 'apps';
+    const isThinks = activeTab === 'thinks';
+    $('#tabApps').setAttribute('aria-selected', String(!isThinks));
+    $('#tabThinks').setAttribute('aria-selected', String(isThinks));
+    $('#panelApps').hidden = isThinks;
+    $('#panelThinks').hidden = !isThinks;
+    syncLinks();
+    syncHeader();
+    if (push) {
+      const target = prerendered
+        ? new URL(tabHref(lang, activeTab), ROOT_URL).href
+        : (() => {
+            const u = new URL(location.href);
+            if (isThinks) u.searchParams.set('tab', 'thinks'); else u.searchParams.delete('tab');
+            u.hash = '';
+            return u.href;
+          })();
+      if (target !== location.href) history.pushState({ tab: activeTab }, '', target);
+    }
+  }
+
+  $('#tabs').addEventListener('click', (e) => {
+    const a = e.target.closest('.tab[data-tab]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (a.dataset.tab !== activeTab) setTab(a.dataset.tab);
+  });
+  $('#tabs').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const next = activeTab === 'apps' ? 'thinks' : 'apps';
+    setTab(next);
+    (next === 'apps' ? $('#tabApps') : $('#tabThinks')).focus();
+  });
+  window.addEventListener('popstate', (e) => {
+    const st = e.state?.tab;
+    setTab(st === 'thinks' || st === 'apps' ? st : detectTab(), { push: false });
+  });
+
+  $('#tq').addEventListener('input', applyThinkFilter);
+  $('#tchips').addEventListener('click', (e) => {
+    const b = e.target.closest('.chip[data-tag]'); if (!b) return;
+    thinkTag = b.dataset.tag;
+    document.querySelectorAll('#tchips .chip').forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+    applyThinkFilter();
+  });
+  $('#thinksList').addEventListener('click', (e) => {
+    const cardEl = e.target.closest('.think-card');
+    if (!cardEl || prerendered || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    openLocalReader(cardEl.dataset.slug);
+  });
+
   // 화면의 고정 문구를 지금 언어로 바꾸고, 전환 버튼을 누르면 카드까지 다시 그린다
   let rerender = () => {};
   function applyLang() {
     document.documentElement.lang = lang;
+    $('#tabAppsLbl').textContent = t('tabApps');
+    $('#tabThinksLbl').textContent = t('tabThinks');
     $('#q').placeholder = t('search'); $('#q').setAttribute('aria-label', t('search').replace('…', ''));
-    document.querySelectorAll('.chip').forEach((c) => (c.textContent = t(c.dataset.f)));
+    $('#tq').placeholder = t('thinksSearch'); $('#tq').setAttribute('aria-label', t('thinksSearch').replace('…', ''));
+    document.querySelectorAll('#chips .chip').forEach((c) => (c.textContent = t(c.dataset.f)));
     $('#footNote').textContent = t('footNote');
     const ld = $('#loading'); if (ld) ld.textContent = t('loading');
+    const tld = $('#thinksLoading'); if (tld) tld.textContent = t('loading');
     document.querySelectorAll('#langSw a').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+    syncLinks();
     lbLabels();
     document.dispatchEvent(new CustomEvent('mh:lang'));
   }
@@ -643,20 +930,54 @@
     applyLang(); rerender();
   });
   applyLang();
+  setTab(activeTab, { push: false });
 
   (async () => {
-    try {
-      const dataPromise = loadData();   // 설정과 동시에 받는다 (차례로 받으면 첫 화면이 그만큼 늦어진다)
-      dataPromise.catch(() => {});
-      const cfg = await fetch('config.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
-      const applyHeader = () => {
-        const title = loc(cfg, 'title'), headline = loc(cfg, 'headline');
-        if (title) { $('#title').textContent = title; document.title = headline ? `${title} · ${headline}` : title; }
+    const dataPromise = loadData();   // 설정·글 목록과 동시에 받는다
+    dataPromise.catch(() => {});
+    const thinksPromise = fetch('data/thinks.json', { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+    const cfg = await fetch('config.json').then((r) => r.ok ? r.json() : {}).catch(() => ({}));
+
+    let repos = null, repoData = null, lastLive = 0;
+
+    const applyHeader = () => {
+      const title = loc(cfg, 'title') || 'MinaryHub';
+      const headline = loc(cfg, 'headline');
+      $('#title').textContent = title;
+      if (activeTab === 'thinks') {
+        document.title = `${title} · ${t('tabThinks')}`;
+        $('#tagline').textContent = loc(cfg.thinks, 'tagline') || loc(cfg, 'tagline');
+        const posts = thinksData.posts || [];
+        $('#meta').innerHTML = posts.length
+          ? t('thinksMeta', posts.length, thinksData.generatedAt ? ago(thinksData.generatedAt) : '')
+          : '';
+      } else {
+        document.title = headline ? `${title} · ${headline}` : title;
         $('#tagline').textContent = loc(cfg, 'tagline');
-      };
-      applyHeader(); rerender = applyHeader;
+        if (repos && repoData) {
+          const nRel = repos.filter((r) => r.release).length;
+          $('#meta').innerHTML = t('meta', repos.length, nRel, ago(repoData.generatedAt), lastLive, userOS !== 'other' ? osLabel(userOS) : '');
+        } else {
+          $('#meta').innerHTML = '';
+        }
+      }
+    };
+    syncHeader = applyHeader;
+    applyHeader();
+
+    // Thinks 데이터 로드 (Apps 로드 실패 여부와 독립적으로 표시)
+    thinksPromise.then((td) => {
+      if (td && Array.isArray(td.posts)) thinksData = td;
+      renderThinks();
+      applyHeader();
+    });
+
+    try {
       const data = await dataPromise;
-      const repos = data.repos;
+      repoData = data;
+      repos = data.repos;
       // 배포 때 앱 소개 페이지(apps/<앱>/)를 만든 앱 — 카드 제목을 그 페이지로 잇는다
       if (prerendered && !data.live) for (const r of repos) r.page = true;
       // config.apps(저장소 없이 직접 등록한 앱): repos.json에 이미 들어 있지 않을 때(API 직접 호출 등)만 보충
@@ -668,11 +989,12 @@
           topics: a.topics || [], stars: null, pushedAt: a.updated || data.generatedAt, external: true,
           icon: a.icon || null, screenshots: a.screenshots || [], release: null, ...i18nFields(a) });
       }
-      let lastLive = 0;
       const render = (nLive) => {
         lastLive = nLive;
-        const nRel = repos.filter((r) => r.release).length;
-        $('#meta').innerHTML = t('meta', repos.length, nRel, ago(data.generatedAt), nLive, userOS !== 'other' ? osLabel(userOS) : '');
+        const cntEl = $('#cntApps');
+        cntEl.textContent = String(repos.length);
+        cntEl.hidden = !repos.length;
+        applyHeader();
         $('#grid').innerHTML = repos.length ? repos.map(card).join('') : `<div class="state">${t('none')}</div>`;
         if (repos.length) applyFilter();
         paintStars();
@@ -680,7 +1002,7 @@
       };
       render(0);
       loadCounts();
-      rerender = () => { applyHeader(); render(lastLive); paintAuth(); };
+      rerender = () => { applyHeader(); render(lastLive); renderThinks(); paintAuth(); };
       const shotsKey = () => JSON.stringify(repos.map(shotsOf));
       const before = shotsKey();
       loadRepoShots(repos).then((c) => { liveShots = c; if (shotsKey() !== before) render(lastLive); }).catch(() => {});
@@ -703,11 +1025,15 @@
       $('#chips').addEventListener('click', (e) => {
         const b = e.target.closest('.chip'); if (!b) return;
         filter = b.dataset.f;
-        document.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', c === b));
+        document.querySelectorAll('#chips .chip').forEach((c) => c.setAttribute('aria-pressed', c === b));
         applyFilter();
       });
     } catch (e) {
-      const fail = () => { $('#grid').innerHTML = `<div class="state">${esc(t('loadFail', e.message))}</div>`; };
+      const fail = () => {
+        applyHeader();
+        $('#grid').innerHTML = `<div class="state">${esc(t('loadFail', e.message))}</div>`;
+        renderThinks();
+      };
       fail(); rerender = fail;
     }
   })();

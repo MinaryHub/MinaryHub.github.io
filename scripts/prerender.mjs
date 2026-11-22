@@ -1,8 +1,10 @@
-// 검색엔진용 사전 렌더링: config.json + data/repos.json 을 읽어 정적 페이지를 만듭니다.
-// (JS를 실행하지 않는 크롤러도 내용을 읽을 수 있게, 언어·앱마다 주소가 따로 있게)
+// 검색엔진용 사전 렌더링: config.json + data/repos.json + data/thinks-full.json 을 읽어 정적 페이지를 만듭니다.
+// (JS를 실행하지 않는 크롤러도 내용을 읽을 수 있게, 언어·앱·글마다 주소가 따로 있게)
 //
-//   /                 영어 첫 페이지       /ko/                 한국어 첫 페이지
-//   /apps/<앱>/       영어 앱 소개 페이지  /ko/apps/<앱>/       한국어 앱 소개 페이지
+//   /                   영어 첫 페이지(Apps)   /ko/                   한국어 첫 페이지(Apps)
+//   /thinks/            영어 Thinks 탭         /ko/thinks/            한국어 Thinks 탭
+//   /apps/<앱>/         영어 앱 소개 페이지    /ko/apps/<앱>/         한국어 앱 소개 페이지
+//   /thinks/<글>/       영어 글 읽기 페이지    /ko/thinks/<글>/       한국어 글 읽기 페이지
 //
 // 페이지마다 제목·설명·canonical·hreflang·OG·구조화 데이터(JSON-LD)를 따로 넣고, sitemap.xml / robots.txt 를 만듭니다.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -10,6 +12,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 const SITE_DIR = process.env.SITE_DIR || '_site';
 const cfg = JSON.parse(await readFile('config.json', 'utf8').catch(() => '{}'));
 const data = JSON.parse(await readFile('data/repos.json', 'utf8').catch(() => '{"repos":[]}'));
+const thinksFull = JSON.parse(await readFile('data/thinks-full.json', 'utf8').catch(() => '{"posts":[]}'));
 const indexSrc = await readFile(`${SITE_DIR}/index.html`, 'utf8');
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -17,6 +20,7 @@ const ld = (o) => `<script type="application/ld+json">${JSON.stringify(o).replac
 const siteUrl = (cfg.siteUrl || 'https://minaryhub.github.io').replace(/\/+$/, '') + '/';
 const title = cfg.title || 'MinaryHub';
 const repos = data.repos || [];
+const posts = thinksFull.posts || [];
 const LANGS = ['en', 'ko'];
 const LOCALE = { en: 'en_US', ko: 'ko_KR' };
 
@@ -27,6 +31,9 @@ const slugOf = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(
 const abs = (u) => (!u ? '' : /^https?:/.test(u) ? u : siteUrl + u.replace(/^\.?\//, ''));
 const home = (lang) => (lang === 'ko' ? 'ko/' : '');               // 사이트 루트 기준 경로
 const appPath = (r, lang) => `${home(lang)}apps/${slugOf(r.name)}/`;
+const thinksHome = (lang) => `${home(lang)}thinks/`;
+const postPathDisk = (p, lang) => `${home(lang)}thinks/${p.slug}/`;
+const postPathUrl = (p, lang) => `${home(lang)}thinks/${encodeURIComponent(p.slug)}/`;
 const clip = (s, n = 158) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s);
 const fmtDate = (d, lang) => (d ? new Date(d).toLocaleDateString(lang === 'en' ? 'en-US' : 'ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '');
 const fmtSize = (b) => (b >= 1 << 30 ? (b / (1 << 30)).toFixed(1) + ' GB' : b >= 1 << 20 ? (b / (1 << 20)).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB');
@@ -58,6 +65,9 @@ const T = {
     platforms: 'Platforms', shotAlt: (n, i) => `${n} screenshot ${i}`, dl: (v) => `Download ${v}`,
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? 'Free browser game' : 'Free game')
       : r.release?.assets?.length ? `Free download for ${osList(r).filter((o) => o !== 'Web').join(', ')}` : r.web ? 'Free web app' : 'Open-source app'),
+    thinks: 'Thinks', allPosts: 'All posts', readMin: (m) => `${m} min read`,
+    postUpdated: (d) => `Updated ${d}`, prevPost: 'Previous', nextPost: 'Next', morePosts: 'More posts',
+    backToThinks: '← Back to Thinks',
   },
   ko: {
     headline: loc(cfg, 'headline', 'ko') || '무료 데스크톱·웹 앱',
@@ -67,6 +77,9 @@ const T = {
     platforms: '지원 환경', shotAlt: (n, i) => `${n} 스크린샷 ${i}`, dl: (v) => `${v} 다운로드`,
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? '무료 웹 게임' : '무료 게임')
       : r.release?.assets?.length ? `${osList(r).filter((o) => o !== 'Web').join('·')} 무료 다운로드` : r.web ? '무료 웹 앱' : '오픈소스 앱'),
+    thinks: 'Thinks', allPosts: '전체 글', readMin: (m) => `약 ${m}분`,
+    postUpdated: (d) => `${d} 수정`, prevPost: '이전 글', nextPost: '다음 글', morePosts: '다른 글',
+    backToThinks: '← Thinks 목록으로',
   },
 };
 
@@ -102,7 +115,7 @@ const appLd = (r, lang) => ({
 });
 
 // 공통 <head>: 제목·설명·canonical·hreflang·OG·트위터
-function headTags({ lang, path, pageTitle, desc, image, type = 'website', alt }) {
+function headTags({ lang, path, pageTitle, desc, image, type = 'website', alt, extraMeta = [] }) {
   const url = siteUrl + path;
   const v = cfg.verification || {};
   return [
@@ -124,6 +137,7 @@ function headTags({ lang, path, pageTitle, desc, image, type = 'website', alt })
     `<meta property="og:image:alt" content="${esc(pageTitle)}">`,
     `<meta property="og:locale" content="${LOCALE[lang]}">`,
     ...LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${LOCALE[l]}">`),
+    ...extraMeta,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${esc(pageTitle)}">`,
     `<meta name="twitter:description" content="${esc(desc)}">`,
@@ -142,10 +156,11 @@ const baseFor = (path) => (path ? '../'.repeat(path.split('/').filter(Boolean).l
 const pages = [];   // sitemap: { alt: {en, ko}, lastmod }
 const ogImage = siteUrl + (cfg.ogImage || 'og.png');
 const generated = (data.generatedAt || new Date().toISOString()).slice(0, 10);
+const thinksGenerated = (thinksFull.generatedAt || data.generatedAt || new Date().toISOString()).slice(0, 10);
 // 배포마다 바뀌는 버전 — 브라우저가 예전 contact.js를 캐시에서 쓰지 않게
 const ver = Date.now().toString(36);
 
-// ── 첫 페이지 (영어 /, 한국어 /ko/) ──
+// ── 첫 페이지 (영어 /, 한국어 /ko/) — Apps 탭 기본 ──
 for (const lang of LANGS) {
   const t = T[lang], path = home(lang);
   const tagline = loc(cfg, 'tagline', lang);
@@ -157,7 +172,7 @@ for (const lang of LANGS) {
     mainEntity: { '@type': 'ItemList', itemListElement: repos.map((r, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + appPath(r, lang), name: nameOf(r, lang) })) },
   }];
   let html = indexSrc
-    .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-prerendered="1"`)
+    .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="apps" data-prerendered="1"`)
     .replace('<meta charset="utf-8">', `<meta charset="utf-8">${baseFor(path) ? `\n<base href="${baseFor(path)}">` : ''}`)
     .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
       headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: home('en'), ko: home('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
@@ -178,12 +193,56 @@ for (const lang of LANGS) {
 }
 pages.push({ alt: { en: home('en'), ko: home('ko') }, lastmod: generated, priority: '1.0' });
 
+// ── Thinks 탭 첫 페이지 (영어 /thinks/, 한국어 /ko/thinks/) ──
+for (const lang of LANGS) {
+  const t = T[lang], path = thinksHome(lang);
+  const tagline = loc(cfg.thinks, 'tagline', lang) || loc(cfg, 'tagline', lang);
+  const pageTitle = `${title} · ${t.thinks}`;
+  const desc = clip(tagline || `${title} — ${t.thinks}`);
+  const graph = [org, website, {
+    '@type': 'CollectionPage', '@id': siteUrl + path + '#page', url: siteUrl + path, name: pageTitle, description: desc, inLanguage: lang,
+    isPartOf: { '@id': siteUrl + '#website' },
+    mainEntity: { '@type': 'ItemList', itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + postPathUrl(p, lang), name: p.title })) },
+  }];
+  let html = indexSrc
+    .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="thinks" data-prerendered="1"`)
+    .replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<base href="${baseFor(path)}">`)
+    .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
+      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: thinksHome('en'), ko: thinksHome('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
+    .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
+    .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
+    .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`)
+    .replace('id="tabApps" data-tab="apps" aria-controls="panelApps" aria-selected="true"',
+      'id="tabApps" data-tab="apps" aria-controls="panelApps" aria-selected="false"')
+    .replace('id="tabThinks" data-tab="thinks" aria-controls="panelThinks" aria-selected="false"',
+      'id="tabThinks" data-tab="thinks" aria-controls="panelThinks" aria-selected="true"')
+    .replace('<section id="panelApps" role="tabpanel" aria-labelledby="tabApps">',
+      '<section id="panelApps" role="tabpanel" aria-labelledby="tabApps" hidden>')
+    .replace('<section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks" hidden>',
+      '<section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks">');
+  if (posts.length) {
+    const list = posts.map((p) =>
+      `<li><a href="${esc(postPathUrl(p, lang))}"><strong>${esc(p.title)}</strong></a>${p.excerpt ? ` — ${esc(p.excerpt)}` : ''}</li>`
+    ).join('');
+    html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/,
+      `<div class="state" id="thinksLoading"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${t.thinks}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`);
+  }
+  await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
+  await writeFile(`${SITE_DIR}/${path}index.html`, html);
+}
+pages.push({ alt: { en: thinksHome('en'), ko: thinksHome('ko') }, lastmod: thinksGenerated, priority: '0.9' });
+
 // ── 앱 소개 페이지 ──
 const style = (indexSrc.match(/<style>([\s\S]*?)<\/style>/) || [])[1] || '';
 const APP_CSS = `
   .top { display: flex; align-items: center; gap: 12px; padding: 28px 0 8px; }
   .top .home { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 18px; }
   .top .logo { width: 32px; height: 32px; }
+  .top-nav { display: flex; align-items: center; gap: 4px; margin-left: 12px; }
+  .top-nav a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none;
+    padding: 5px 10px; border-radius: 8px; transition: color .18s, background .18s; }
+  .top-nav a:hover { color: var(--text); background: var(--surface-2); }
+  .top-nav a[aria-current="section"] { color: var(--text); font-weight: 700; }
   .crumbs { font-size: 13px; color: var(--muted); margin: 12px 0 20px; }
   .crumbs a { color: var(--accent); text-decoration: none; }
   .app-head { display: flex; gap: 16px; align-items: center; }
@@ -284,6 +343,10 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 <div class="wrap">
   <header class="top">
     <a class="home" href="${home(lang) || './'}"><img class="logo" src="logo.webp" alt="" width="32" height="32">${esc(title)}</a>
+    <nav class="top-nav" aria-label="Sections">
+      <a href="${home(lang) || './'}" aria-current="section">Apps</a>
+      <a href="${thinksHome(lang)}">${esc(t.thinks)}</a>
+    </nav>
     <nav class="lang-sw" aria-label="Language"><a href="${alt.en}" data-lang="en" lang="en" hreflang="en"${lang === 'en' ? ' aria-current="page"' : ''}>EN</a><a href="${alt.ko}" data-lang="ko" lang="ko" hreflang="ko"${lang === 'ko' ? ' aria-current="page"' : ''}>한국어</a></nav>
   </header>
   <nav class="crumbs" aria-label="Breadcrumb"><a href="${home(lang) || './'}">${esc(t.allApps)}</a> › ${esc(name)}</nav>
@@ -324,6 +387,174 @@ for (const r of repos) {
   });
 }
 
+// ── Thinks 글 읽기 페이지 (/thinks/<slug>/, /ko/thinks/<slug>/) ──
+const POST_CSS = `
+  .article-wrap { max-width: 740px; padding-bottom: 56px; }
+  .article-head { margin: 8px 0 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .article-head h1 { font-size: clamp(26px, 4vw, 34px); line-height: 1.3; letter-spacing: -.02em;
+    margin: 0 0 14px; word-break: keep-all; }
+  .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--muted); }
+  .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; font-size: 12px; }
+  .post-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;
+    margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--border); }
+  .post-nav a { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px;
+    border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+    text-decoration: none; transition: border-color .18s; }
+  .post-nav a:hover { border-color: var(--accent); }
+  .post-nav .pn-lbl { font-size: 12px; color: var(--muted); }
+  .post-nav .pn-ttl { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .post-nav a.pn-next { text-align: right; }
+  .back-link { display: inline-block; margin-top: 28px; font-size: 14px; color: var(--accent); text-decoration: none; }
+  .back-link:hover { text-decoration: underline; }
+`;
+
+const postLightboxScript = (closeLabel) => `<script>
+(() => {
+  const imgs = [...document.querySelectorAll('.prose img')];
+  if (!imgs.length) return;
+  const lb = document.createElement('div');
+  lb.id = 'lb'; lb.hidden = true;
+  lb.innerHTML = '<button class="lb-x" aria-label="${esc(closeLabel)}">×</button><img alt="">';
+  document.body.appendChild(lb);
+  imgs.forEach((im) => im.addEventListener('click', () => {
+    lb.querySelector('img').src = im.currentSrc || im.src;
+    lb.querySelector('img').alt = im.alt || '';
+    lb.hidden = false;
+  }));
+  lb.addEventListener('click', (e) => { if (e.target === lb || e.target.closest('.lb-x')) lb.hidden = true; });
+  document.addEventListener('keydown', (e) => { if (!lb.hidden && e.key === 'Escape') lb.hidden = true; });
+})();
+</script>`;
+
+function postPage(p, idx, lang) {
+  const t = T[lang];
+  const pathUrl = postPathUrl(p, lang);
+  const pathDisk = postPathDisk(p, lang);
+  const alt = { en: postPathUrl(p, 'en'), ko: postPathUrl(p, 'ko') };
+  const pageTitle = `${p.title} · ${t.thinks} | ${title}`;
+  const desc = clip(p.excerpt || p.title);
+  const common = (u) => /\.(png|jpe?g|gif)(\?|$)/i.test(u || '');
+  const image = (common(p.cover) ? abs(p.cover) : '') || ogImage;
+  const extraMeta = [
+    p.publishedAt && `<meta property="article:published_time" content="${esc(p.publishedAt)}">`,
+    p.updatedAt && `<meta property="article:modified_time" content="${esc(p.updatedAt)}">`,
+  ].filter(Boolean);
+
+  const pubDay = p.publishedAt ? p.publishedAt.slice(0, 10) : '';
+  const updDay = p.updatedAt ? p.updatedAt.slice(0, 10) : '';
+  const metaParts = [
+    p.publishedAt && `<time datetime="${esc(p.publishedAt)}">${esc(fmtDate(p.publishedAt, lang))}</time>`,
+    updDay && pubDay && updDay > pubDay && `<span>${esc(t.postUpdated(fmtDate(p.updatedAt, lang)))}</span>`,
+    p.readingMinutes && `<span>${esc(t.readMin(p.readingMinutes))}</span>`,
+  ].filter(Boolean).join(' · ');
+
+  const tagsHtml = (p.tags || []).length
+    ? `<div class="article-tags">${p.tags.map((tg) => `<span class="tag">${esc(tg)}</span>`).join('')}</div>`
+    : '';
+
+  // 최신순 정렬이므로 idx + 1 이 이전 글(더 오래된 글), idx - 1 이 다음 글(더 최신 글)
+  const prev = posts[idx + 1] || null;
+  const next = posts[idx - 1] || null;
+  const navHtml = (prev || next)
+    ? `<nav class="post-nav" aria-label="Post navigation">
+        ${prev ? `<a href="${esc(postPathUrl(prev, lang))}"><span class="pn-lbl">← ${esc(t.prevPost)}</span><span class="pn-ttl">${esc(prev.title)}</span></a>` : '<span></span>'}
+        ${next ? `<a class="pn-next" href="${esc(postPathUrl(next, lang))}"><span class="pn-lbl">${esc(t.nextPost)} →</span><span class="pn-ttl">${esc(next.title)}</span></a>` : ''}
+      </nav>`
+    : '';
+
+  const blogLd = {
+    '@type': 'BlogPosting',
+    '@id': siteUrl + postPathUrl(p, 'en') + '#post',
+    headline: p.title,
+    description: desc,
+    url: siteUrl + pathUrl,
+    mainEntityOfPage: siteUrl + pathUrl,
+    datePublished: p.publishedAt || undefined,
+    dateModified: p.updatedAt || p.publishedAt || undefined,
+    image: image,
+    keywords: (p.tags || []).length ? p.tags.join(', ') : undefined,
+    author: { '@id': siteUrl + '#org' },
+    publisher: { '@id': siteUrl + '#org' },
+    inLanguage: lang,
+  };
+  const graph = [org, website, blogLd, {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: title, item: siteUrl + home(lang) },
+      { '@type': 'ListItem', position: 2, name: t.thinks, item: siteUrl + thinksHome(lang) },
+      { '@type': 'ListItem', position: 3, name: p.title, item: siteUrl + pathUrl },
+    ],
+  }];
+
+  return `<!doctype html>
+<html lang="${lang}">
+<head>
+<meta charset="utf-8">
+<base href="${baseFor(pathDisk)}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+${headTags({ lang, path: pathUrl, pageTitle, desc, image, type: 'article', alt, extraMeta })}
+${ld({ '@context': 'https://schema.org', '@graph': graph })}
+<link rel="icon" type="image/webp" href="logo.webp">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>${style}${APP_CSS}${POST_CSS}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="home" href="${home(lang) || './'}"><img class="logo" src="logo.webp" alt="" width="32" height="32">${esc(title)}</a>
+    <nav class="top-nav" aria-label="Sections">
+      <a href="${home(lang) || './'}">Apps</a>
+      <a href="${thinksHome(lang)}" aria-current="section">${esc(t.thinks)}</a>
+    </nav>
+    <nav class="lang-sw" aria-label="Language"><a href="${alt.en}" data-lang="en" lang="en" hreflang="en"${lang === 'en' ? ' aria-current="page"' : ''}>EN</a><a href="${alt.ko}" data-lang="ko" lang="ko" hreflang="ko"${lang === 'ko' ? ' aria-current="page"' : ''}>한국어</a></nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="${thinksHome(lang)}">${esc(t.thinks)}</a> › ${esc(p.title)}</nav>
+  <main class="article-wrap">
+    <article>
+      <div class="article-head">
+        <h1>${esc(p.title)}</h1>
+        ${metaParts ? `<div class="article-meta">${metaParts}</div>` : ''}
+        ${tagsHtml}
+      </div>
+      <div class="prose">${p.html || ''}</div>
+    </article>
+    ${navHtml}
+    <a class="back-link" href="${thinksHome(lang)}">${esc(t.backToThinks)}</a>
+  </main>
+  <footer>
+    <span></span>
+    <span class="foot-r"><button type="button" class="contact-link" data-contact>${lang === 'ko' ? '문의하기' : 'Contact'}</button>
+    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
+  </footer>
+</div>
+${appScript(lang, alt)}
+${postLightboxScript(lang === 'ko' ? '닫기' : 'Close')}
+<script src="contact.js?v=${ver}" defer></script>
+</body>
+</html>
+`;
+}
+
+for (let i = 0; i < posts.length; i++) {
+  const p = posts[i];
+  for (const lang of LANGS) {
+    const dirPath = postPathDisk(p, lang);
+    await mkdir(`${SITE_DIR}/${dirPath}`, { recursive: true });
+    await writeFile(`${SITE_DIR}/${dirPath}index.html`, postPage(p, i, lang));
+  }
+  pages.push({
+    alt: { en: postPathUrl(p, 'en'), ko: postPathUrl(p, 'ko') },
+    lastmod: (p.updatedAt || p.publishedAt || thinksGenerated).slice(0, 10),
+    priority: '0.7',
+    images: p.cover ? Object.fromEntries(LANGS.map((l) => [l, [abs(p.cover)]])) : undefined,
+  });
+}
+
 // ── sitemap.xml (언어별 주소를 hreflang으로 묶음) / robots.txt ──
 const urls = pages.flatMap((p) => LANGS.map((lang) => `  <url>
     <loc>${esc(siteUrl + p.alt[lang])}</loc>
@@ -357,11 +588,11 @@ await writeFile(`${SITE_DIR}/404.html`, `<!doctype html>
 <body>
 <div class="wrap"><main class="nf">
   <h1>Page not found</h1>
-  <p>That page doesn't exist. <a href="./">See all apps</a></p>
-  <p lang="ko">페이지를 찾을 수 없습니다. <a href="ko/">전체 앱 보기</a></p>
+  <p>That page doesn't exist. <a href="./">Apps</a> · <a href="thinks/">Thinks</a></p>
+  <p lang="ko">페이지를 찾을 수 없습니다. <a href="ko/">Apps</a> · <a href="ko/thinks/">Thinks</a></p>
 </main></div>
 </body>
 </html>
 `);
 
-console.log(`✓ prerender: ${repos.length} apps × ${LANGS.length} languages, ${pages.length * LANGS.length} URLs, canonical ${siteUrl}`);
+console.log(`✓ prerender: ${repos.length} apps + ${posts.length} thinks posts × ${LANGS.length} languages, ${pages.length * LANGS.length} URLs, canonical ${siteUrl}`);

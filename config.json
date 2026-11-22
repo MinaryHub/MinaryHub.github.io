@@ -57,6 +57,13 @@
         "ship-tracker",
         "3d-globe",
         "maritime"
+      ],
+      "icon": "icons/global-ship-tracker-3d.webp",
+      "screenshots": [
+        "screenshots/global-ship-tracker-3d/01.webp",
+        "screenshots/global-ship-tracker-3d/02.webp",
+        "screenshots/global-ship-tracker-3d/03.webp",
+        "screenshots/global-ship-tracker-3d/04.webp"
       ]
     },
     {
@@ -87,6 +94,13 @@
         "map",
         "webgl",
         "korea"
+      ],
+      "icon": "icons/gyeonggi-traffic-map.webp",
+      "screenshots": [
+        "screenshots/gyeonggi-traffic-map/01.webp",
+        "screenshots/gyeonggi-traffic-map/02.webp",
+        "screenshots/gyeonggi-traffic-map/03.webp",
+        "screenshots/gyeonggi-traffic-map/04.webp"
       ]
     },
     {

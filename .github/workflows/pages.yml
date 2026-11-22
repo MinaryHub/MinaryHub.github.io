@@ -39,7 +39,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/data
-          cp index.html stats.html config.json logo.webp contact.js favicon-32.png apple-touch-icon.png _site/
+          cp index.html stats.html config.json logo.webp contact.js comments.js favicon-32.png apple-touch-icon.png _site/
           cp data/repos.json data/downloads.json data/thinks.json _site/data/
           if [ -d data/thinks-assets ]; then mkdir -p _site/thinks && cp -r data/thinks-assets _site/thinks/assets; fi
           if [ -d screenshots ]; then cp -r screenshots _site/; fi
@@ -50,6 +50,8 @@ jobs:
           for f in *.txt; do if [[ "$f" =~ ^[0-9a-fA-F]{32}\.txt$ ]]; then cp "$f" _site/; fi; done
           touch _site/.nojekyll
       - name: Prerender for search engines (SEO)
+        env:
+          THINKS_COMMENTS_URL: ${{ secrets.THINKS_FEED_URL }}
         run: node scripts/prerender.mjs
       - uses: actions/upload-pages-artifact@v3
         with:

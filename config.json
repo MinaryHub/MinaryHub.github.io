@@ -130,6 +130,11 @@
         "orbit",
         "3d-globe",
         "sgp4"
+      ],
+      "icon": "icons/satellite-tracker-3d.webp",
+      "screenshots": [
+        "screenshots/satellite-tracker-3d/01.webp",
+        "screenshots/satellite-tracker-3d/02.webp"
       ]
     }
   ],

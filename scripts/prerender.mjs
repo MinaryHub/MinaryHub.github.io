@@ -67,7 +67,7 @@ const T = {
       : r.release?.assets?.length ? `Free download for ${osList(r).filter((o) => o !== 'Web').join(', ')}` : r.web ? 'Free web app' : 'Open-source app'),
     thinks: 'Thinks', allPosts: 'All posts', readMin: (m) => `${m} min read`,
     postUpdated: (d) => `Updated ${d}`, prevPost: 'Previous', nextPost: 'Next', morePosts: 'More posts',
-    backToThinks: '← Back to Thinks',
+    backToThinks: '← Back to Thinks', toc: 'Contents',
   },
   ko: {
     headline: loc(cfg, 'headline', 'ko') || '무료 데스크톱·웹 앱',
@@ -79,7 +79,7 @@ const T = {
       : r.release?.assets?.length ? `${osList(r).filter((o) => o !== 'Web').join('·')} 무료 다운로드` : r.web ? '무료 웹 앱' : '오픈소스 앱'),
     thinks: 'Thinks', allPosts: '전체 글', readMin: (m) => `약 ${m}분`,
     postUpdated: (d) => `${d} 수정`, prevPost: '이전 글', nextPost: '다음 글', morePosts: '다른 글',
-    backToThinks: '← Thinks 목록으로',
+    backToThinks: '← Thinks 목록으로', toc: '목차',
   },
 };
 
@@ -389,13 +389,48 @@ for (const r of repos) {
 
 // ── Thinks 글 읽기 페이지 (/thinks/<slug>/, /ko/thinks/<slug>/) ──
 const POST_CSS = `
-  .article-wrap { max-width: 740px; padding-bottom: 56px; }
-  .article-head { margin: 8px 0 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  html { scroll-behavior: smooth; }
+  .post-layout { padding-bottom: 56px; }
+  .post-layout.has-toc { display: grid; grid-template-columns: minmax(0, 740px) 240px; gap: 48px; align-items: start; }
+  .article-wrap { max-width: 740px; min-width: 0; }
+  .article-head { margin: 8px 0 28px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
   .article-head h1 { font-size: clamp(26px, 4vw, 34px); line-height: 1.3; letter-spacing: -.02em;
     margin: 0 0 14px; word-break: keep-all; }
   .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
     font-size: 14px; color: var(--muted); }
   .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; font-size: 12px; }
+  .prose h2, .prose h3, .prose h4 { scroll-margin-top: 24px; }
+
+  /* 목차 — 데스크톱 오른쪽 고정 사이드바 */
+  .toc-side { position: sticky; top: 28px; max-height: calc(100vh - 56px); overflow-y: auto;
+    padding: 4px 0 4px 16px; border-left: 1px solid var(--border); scrollbar-width: thin; }
+  .toc-head { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 10px; }
+  .toc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .toc-link { display: block; padding: 4px 8px; border-radius: 6px; font-size: 13.5px; line-height: 1.45;
+    color: var(--muted); text-decoration: none; word-break: keep-all;
+    transition: color .15s, background .15s; }
+  .toc-link:hover { color: var(--text); background: var(--surface-2); }
+  .toc-link.on { color: var(--accent); font-weight: 600; background: var(--accent-soft); }
+  .toc-d1 .toc-link { padding-left: 18px; font-size: 13px; }
+  .toc-d2 .toc-link { padding-left: 30px; font-size: 12.5px; }
+
+  /* 목차 — 모바일·태블릿 접이식 박스 */
+  .toc-mobile { display: none; margin: 0 0 28px; padding: 14px 18px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .toc-mobile summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text);
+    list-style: none; display: flex; align-items: center; justify-content: space-between; }
+  .toc-mobile summary::-webkit-details-marker { display: none; }
+  .toc-mobile summary::after { content: "▾"; font-size: 12px; color: var(--muted); transition: transform .18s; }
+  .toc-mobile[open] summary::after { transform: rotate(180deg); }
+  .toc-mobile .toc-list { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 1020px) {
+    .post-layout.has-toc { display: block; }
+    .toc-side { display: none; }
+    .toc-mobile { display: block; }
+  }
+
   .post-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;
     margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--border); }
   .post-nav a { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px;
@@ -408,6 +443,69 @@ const POST_CSS = `
   .back-link { display: inline-block; margin-top: 28px; font-size: 14px; color: var(--accent); text-decoration: none; }
   .back-link:hover { text-decoration: underline; }
 `;
+
+const decodeEntities = (s) =>
+  String(s ?? '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ');
+
+function extractToc(rawHtml) {
+  const rawItems = [];
+  let seq = 0;
+  const html = String(rawHtml || '').replace(/<(h[2-4])\b([^>]*)>([\s\S]*?)<\/\1>/gi, (full, tag, attrs, inner) => {
+    const text = decodeEntities(inner.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+    if (!text) return full;
+    const id = `sec-${++seq}`;
+    const level = Number(tag[1]);
+    rawItems.push({ id, level, text });
+    const cleanedAttrs = attrs.replace(/\s+id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+    return `<${tag.toLowerCase()} id="${id}"${cleanedAttrs}>${inner}</${tag.toLowerCase()}>`;
+  });
+  const minLevel = rawItems.length ? Math.min(...rawItems.map((x) => x.level)) : 2;
+  const toc = rawItems.map((x) => ({ id: x.id, depth: Math.min(2, x.level - minLevel), text: x.text }));
+  return { html, toc };
+}
+
+const postTocScript = () => `<script>
+(() => {
+  const links = [...document.querySelectorAll('.toc-side .toc-link')];
+  if (!links.length) return;
+  const items = links.map((a) => ({ a, el: document.getElementById(a.dataset.id) })).filter((x) => x.el);
+  if (!items.length) return;
+  let active = null;
+  const setOn = (id) => {
+    if (active === id) return;
+    active = id;
+    links.forEach((a) => {
+      const on = a.dataset.id === id;
+      a.classList.toggle('on', on);
+      if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+    });
+    const cur = links.find((a) => a.dataset.id === id);
+    if (cur) cur.scrollIntoView({ block: 'nearest' });
+  };
+  const update = () => {
+    let cur = items[0].el.id;
+    const y = window.scrollY + 96;
+    for (const it of items) {
+      if (it.el.getBoundingClientRect().top + window.scrollY <= y) cur = it.el.id;
+      else break;
+    }
+    setOn(cur);
+  };
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { ticking = false; update(); });
+  }, { passive: true });
+  update();
+})();
+</script>`;
 
 const postLightboxScript = (closeLabel) => `<script>
 (() => {
@@ -427,7 +525,7 @@ const postLightboxScript = (closeLabel) => `<script>
 })();
 </script>`;
 
-function postPage(p, idx, lang) {
+function postPage(p, idx, lang, prepared) {
   const t = T[lang];
   const pathUrl = postPathUrl(p, lang);
   const pathDisk = postPathDisk(p, lang);
@@ -451,6 +549,19 @@ function postPage(p, idx, lang) {
 
   const tagsHtml = (p.tags || []).length
     ? `<div class="article-tags">${p.tags.map((tg) => `<span class="tag">${esc(tg)}</span>`).join('')}</div>`
+    : '';
+
+  const { html: bodyHtml, toc } = prepared;
+  const hasToc = toc.length > 0;
+  // <base href> 가 있으므로 앵커 링크는 현재 페이지 경로를 앞에 붙여 홈으로 튀지 않게 한다
+  const tocItemsHtml = toc
+    .map((item) => `<li class="toc-d${item.depth}"><a class="toc-link" href="${esc(pathUrl)}#${item.id}" data-id="${item.id}">${esc(item.text)}</a></li>`)
+    .join('');
+  const tocMobileHtml = hasToc
+    ? `<details class="toc-mobile"${toc.length <= 8 ? ' open' : ''}><summary>${esc(t.toc)} (${toc.length})</summary><ul class="toc-list">${tocItemsHtml}</ul></details>`
+    : '';
+  const tocSideHtml = hasToc
+    ? `<aside class="toc-side" aria-label="${esc(t.toc)}"><p class="toc-head">${esc(t.toc)}</p><ul class="toc-list">${tocItemsHtml}</ul></aside>`
     : '';
 
   // 최신순 정렬이므로 idx + 1 이 이전 글(더 오래된 글), idx - 1 이 다음 글(더 최신 글)
@@ -514,18 +625,22 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
     <nav class="lang-sw" aria-label="Language"><a href="${alt.en}" data-lang="en" lang="en" hreflang="en"${lang === 'en' ? ' aria-current="page"' : ''}>EN</a><a href="${alt.ko}" data-lang="ko" lang="ko" hreflang="ko"${lang === 'ko' ? ' aria-current="page"' : ''}>한국어</a></nav>
   </header>
   <nav class="crumbs" aria-label="Breadcrumb"><a href="${thinksHome(lang)}">${esc(t.thinks)}</a> › ${esc(p.title)}</nav>
-  <main class="article-wrap">
-    <article>
-      <div class="article-head">
-        <h1>${esc(p.title)}</h1>
-        ${metaParts ? `<div class="article-meta">${metaParts}</div>` : ''}
-        ${tagsHtml}
-      </div>
-      <div class="prose">${p.html || ''}</div>
-    </article>
-    ${navHtml}
-    <a class="back-link" href="${thinksHome(lang)}">${esc(t.backToThinks)}</a>
-  </main>
+  <div class="post-layout${hasToc ? ' has-toc' : ''}">
+    <main class="article-wrap">
+      <article>
+        <div class="article-head">
+          <h1>${esc(p.title)}</h1>
+          ${metaParts ? `<div class="article-meta">${metaParts}</div>` : ''}
+          ${tagsHtml}
+        </div>
+        ${tocMobileHtml}
+        <div class="prose">${bodyHtml}</div>
+      </article>
+      ${navHtml}
+      <a class="back-link" href="${thinksHome(lang)}">${esc(t.backToThinks)}</a>
+    </main>
+    ${tocSideHtml}
+  </div>
   <footer>
     <span></span>
     <span class="foot-r"><button type="button" class="contact-link" data-contact>${lang === 'ko' ? '문의하기' : 'Contact'}</button>
@@ -533,6 +648,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </footer>
 </div>
 ${appScript(lang, alt)}
+${hasToc ? postTocScript() : ''}
 ${postLightboxScript(lang === 'ko' ? '닫기' : 'Close')}
 <script src="contact.js?v=${ver}" defer></script>
 </body>
@@ -540,12 +656,15 @@ ${postLightboxScript(lang === 'ko' ? '닫기' : 'Close')}
 `;
 }
 
+let totalTocHeadings = 0;
 for (let i = 0; i < posts.length; i++) {
   const p = posts[i];
+  const prepared = extractToc(p.html || '');
+  totalTocHeadings += prepared.toc.length;
   for (const lang of LANGS) {
     const dirPath = postPathDisk(p, lang);
     await mkdir(`${SITE_DIR}/${dirPath}`, { recursive: true });
-    await writeFile(`${SITE_DIR}/${dirPath}index.html`, postPage(p, i, lang));
+    await writeFile(`${SITE_DIR}/${dirPath}index.html`, postPage(p, i, lang, prepared));
   }
   pages.push({
     alt: { en: postPathUrl(p, 'en'), ko: postPathUrl(p, 'ko') },
@@ -595,4 +714,4 @@ await writeFile(`${SITE_DIR}/404.html`, `<!doctype html>
 </html>
 `);
 
-console.log(`✓ prerender: ${repos.length} apps + ${posts.length} thinks posts × ${LANGS.length} languages, ${pages.length * LANGS.length} URLs, canonical ${siteUrl}`);
+console.log(`✓ prerender: ${repos.length} apps + ${posts.length} thinks posts (toc headings: ${totalTocHeadings}) × ${LANGS.length} languages, ${pages.length * LANGS.length} URLs, canonical ${siteUrl}`);

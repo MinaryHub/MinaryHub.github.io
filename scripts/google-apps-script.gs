@@ -30,7 +30,9 @@
 
 const FOLDER_ID = '여기에_구글_드라이브_폴더_ID_입력';
 const FOLDER_PATH = ''; // 선택: FOLDER_ID 대신 '내 드라이브 기준 경로' (예: '06_개인프로젝트·집필/Publish')
-const SECRET_TOKEN = ''; // 선택: 비워 두면 토큰 검사 안 함. 설정 시 ?token=... 필요
+const SECRET_TOKEN = ''; // 선택: 비워 두면 토큰 검사 안 함. 설정 시 글 수집에만 ?token=... 필요
+const COMMENTS_SHEET_ID = ''; // 선택: 비워 두면 첫 실행 시 Google Drive에 'MinaryHub Thinks 피드백' 시트를 자동 생성
+const AUTO_APPROVE_COMMENTS = true; // true: 즉시 공개(시트에서 hidden 으로 숨김 가능) / false: 승인제(approved 로 변경 시 공개)
 const INCLUDE_SUBFOLDERS = true;
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024; // 이미지 1장 최대 12MB
 
@@ -40,6 +42,7 @@ function getConfig_() {
     folderId: (props.getProperty('FOLDER_ID') || FOLDER_ID || '').trim(),
     folderPath: (props.getProperty('FOLDER_PATH') || FOLDER_PATH || '').trim(),
     secretToken: (props.getProperty('SECRET_TOKEN') || SECRET_TOKEN || '').trim(),
+    commentsSheetId: (props.getProperty('COMMENTS_SHEET_ID') || COMMENTS_SHEET_ID || '').trim(),
   };
 }
 
@@ -79,8 +82,21 @@ function resolveFolder_(cfg) {
 
 function doGet(e) {
   const cfg = getConfig_();
-  const reqToken = (e && e.parameter && e.parameter.token) ? String(e.parameter.token).trim() : '';
+  const action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action).trim() : '';
 
+  // 공개 댓글 조회 (방문자 브라우저에서 토큰 없이 호출 가능)
+  if (action === 'comments') {
+    try {
+      const slug = (e && e.parameter && e.parameter.slug) ? String(e.parameter.slug).trim() : '';
+      if (!slug) return jsonResponse_({ comments: [] });
+      return jsonResponse_({ comments: listComments_(cfg, slug) });
+    } catch (err) {
+      return jsonResponse_({ error: String(err && err.message ? err.message : err) });
+    }
+  }
+
+  // 글 피드 수집 (GitHub Actions 전용 — SECRET_TOKEN 검증)
+  const reqToken = (e && e.parameter && e.parameter.token) ? String(e.parameter.token).trim() : '';
   if (cfg.secretToken && reqToken !== cfg.secretToken) {
     return jsonResponse_({ error: 'Unauthorized' });
   }
@@ -98,6 +114,130 @@ function doGet(e) {
   }
 }
 
+function doPost(e) {
+  const cfg = getConfig_();
+  try {
+    let payload = {};
+    if (e && e.postData && e.postData.contents) {
+      payload = JSON.parse(e.postData.contents);
+    } else if (e && e.parameter) {
+      payload = e.parameter;
+    }
+    return jsonResponse_(addComment_(cfg, payload));
+  } catch (err) {
+    return jsonResponse_({ ok: false, error: String(err && err.message ? err.message : err) });
+  }
+}
+
+function getCommentsSheet_(cfg, folder) {
+  const props = PropertiesService.getScriptProperties();
+  let ss = null;
+  if (cfg.commentsSheetId) {
+    try {
+      ss = SpreadsheetApp.openById(cfg.commentsSheetId);
+    } catch (err) {
+      ss = null;
+    }
+  }
+  if (!ss) {
+    ss = SpreadsheetApp.create('MinaryHub Thinks 피드백');
+    props.setProperty('COMMENTS_SHEET_ID', ss.getId());
+    // 가능하면 Publish 폴더의 상위 폴더(예: 06_개인프로젝트·집필)로 이동
+    try {
+      const refFolder = folder || resolveFolder_(cfg);
+      const parents = refFolder.getParents();
+      if (parents.hasNext()) {
+        const parent = parents.next();
+        DriveApp.getFileById(ss.getId()).moveTo(parent);
+      }
+    } catch (err) {}
+  }
+  let sheet = ss.getSheetByName('comments');
+  if (!sheet) {
+    sheet = ss.getSheets()[0];
+    sheet.setName('comments');
+  }
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['createdAt', 'slug', 'title', 'name', 'type', 'message', 'status', 'page']);
+    sheet.setFrozenRows(1);
+  }
+  return { ss: ss, sheet: sheet };
+}
+
+function listComments_(cfg, slug) {
+  const targetSlug = String(slug || '').trim();
+  const ref = getCommentsSheet_(cfg);
+  const sheet = ref.sheet;
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+  const rows = sheet.getRange(2, 1, lastRow - 1, 7).getValues();
+  const out = [];
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const r = rows[i];
+    const rowSlug = String(r[1] || '').trim();
+    const status = String(r[6] || '').trim().toLowerCase();
+    if (rowSlug !== targetSlug || status !== 'approved') continue;
+    const created = r[0] instanceof Date ? r[0].toISOString() : String(r[0] || '');
+    out.push({
+      createdAt: created,
+      name: String(r[3] || '').trim(),
+      type: String(r[4] || 'thought').trim(),
+      message: String(r[5] || '').trim(),
+    });
+    if (out.length >= 200) break;
+  }
+  return out;
+}
+
+function safeCell_(v) {
+  const s = String(v == null ? '' : v);
+  return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+}
+
+function addComment_(cfg, p) {
+  // 허니팟 스팸 봇 차단
+  if (String(p.website || '').trim()) {
+    return { ok: true, status: 'pending' };
+  }
+  const slug = String(p.slug || '').trim().slice(0, 120);
+  const title = String(p.title || '').trim().slice(0, 200);
+  const name = String(p.name || '').trim().slice(0, 40);
+  const rawType = String(p.type || 'thought').trim().toLowerCase();
+  const type = ['thought', 'question', 'suggestion'].indexOf(rawType) !== -1 ? rawType : 'thought';
+  const message = String(p.message || '').trim();
+  const page = String(p.page || '').trim().slice(0, 400);
+
+  if (!slug || !message) throw new Error('Message is required');
+  if (message.length > 2000) throw new Error('Message is too long');
+
+  const status = AUTO_APPROVE_COMMENTS ? 'approved' : 'pending';
+  const createdAt = new Date().toISOString();
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ref = getCommentsSheet_(cfg);
+    ref.sheet.appendRow([
+      createdAt,
+      safeCell_(slug),
+      safeCell_(title),
+      safeCell_(name),
+      type,
+      safeCell_(message),
+      status,
+      safeCell_(page),
+    ]);
+  } finally {
+    lock.releaseLock();
+  }
+
+  return {
+    ok: true,
+    status: status,
+    comment: { createdAt: createdAt, name: name, type: type, message: message },
+  };
+}
+
 /**
  * 권한 승인 및 동작 확인용 테스트 함수 (Apps Script 편집기에서 직접 실행)
  */
@@ -105,6 +245,8 @@ function testRun() {
   const cfg = getConfig_();
   const folder = resolveFolder_(cfg);
   Logger.log('대상 폴더: ' + folder.getName() + ' (ID: ' + folder.getId() + ')');
+  const cm = getCommentsSheet_(cfg, folder);
+  Logger.log('피드백 시트: ' + cm.ss.getUrl() + ' (ID: ' + cm.ss.getId() + ')');
   const posts = collectPosts_(folder);
   Logger.log('수집된 글 수: ' + posts.length);
   posts.forEach(function (p) {

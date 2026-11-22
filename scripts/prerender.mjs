@@ -179,6 +179,7 @@ const ogImage = siteUrl + (cfg.ogImage || 'og.png');
 const generated = (data.generatedAt || new Date().toISOString()).slice(0, 10);
 const thinksGenerated = (thinksFull.generatedAt || data.generatedAt || new Date().toISOString()).slice(0, 10);
 const siteKeywords = Array.isArray(cfg.keywords) ? cfg.keywords.join(', ') : '';
+const commentsApi = (process.env.THINKS_COMMENTS_URL || cfg.thinks?.commentsApi || '').trim();
 // 배포마다 바뀌는 버전 — 브라우저가 예전 contact.js를 캐시에서 쓰지 않게
 const ver = Date.now().toString(36);
 
@@ -475,6 +476,39 @@ const POST_CSS = `
   .post-nav a.pn-next { text-align: right; }
   .back-link { display: inline-block; margin-top: 28px; font-size: 14px; color: var(--accent); text-decoration: none; }
   .back-link:hover { text-decoration: underline; }
+
+  /* 글 하단 피드백 · 댓글 (comments.js) */
+  .comments { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .cm-head h2 { font-size: 20px; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+  .cm-cnt { font: 600 12px "JetBrains Mono", monospace; padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent); }
+  .cm-sub { font-size: 14px; color: var(--muted); margin: 0 0 18px; }
+  .cm-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; display: grid; gap: 12px; box-shadow: var(--shadow); }
+  .cm-types { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cm-type { cursor: pointer; }
+  .cm-type input { position: absolute; opacity: 0; pointer-events: none; }
+  .cm-type span { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 13px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); transition: all .15s; }
+  .cm-type input:checked + span { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 500; }
+  .cm-type input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cm-name, .cm-msg { font: inherit; font-size: 14.5px; color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; width: 100%; }
+  .cm-msg { resize: vertical; min-height: 96px; line-height: 1.6; }
+  .cm-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .cm-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .cm-status { font-size: 13.5px; color: var(--muted); }
+  .cm-status.err { color: #d14343; }
+  .cm-status.ok { color: var(--ok); }
+  .cm-btn { cursor: pointer; font: inherit; font-size: 14px; }
+  .cm-btn:disabled { opacity: .6; cursor: progress; }
+  .cm-list { display: grid; gap: 12px; margin-top: 20px; }
+  .cm-empty { font-size: 14px; color: var(--muted); text-align: center; padding: 24px 0; margin: 0; }
+  .cm-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .cm-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .cm-author { color: var(--text); font-weight: 600; font-size: 14px; }
+  .cm-badge { font-size: 11.5px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+  .cm-body { margin: 0; font-size: 14.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
 `;
 
 const decodeEntities = (s) =>
@@ -724,6 +758,7 @@ ${extraFontLinks}
         ${tocMobileHtml}
         <div class="prose">${bodyHtml}</div>
       </article>
+      ${commentsApi ? `<section class="comments" id="comments" data-api="${esc(commentsApi)}" data-slug="${esc(p.slug)}" data-title="${esc(p.title)}"></section>` : ''}
       ${navHtml}
       <a class="back-link" href="${thinksHome(lang)}">${esc(t.backToThinks)}</a>
     </main>
@@ -738,6 +773,7 @@ ${extraFontLinks}
 ${appScript(lang, alt)}
 ${hasToc ? postTocScript() : ''}
 ${postLightboxScript(lang === 'ko' ? '닫기' : 'Close')}
+${commentsApi ? `<script src="comments.js?v=${ver}" defer></script>` : ''}
 <script src="contact.js?v=${ver}" defer></script>
 </body>
 </html>

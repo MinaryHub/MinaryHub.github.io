@@ -492,7 +492,8 @@ async function main() {
   await writeFile(OUT_INDEX, JSON.stringify({ generatedAt, configured, posts: indexPosts }, null, 2));
   await writeFile(OUT_FULL, JSON.stringify({ generatedAt, configured, posts: fullPosts }, null, 2));
 
-  console.log(`✓ ${fullPosts.length} thinks posts → ${OUT_INDEX} & ${OUT_FULL}`);
+  const coverCount = fullPosts.filter((p) => p.cover).length;
+  console.log(`✓ ${fullPosts.length} thinks posts (covers: ${coverCount}) → ${OUT_INDEX} & ${OUT_FULL}`);
 }
 
 main().catch((err) => {

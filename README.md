@@ -100,17 +100,58 @@ MinaryHub 공개 저장소를 소개하고 최신 빌드를 내려받는 페이�
 }
 ```
 
+## Thinks 탭 (Google Drive 연동)
+
+상단 **Apps / Thinks** 탭에서 Google Drive 폴더에 작성한 글(Google Docs, `.md`, `.txt`)을 자동으로 불러와 표시합니다.
+GitHub Actions가 매시간(또는 푸시·수동 실행 시) `scripts/fetch-thinks.mjs`로 글을 수집해 `data/thinks.json`과 글별 정적 페이지(`/thinks/<글>/`)를 생성합니다.
+
+### 처음 설정 (1회)
+
+1. Google Drive에 글을 모아 둘 폴더를 만들고 주소에서 폴더 ID를 복사합니다.
+   - 예: `https://drive.google.com/drive/folders/1AbCdEf...` → `1AbCdEf...` (폴더를 공개 공유하지 않아도 됩니다.)
+2. [script.google.com](https://script.google.com)에서 **새 프로젝트**를 만들고 `scripts/google-apps-script.gs` 내용을 그대로 붙여넣습니다.
+3. 코드 상단의 `FOLDER_ID`에 복사한 폴더 ID를 넣습니다. (선택: `SECRET_TOKEN`에 임의의 문자열을 넣으면 토큰이 일치할 때만 응답합니다.)
+4. 상단 실행 메뉴에서 `testRun` 함수를 한 번 실행해 Google Drive/Docs 접근 권한을 승인합니다.
+5. **배포 → 새 배포 → 유형: 웹 앱**을 선택합니다.
+   - **다음 사용자 권한으로 실행**: 나
+   - **액세스 권한이 있는 사용자**: 모든 사용자
+   - 배포 후 나오는 **웹 앱 URL**(`https://script.google.com/macros/s/.../exec`)을 복사합니다.
+6. 이 GitHub 저장소의 **Settings → Secrets and variables → Actions → New repository secret**에 등록합니다.
+   - `THINKS_FEED_URL`: 복사한 웹 앱 URL
+   - `THINKS_FEED_TOKEN`: (선택) Apps Script에 `SECRET_TOKEN`을 넣었다면 같은 값
+7. **Actions** 탭에서 `Build & Deploy Pages` → **Run workflow**를 실행하면 바로 반영됩니다.
+
+### 글 작성 팁
+
+- **지원 형식**: Google Docs 문서(제목·굵게·기울임·링크·목록·표·코드·인라인 이미지 지원), Markdown(`.md`), 일반 텍스트(`.txt`)
+- **초안 숨기기**: 파일 이름이 `_`, `.`, `[draft]`, `[초안]`, `draft:`로 시작하면 공개 목록에서 제외됩니다.
+- **자동 태그**: 폴더 안에 1단계 하위 폴더를 만들면 폴더 이름이 태그로 자동 추가됩니다.
+- **선택적 메타데이터**: 문서 맨 첫머리에 아래 형식을 넣으면 제목·날짜·태그·요약·슬러그를 직접 지정할 수 있습니다(생략 시 파일명과 작성일을 자동 사용).
+
+```yaml
+---
+title: 글 제목
+date: 2026-11-21
+tags: 개발, 생각
+summary: 목록에 보여 줄 짧은 요약
+slug: custom-slug
+draft: false
+---
+```
+
 ## 검색엔진 최적화 (배포 때 자동)
 
-`scripts/prerender.mjs`가 배포 때마다 언어·앱별 정적 페이지를 만듭니다.
+`scripts/prerender.mjs`가 배포 때마다 언어·앱·글별 정적 페이지를 만듭니다.
 
 | 주소 | 내용 |
 |---|---|
-| `/`, `/ko/` | 첫 페이지 (영어 / 한국어) |
+| `/`, `/ko/` | 첫 페이지 — Apps 탭 (영어 / 한국어) |
+| `/thinks/`, `/ko/thinks/` | Thinks 탭 글 목록 (영어 / 한국어) |
 | `/apps/<앱>/`, `/ko/apps/<앱>/` | 앱 소개 페이지: 설명·실행/다운로드 버튼·스크린샷·다운로드 파일·다른 앱 |
+| `/thinks/<글>/`, `/ko/thinks/<글>/` | Thinks 글 읽기 페이지: 본문·날짜·읽기 시간·이전/다음 글 |
 
-- 페이지마다 제목·설명·canonical·hreflang(en/ko/x-default)·OG/트위터 카드(첫 스크린샷)·구조화 데이터
-  (Organization, WebSite, SoftwareApplication, BreadcrumbList)를 넣고, `sitemap.xml`에 언어 짝과 함께 올립니다.
+- 페이지마다 제목·설명·canonical·hreflang(en/ko/x-default)·OG/트위터 카드·구조화 데이터
+  (Organization, WebSite, SoftwareApplication, BlogPosting, BreadcrumbList)를 넣고, `sitemap.xml`에 언어 짝과 함께 올립니다.
 - 첫 페이지 제목 뒤에 붙는 한 줄은 `headline` / `headlineEn`, 앱 분류는 `overrides.<앱>.category`
   (schema.org `applicationCategory`: `GameApplication`, `DeveloperApplication`, `SecurityApplication` …)
 - 공유 미리보기 이미지는 앱의 첫 PNG/JPEG 스크린샷 → PNG 아이콘 → 사이트 기본 이미지(`og.png`) 순으로 고릅니다
@@ -178,5 +219,6 @@ OS·아키텍처를 파일명에 넣으면 버튼이 자동 분류됩니다.
 
 ```bash
 GITHUB_TOKEN=$(gh auth token) node scripts/fetch-data.mjs
+THINKS_FEED_URL="https://script.google.com/macros/s/.../exec" node scripts/fetch-thinks.mjs
 python3 -m http.server 8000   # → http://localhost:8000
 ```

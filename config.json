@@ -30,6 +30,12 @@
   ],
   "order": [],
   "apps": [],
+  "thinks": {
+    "feedUrl": "",
+    "tagline": "도구를 만들며 떠올린 생각과 기록을 정리해 두는 공간입니다.",
+    "taglineEn": "Notes, essays, and thoughts written while building tools at MinaryHub.",
+    "posts": []
+  },
   "overrides": {
     "Kreate": {
       "icon": "apps/kreate/assets/kreate.png",

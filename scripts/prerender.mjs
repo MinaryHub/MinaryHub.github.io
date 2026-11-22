@@ -21,6 +21,10 @@ const siteUrl = (cfg.siteUrl || 'https://minaryhub.github.io').replace(/\/+$/, '
 const title = cfg.title || 'MinaryHub';
 const repos = data.repos || [];
 const posts = thinksFull.posts || [];
+// 설치 파일 없이 웹 링크로만 쓰는 앱은 Web 탭, 나머지(다운로드·소스)는 Apps 탭 (index.html 의 isWebApp 과 동일 규칙)
+const isWebApp = (r) => !!r.web && !(r.release?.assets?.length);
+const dlRepos = repos.filter((r) => !isWebApp(r));
+const webRepos = repos.filter(isWebApp);
 const LANGS = ['en', 'ko'];
 const LOCALE = { en: 'en_US', ko: 'ko_KR' };
 
@@ -32,6 +36,7 @@ const abs = (u) => (!u ? '' : /^https?:/.test(u) ? u : siteUrl + u.replace(/^\.?
 const home = (lang) => (lang === 'ko' ? 'ko/' : '');               // 사이트 루트 기준 경로
 const appPath = (r, lang) => `${home(lang)}apps/${slugOf(r.name)}/`;
 const thinksHome = (lang) => `${home(lang)}thinks/`;
+const webHome = (lang) => `${home(lang)}web/`;
 const postPathDisk = (p, lang) => `${home(lang)}thinks/${p.slug}/`;
 const postPathUrl = (p, lang) => `${home(lang)}thinks/${encodeURIComponent(p.slug)}/`;
 const clip = (s, n = 158) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s);
@@ -65,7 +70,7 @@ const T = {
     platforms: 'Platforms', shotAlt: (n, i) => `${n} screenshot ${i}`, dl: (v) => `Download ${v}`,
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? 'Free browser game' : 'Free game')
       : r.release?.assets?.length ? `Free download for ${osList(r).filter((o) => o !== 'Web').join(', ')}` : r.web ? 'Free web app' : 'Open-source app'),
-    thinks: 'Thinks', allPosts: 'All posts', readMin: (m) => `${m} min read`,
+    thinks: 'Thinks', web: 'Web', allPosts: 'All posts', readMin: (m) => `${m} min read`,
     postUpdated: (d) => `Updated ${d}`, prevPost: 'Previous', nextPost: 'Next', morePosts: 'More posts',
     backToThinks: '← Back to Thinks', toc: 'Contents',
   },
@@ -77,7 +82,7 @@ const T = {
     platforms: '지원 환경', shotAlt: (n, i) => `${n} 스크린샷 ${i}`, dl: (v) => `${v} 다운로드`,
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? '무료 웹 게임' : '무료 게임')
       : r.release?.assets?.length ? `${osList(r).filter((o) => o !== 'Web').join('·')} 무료 다운로드` : r.web ? '무료 웹 앱' : '오픈소스 앱'),
-    thinks: 'Thinks', allPosts: '전체 글', readMin: (m) => `약 ${m}분`,
+    thinks: 'Thinks', web: '웹', allPosts: '전체 글', readMin: (m) => `약 ${m}분`,
     postUpdated: (d) => `${d} 수정`, prevPost: '이전 글', nextPost: '다음 글', morePosts: '다른 글',
     backToThinks: '← Thinks 목록으로', toc: '목차',
   },
@@ -183,14 +188,14 @@ const commentsApi = (process.env.THINKS_COMMENTS_URL || cfg.thinks?.commentsApi 
 // 배포마다 바뀌는 버전 — 브라우저가 예전 contact.js를 캐시에서 쓰지 않게
 const ver = Date.now().toString(36);
 
-const appsStaticList = (lang) => {
-  if (!repos.length) return '';
+const appsStaticList = (lang, items = dlRepos, heading = T[lang].projects, loadingId = 'loading') => {
+  if (!items.length) return '';
   const t = T[lang];
-  const list = repos.map((r) => {
+  const list = items.map((r) => {
     const d = loc(r, 'description', lang);
     return `<li><a href="${esc(appPath(r, lang))}"><strong>${esc(nameOf(r, lang))}</strong></a>${d ? ` — ${esc(d)}` : ''}</li>`;
   }).join('');
-  return `<div class="state" id="loading"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${t.projects}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`;
+  return `<div class="state" id="${loadingId}"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${heading}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`;
 };
 
 const thinksStaticList = (lang) => {
@@ -211,7 +216,7 @@ for (const lang of LANGS) {
   const graph = [org, website, {
     '@type': 'CollectionPage', '@id': siteUrl + path + '#page', url: siteUrl + path, name: pageTitle, description: desc, inLanguage: lang,
     isPartOf: { '@id': siteUrl + '#website' },
-    mainEntity: { '@type': 'ItemList', itemListElement: repos.map((r, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + appPath(r, lang), name: nameOf(r, lang) })) },
+    mainEntity: { '@type': 'ItemList', itemListElement: dlRepos.map((r, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + appPath(r, lang), name: nameOf(r, lang) })) },
   }];
   let html = indexSrc
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="apps" data-prerendered="1"`)
@@ -221,7 +226,8 @@ for (const lang of LANGS) {
     .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
     .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
     .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`);
-  if (repos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (dlRepos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (webRepos.length) html = html.replace(/<div class="state" id="webLoading">[^<]*<\/div>/, appsStaticList(lang, webRepos, T[lang].web, 'webLoading'));
   if (posts.length) html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/, thinksStaticList(lang));
   await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
   await writeFile(`${SITE_DIR}/${path}index.html`, html);
@@ -255,12 +261,48 @@ for (const lang of LANGS) {
       '<section id="panelApps" role="tabpanel" aria-labelledby="tabApps" hidden>')
     .replace('<section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks" hidden>',
       '<section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks">');
-  if (repos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (dlRepos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (webRepos.length) html = html.replace(/<div class="state" id="webLoading">[^<]*<\/div>/, appsStaticList(lang, webRepos, T[lang].web, 'webLoading'));
   if (posts.length) html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/, thinksStaticList(lang));
   await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
   await writeFile(`${SITE_DIR}/${path}index.html`, html);
 }
 pages.push({ alt: { en: thinksHome('en'), ko: thinksHome('ko') }, lastmod: thinksGenerated, priority: '0.9' });
+
+// ── Web 탭 첫 페이지 (영어 /web/, 한국어 /ko/web/) ──
+for (const lang of LANGS) {
+  const t = T[lang], path = webHome(lang);
+  const tagline = loc(cfg, 'tagline', lang);
+  const pageTitle = `${title} · ${t.web}`;
+  const desc = clip(`${title} — ${lang === 'ko' ? '설치 없이 브라우저에서 바로 쓰는 웹 앱 모음' : 'Web apps you can run right in the browser — no install'}`);
+  const graph = [org, website, {
+    '@type': 'CollectionPage', '@id': siteUrl + path + '#page', url: siteUrl + path, name: pageTitle, description: desc, inLanguage: lang,
+    isPartOf: { '@id': siteUrl + '#website' },
+    mainEntity: { '@type': 'ItemList', itemListElement: webRepos.map((r, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + appPath(r, lang), name: nameOf(r, lang) })) },
+  }];
+  let html = indexSrc
+    .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="web" data-prerendered="1"`)
+    .replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<base href="${baseFor(path)}">`)
+    .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
+      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: webHome('en'), ko: webHome('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
+    .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
+    .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
+    .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`)
+    .replace('id="tabApps" data-tab="apps" aria-controls="panelApps" aria-selected="true"',
+      'id="tabApps" data-tab="apps" aria-controls="panelApps" aria-selected="false"')
+    .replace('id="tabWeb" data-tab="web" aria-controls="panelWeb" aria-selected="false"',
+      'id="tabWeb" data-tab="web" aria-controls="panelWeb" aria-selected="true"')
+    .replace('<section id="panelApps" role="tabpanel" aria-labelledby="tabApps">',
+      '<section id="panelApps" role="tabpanel" aria-labelledby="tabApps" hidden>')
+    .replace('<section id="panelWeb" role="tabpanel" aria-labelledby="tabWeb" hidden>',
+      '<section id="panelWeb" role="tabpanel" aria-labelledby="tabWeb">');
+  if (dlRepos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (webRepos.length) html = html.replace(/<div class="state" id="webLoading">[^<]*<\/div>/, appsStaticList(lang, webRepos, t.web, 'webLoading'));
+  if (posts.length) html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/, thinksStaticList(lang));
+  await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
+  await writeFile(`${SITE_DIR}/${path}index.html`, html);
+}
+if (webRepos.length) pages.push({ alt: { en: webHome('en'), ko: webHome('ko') }, lastmod: generated, priority: '0.9' });
 
 // ── 앱 소개 페이지 ──
 const style = (indexSrc.match(/<style>([\s\S]*?)<\/style>/) || [])[1] || '';
@@ -378,7 +420,8 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   <header class="top">
     <a class="home" href="${home(lang) || './'}"><img class="logo" src="logo.webp" alt="" width="32" height="32">${esc(title)}</a>
     <nav class="top-nav" aria-label="Sections">
-      <a href="${home(lang) || './'}" aria-current="section">Apps</a>
+      <a href="${home(lang) || './'}"${isWebApp(r) ? '' : ' aria-current="section"'}>Apps</a>
+      ${webRepos.length ? `<a href="${webHome(lang)}"${isWebApp(r) ? ' aria-current="section"' : ''}>${esc(t.web)}</a>` : ''}
       <a href="${thinksHome(lang)}">${esc(t.thinks)}</a>
     </nav>
     <nav class="lang-sw" aria-label="Language"><a href="${alt.en}" data-lang="en" lang="en" hreflang="en"${lang === 'en' ? ' aria-current="page"' : ''}>EN</a><a href="${alt.ko}" data-lang="ko" lang="ko" hreflang="ko"${lang === 'ko' ? ' aria-current="page"' : ''}>한국어</a></nav>
@@ -742,6 +785,7 @@ ${extraFontLinks}
     <a class="home" href="${home(lang) || './'}"><img class="logo" src="logo.webp" alt="" width="32" height="32">${esc(title)}</a>
     <nav class="top-nav" aria-label="Sections">
       <a href="${home(lang) || './'}">Apps</a>
+      ${webRepos.length ? `<a href="${webHome(lang)}">${esc(t.web)}</a>` : ''}
       <a href="${thinksHome(lang)}" aria-current="section">${esc(t.thinks)}</a>
     </nav>
     <nav class="lang-sw" aria-label="Language"><a href="${alt.en}" data-lang="en" lang="en" hreflang="en"${lang === 'en' ? ' aria-current="page"' : ''}>EN</a><a href="${alt.ko}" data-lang="ko" lang="ko" hreflang="ko"${lang === 'ko' ? ' aria-current="page"' : ''}>한국어</a></nav>
@@ -874,6 +918,7 @@ const llmsLines = [
   '',
   `- Site (EN): ${siteUrl}`,
   `- Site (KO): ${siteUrl}ko/`,
+  ...(webRepos.length ? [`- Web apps (EN/KO): ${siteUrl}web/ · ${siteUrl}ko/web/`] : []),
   `- Thinks (EN/KO): ${siteUrl}thinks/ · ${siteUrl}ko/thinks/`,
   `- Sitemap: ${siteUrl}sitemap.xml`,
   `- RSS Feed: ${siteUrl}rss.xml`,

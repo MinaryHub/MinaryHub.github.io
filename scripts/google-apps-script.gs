@@ -301,6 +301,12 @@ function readGoogleDoc_(file, folderTags) {
 
 function renderContainer_(container, images) {
   const out = [];
+  if (typeof container.getPositionedImages === 'function') {
+    const posImgs = container.getPositionedImages();
+    for (let k = 0; k < posImgs.length; k++) {
+      out.push(renderImage_(posImgs[k], images));
+    }
+  }
   const count = container.getNumChildren();
   for (let i = 0; i < count; i++) {
     const child = container.getChild(i);
@@ -356,7 +362,9 @@ function renderImage_(imgEl, images) {
     const bytes = blob.getBytes();
     if (!bytes || bytes.length > MAX_IMAGE_BYTES) return '';
     const mime = blob.getContentType() || 'image/png';
-    const alt = (imgEl.getAltDescription() || imgEl.getAltTitle() || '').trim();
+    const altDesc = typeof imgEl.getAltDescription === 'function' ? imgEl.getAltDescription() : '';
+    const altTitle = typeof imgEl.getAltTitle === 'function' ? imgEl.getAltTitle() : '';
+    const alt = (altDesc || altTitle || '').trim();
     const id = 'img-' + images.length;
     images.push({
       id: id,

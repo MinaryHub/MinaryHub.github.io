@@ -157,14 +157,22 @@
     background: var(--surface-2); color: var(--muted); transition: background .18s, color .18s; }
   .tab[aria-selected="true"] .tab-cnt { background: var(--accent-soft); color: var(--accent); }
 
-  /* Thinks 글 목록 */
-  .thinks-list { display: grid; gap: 14px; padding-bottom: 64px; }
-  .think-card { display: flex; gap: 20px; align-items: flex-start; justify-content: space-between;
+  /* Thinks 글 목록 (세로형 북커버 카드) */
+  .thinks-list { display: grid; gap: 16px; padding-bottom: 64px; }
+  .think-card { display: flex; gap: 22px; align-items: flex-start;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 22px 24px; box-shadow: var(--shadow); text-decoration: none;
     transition: border-color .18s, transform .18s; }
   .think-card:hover { border-color: var(--accent); transform: translateY(-1px); }
   .think-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .think-cover { position: relative; width: 108px; aspect-ratio: 1 / 1.45; flex: none;
+    border-radius: 4px 8px 8px 4px; overflow: hidden; border: 1px solid var(--border);
+    background: var(--surface-2); box-shadow: 0 4px 12px rgba(0,0,0,.12), 0 1px 3px rgba(0,0,0,.08);
+    transition: transform .22s ease, box-shadow .22s ease; }
+  .think-cover::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgba(0,0,0,.16) 0, rgba(255,255,255,.22) 5px, rgba(0,0,0,.04) 8px, transparent 14px); }
+  .think-cover img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  .think-card:hover .think-cover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.16), 0 2px 6px rgba(0,0,0,.1); }
   .think-body { flex: 1; min-width: 0; max-width: 72ch; }
   .think-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     font-size: 13px; color: var(--muted); margin-bottom: 6px; }
@@ -174,8 +182,6 @@
   .think-excerpt { color: var(--muted); margin: 0; line-height: 1.65;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .think-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; }
-  .think-thumb { width: 152px; height: 102px; flex: none; border-radius: 10px; object-fit: cover;
-    border: 1px solid var(--border); background: var(--surface-2); display: block; }
 
   /* 글 본문 타이포그래피 (전용 페이지 및 로컬 미리보기 공용) */
   .prose { font-size: 16px; line-height: 1.82; color: var(--text); word-break: keep-all; overflow-wrap: break-word; }
@@ -195,8 +201,8 @@
     border: 1px solid var(--border); overflow-x: auto; line-height: 1.6; }
   .prose pre code { background: none; padding: 0; font-size: 13px; }
   .prose hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
-  .prose img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border);
-    display: block; margin: 1.4em auto; cursor: zoom-in; }
+  .prose img { max-width: 100%; max-height: 540px; width: auto; height: auto; border-radius: 10px;
+    border: 1px solid var(--border); display: block; margin: 1.4em auto; cursor: zoom-in; }
   .prose .tbl-wrap { overflow-x: auto; margin: 1.4em 0; }
   .prose table { width: 100%; border-collapse: collapse; font-size: 14px; }
   .prose th, .prose td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; }
@@ -215,8 +221,9 @@
   dialog.reader-dlg .rd-body { padding: 24px; overflow-y: auto; max-height: calc(100vh - 140px); }
 
   @media (max-width: 600px) {
-    .think-card { flex-direction: column-reverse; padding: 18px; gap: 14px; }
-    .think-thumb { width: 100%; height: 170px; }
+    .think-card { padding: 16px; gap: 16px; }
+    .think-cover { width: 82px; }
+    .think-title { font-size: 18px; }
   }
   @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 26px; } header { padding-top: 36px; } }
 </style>
@@ -759,13 +766,13 @@
     const q = (p.searchText || [p.title, ...(p.tags || []), p.excerpt].join(' ')).toLowerCase();
     const tagAttr = (p.tags || []).map((x) => x.toLowerCase()).join('|');
     return `<a class="think-card" href="${esc(href)}" data-slug="${esc(p.slug)}" data-tags="${esc(tagAttr)}" data-q="${esc(q)}">
+      ${p.cover ? `<span class="think-cover"><img src="${esc(p.cover)}" alt="" loading="lazy"></span>` : ''}
       <div class="think-body">
         ${meta ? `<div class="think-meta">${esc(meta)}</div>` : ''}
         <h2 class="think-title">${esc(p.title)}</h2>
         ${p.excerpt ? `<p class="think-excerpt">${esc(p.excerpt)}</p>` : ''}
         ${tags ? `<div class="think-tags">${tags}</div>` : ''}
       </div>
-      ${p.cover ? `<img class="think-thumb" src="${esc(p.cover)}" alt="" loading="lazy">` : ''}
     </a>`;
   }
 

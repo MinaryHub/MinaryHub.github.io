@@ -39,6 +39,8 @@
   "overrides": {
     "Kreate": {
       "icon": "apps/kreate/assets/kreate.png",
+      "subtitleEn": "Free 3D Modeling, Sculpting & Animation App",
+      "subtitleKo": "무료 3D 모델링·스컬프팅·애니메이션 앱",
       "descriptionEn": "A 3D modelling, sculpting and animation app written from scratch in Rust, with a built-in connector that lets Claude drive it.",
       "descriptionKo": "Rust로 처음부터 만든 3D 모델링·스컬프팅·애니메이션 앱. Claude가 직접 조작할 수 있는 커넥터를 내장했습니다.",
       "category": "DesignApplication",
@@ -65,6 +67,8 @@
     },
     "Curvo": {
       "icon": "ProjectorWarp/packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
+      "subtitleEn": "Real-Time Curved-Surface Projector Warping",
+      "subtitleKo": "곡면 벽·기둥 실시간 프로젝터 와핑 프로그램",
       "descriptionEn": "A Windows utility that pre-warps the screen in real time so projections onto curved walls, pillars and arches look straight.",
       "category": "MultimediaApplication",
       "featuresEn": [
@@ -82,10 +86,13 @@
         "색보정·블렌딩 — 색 보정과 가장자리 블렌딩.",
         "GPU로 부드럽게 — 디코딩·캡처·렌더링이 모두 GPU(Direct3D 11)에서 이뤄집니다.",
         "프로젝터로 바로 출력 — 프로젝터가 연결된 디스플레이에 전체 화면으로 내보냅니다."
-      ]
+      ],
+      "descriptionKo": "굴곡진 벽면·기둥·아치에 투사할 때 화면을 실시간으로 역왜곡해 직선이 반듯하게 보이도록 보정하는 Windows 프로젝터 와핑 유틸리티입니다."
     },
     "DeskCue": {
       "icon": "packaging/msix/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
+      "subtitleEn": "Windows Virtual Desktop Indicator & Hotkey Switcher",
+      "subtitleKo": "Windows 가상 데스크톱 표시·단축키 전환 앱",
       "descriptionEn": "A tray app that always shows your current Windows virtual desktop as a translucent overlay and lets you jump to any desktop with hotkeys.",
       "descriptionKo": "지금 Windows 가상 데스크톱을 반투명 오버레이로 늘 보여 주고, 단축키로 원하는 데스크톱에 바로 이동하는 트레이 앱.",
       "category": "UtilitiesApplication",
@@ -108,6 +115,8 @@
     },
     "Kerminal": {
       "icon": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
+      "subtitleEn": "Cross-Platform SSH & Terminal Client",
+      "subtitleKo": "무료 크로스플랫폼 SSH·터미널 클라이언트",
       "descriptionEn": "A cross-platform SSH/terminal client for Windows, macOS, Linux, iOS, Android and the web, built from a single Flutter codebase.",
       "category": "DeveloperApplication",
       "featuresEn": [
@@ -127,10 +136,13 @@
         "비밀 정보 보호 — 비밀번호와 개인 키는 호스트 정보와 따로 시스템 보안 저장소에 보관합니다.",
         "휴대폰에서도 편하게 — Esc·Tab·Ctrl-C·방향키 도구 모음, 라이트·다크 테마, 글자 크기 조절.",
         "어디서나 — 하나의 코드로 Windows, macOS, Linux, iOS, Android를 지원합니다."
-      ]
+      ],
+      "descriptionKo": "Windows·macOS·Linux·iOS·Android·웹을 하나의 Flutter 코드베이스로 지원하는 무료 크로스플랫폼 SSH·터미널 클라이언트입니다."
     },
     "HanEng": {
       "icon": "assets/icon-256.png",
+      "subtitleEn": "Korean/English IME Indicator Next to Caret",
+      "subtitleKo": "커서 옆 한영 전환 상태 표시기",
       "descriptionEn": "A Windows utility that shows a Korean/English input-mode badge next to your text caret, so you know the mode before you type.",
       "category": "UtilitiesApplication",
       "featuresEn": [
@@ -148,10 +160,13 @@
         "글자를 건드리지 않음 — 글자를 입력하거나 지우지 않습니다.",
         "오프라인 — 업데이트 확인 버튼을 누를 때만 네트워크를 씁니다.",
         "간단한 설치 — 설치 즉시 실행되고 로그인 때 자동 시작하는 Windows 설치 파일."
-      ]
+      ],
+      "descriptionKo": "입력 커서 바로 옆에 한/영·Caps Lock 상태 배지를 띄워 타이핑 전에 현재 입력 모드를 바로 확인할 수 있는 Windows 유틸리티입니다."
     },
     "NetworkScanner": {
       "icon": "assets/app.png",
+      "subtitleEn": "Free Network Inventory & Security Port Scanner",
+      "subtitleKo": "무료 IP·포트 네트워크 보안 스캐너",
       "screenshots": [
         "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/01-ip-list.png",
         "https://raw.githubusercontent.com/MinaryHub/NetworkScanner/master/screenshots/ko/02-settings.png",
@@ -187,6 +202,8 @@
       "description": "LED 전광판처럼 문구·시계·이미지를 도트(점)로 보여 주는 전광판 앱. 플립 도트 모드와 장면 순차 재생을 지원하며 설치 없이 브라우저에서 바로 실행됩니다.",
       "web": "https://dotty-liart.vercel.app/",
       "icon": "web/icons/Icon-512.png",
+      "subtitleEn": "Browser LED & Flip-Dot Matrix Sign App",
+      "subtitleKo": "웹 LED·플립 도트 전광판 앱",
       "descriptionEn": "A dot-matrix sign app that turns text, clocks and images into LED dots, with a flip-dot mode and scene playlists. Runs right in your browser — no install.",
       "category": "MultimediaApplication",
       "featuresEn": [
@@ -212,6 +229,8 @@
     },
     "DoNotDisturb": {
       "displayName": "방해 금지 모드",
+      "subtitleEn": "2D Psychological Stealth Browser Game",
+      "subtitleKo": "2D 심리 스텔스 무료 웹 게임",
       "description": "세상은 너무 시끄럽고, 나의 에너지는 한정되어 있다. 내향적인 사람이 하루의 의무를 마치고 사회적 배터리가 바닥나기 전에 집 침대로 돌아가는 2D 탑다운 심리 스텔스 게임. 설치 없이 브라우저에서 바로 플레이할 수 있습니다.",
       "web": "https://donotdisturb-rho.vercel.app/",
       "icon": "public/icon-512.png",
@@ -257,10 +276,15 @@
         "서식 문서 — 기안문, 보고서, 회의록, 견적서, 휴가 신청서, 이력서 등을 바로 채워 쓸 수 있습니다.",
         "찾기·찾아 바꾸기 — 정규식과 온전한 낱말 검색.",
         "안심하고 쓰기 — 여러 문서 탭, 자동 저장과 비정상 종료 복구, 인쇄·PDF 저장, 어두운 테마."
-      ]
+      ],
+      "subtitleEn": "Free HWP/HWPX Hangul & Word Processor",
+      "subtitleKo": "무료 HWP·HWPX 한글 문서 편집기",
+      "descriptionKo": "한글(HWP·HWPX) 문서를 중심으로 Word(DOCX)·PDF·Markdown까지 열어 편집하고 인쇄·PDF 저장할 수 있는 무료 데스크톱 워드프로세서입니다."
     },
     "GridDisplay": {
       "displayName": "Grid Display",
+      "subtitleEn": "Windows Grid Display Wall & Window Tiling App",
+      "subtitleKo": "한 모니터 격자 분할 디스플레이 월 프로그램",
       "description": "여러 브라우저와 프로그램을 한 모니터에 격자로 띄워 두는 Windows용 디스플레이 월 프로그램. 칸을 누르면 화면 전체로 확대해 바로 조작하고, 칸마다 띄운 주소와 프로그램을 기억해 다시 켜면 그대로 복원합니다.",
       "descriptionEn": "A Windows display-wall app that tiles browsers and programs into a grid on one monitor. Click a cell to zoom it full-screen and use it right away; every cell remembers its page or program and comes back the same on the next launch.",
       "icon": "packaging/Assets/Square310x310Logo.png",
@@ -284,6 +308,8 @@
     },
     "Kynex": {
       "displayName": "KYNEX",
+      "subtitleEn": "3D Robot & Factory Cell Simulator",
+      "subtitleKo": "3D 로봇·공장 레이아웃 시뮬레이터",
       "description": "로봇·공장 시뮬레이터. Kreate의 공동 편집 세션에 참여해 장면을 실시간으로 받아 보여 주고, CAD·메시 모델과 로봇(URDF)을 가져와 배치·조그·프로그래밍할 수 있습니다. 브라우저에서 보는 3D 뷰어를 내장했습니다.",
       "descriptionEn": "A robot and factory simulator. It joins Kreate's shared session to show the scene live, imports CAD/mesh models and robots (URDF) to place, jog and program, and comes with a 3D viewer that runs in your browser.",
       "icon": "apps/kynex/assets/kynex-256.png",
@@ -307,6 +333,8 @@
     },
     "ScreenDeck": {
       "displayName": "ScreenDeck",
+      "subtitleEn": "Multi-Monitor Live Preview & Window Controller",
+      "subtitleKo": "멀티 모니터 실시간 미리보기·제어 앱",
       "description": "멀티 모니터를 위한 Windows 앱. 한 화면을 제어 모니터로 두고 모든 모니터를 실시간으로 보면서, 프로그램 카드를 끌어다 다른 모니터로 옮기거나 다른 모니터를 제어 모니터에서 직접 조작할 수 있습니다.",
       "descriptionEn": "A Windows app for multi-monitor setups. Keep one screen as your control monitor, see every monitor live, drag programs between monitors, or work on another monitor from where you sit.",
       "icon": "icons/screendeck.png",
@@ -332,6 +360,8 @@
     },
     "BangDB": {
       "displayName": "BangDB",
+      "subtitleEn": "Lightweight Pure-Go Embedded & Server SQL Database",
+      "subtitleKo": "순수 Go 경량 내장·서버 관계형 데이터베이스",
       "description": "소규모 프로젝트를 위한 다목적 경량 관계형 데이터베이스. 순수 Go·의존성 0으로, 라이브러리로 내장하거나 서버로 띄워 쓰고, 웹 콘솔과 인메모리·시계열 테이블을 지원합니다.",
       "descriptionEn": "A multipurpose, lightweight relational database for small projects, in pure Go with no dependencies. Embed it as a library or run it as a server, with a web console plus in-memory and time-series tables.",
       "category": "DeveloperApplication",
@@ -362,6 +392,8 @@
     },
     "BangDB.Manager": {
       "displayName": "BangDB Manager",
+      "subtitleEn": "Multi-Database GUI Manager (SQL, MongoDB, Redis)",
+      "subtitleKo": "무료 멀티 DB 관리 도구 (SQL·MongoDB·Redis)",
       "description": "BangDB·PostgreSQL·MySQL/MariaDB·SQL Server·SQLite·MongoDB·Redis를 한 앱에서 관리하는 데이터베이스 관리 도구. 테이블을 스프레드시트처럼 고치고 SQL을 실행하며, Windows·macOS·Linux·Android·웹에서 같은 화면으로 씁니다.",
       "descriptionEn": "A database manager for BangDB, PostgreSQL, MySQL/MariaDB, SQL Server, SQLite, MongoDB and Redis. Edit tables like a spreadsheet and run SQL with the same app on Windows, macOS, Linux, Android and the web.",
       "category": "DeveloperApplication",
@@ -390,6 +422,8 @@
     },
     "ezBoard": {
       "displayName": "ezBoard",
+      "subtitleEn": "AI PCB Schematic & Auto-Routing Designer",
+      "subtitleKo": "초보자용 AI PCB 회로 설계·자동 배선 프로그램",
       "description": "초보자를 위한 AI PCB 설계 웹 앱. 말로 설명하면 AI(Claude·Gemini·GPT)가 회로를 설계하고, 부품 배치·자동 배선·검사·주문용 거버 파일까지 만들어 줍니다.",
       "descriptionEn": "An AI PCB design app for beginners. Describe a circuit in plain words and the AI (Claude, Gemini or GPT) designs it, then places parts, routes traces, checks the board and exports Gerber files ready to order.",
       "category": "DesignApplication",
@@ -412,6 +446,8 @@
     },
     "KStruct": {
       "displayName": "KStruct",
+      "subtitleEn": "Guided 3D Finite Element Analysis (FEA) App",
+      "subtitleKo": "기계 부품용 3D 구조해석(FEA) 프로그램",
       "description": "기계 부품용 3D 유한요소해석(FEA) 프로그램. CAD 모델을 불러와 재료·고정·하중을 지정하면, 부품이 안전한지 색과 쉬운 말로 알려 줍니다. 전문가가 아니어도 7단계를 따라가면 됩니다.",
       "descriptionEn": "A 3D finite element analysis (FEA) app for mechanical parts. Open a CAD model, set the material, supports and loads, and it tells you in colors and plain words whether the part is safe — seven guided steps, no expertise needed.",
       "category": "DesignApplication",
@@ -447,6 +483,8 @@
     },
     "RobotEmulator": {
       "displayName": "RobotEmulator",
+      "subtitleEn": "Multi-Vendor 3D Industrial Robot Controller Emulator",
+      "subtitleKo": "7대 제조사 3D 산업용 로봇 에뮬레이터",
       "displayNameKo": "산업용 로봇 에뮬레이터",
       "description": "야스카와·카와사키·현대로보틱스·ABB·KUKA·두산로보틱스·Universal Robots 로봇을 하나의 가상 컨트롤러로 에뮬레이션합니다. 제조사 로봇 언어 프로그램을 그대로 실행해 3D로 확인하고, PLC·PC 상위 프로그램을 실제 로봇 없이 개발·시험할 수 있습니다.",
       "descriptionEn": "A virtual robot controller that emulates Yaskawa, Kawasaki, Hyundai, ABB, KUKA, Doosan Robotics and Universal Robots arms. Run programs in each vendor's own language, watch them in 3D, and develop PLC or host-PC software without a real robot.",

@@ -246,8 +246,14 @@ function sanitizeUrl(url) {
   return '';
 }
 
+function sanitizeFontName(font) {
+  const f = String(font || '').trim().replace(/\s+/g, ' ');
+  if (!f || f.length > 60) return '';
+  return /^[a-zA-Z0-9\s\-_가-힣]+$/.test(f) ? f : '';
+}
+
 const ALLOWED_TAGS = new Set([
-  'p', 'br', 'hr', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'p', 'br', 'hr', 'h2', 'h3', 'h4', 'h5', 'h6', 'span',
   'strong', 'b', 'em', 'i', 'u', 's', 'del', 'code', 'pre',
   'ul', 'ol', 'li', 'blockquote', 'a', 'img',
   'table', 'thead', 'tbody', 'tr', 'th', 'td', 'div', 'figure', 'figcaption',
@@ -282,6 +288,9 @@ function sanitizeHtml(html) {
         if (safe) attrs.push(`src="${esc(safe)}"`);
       } else if (tag === 'img' && (name === 'alt' || name === 'loading' || name === 'data-img-id')) {
         attrs.push(`${name}="${esc(val)}"`);
+      } else if (tag === 'span' && name === 'data-font') {
+        const safeFont = sanitizeFontName(val);
+        if (safeFont) attrs.push(`style="font-family: '${esc(safeFont)}', var(--post-font, inherit)"`);
       } else if (tag === 'div' && name === 'class' && val === 'tbl-wrap') {
         attrs.push('class="tbl-wrap"');
       } else if (tag === 'code' && name === 'class' && /^lang-[a-zA-Z0-9-]+$/.test(val)) {
@@ -344,6 +353,23 @@ function estimateReadingMinutes(text) {
   const latinWords = (s.replace(/[\uAC00-\uD7A3\u3040-\u30FF\u4E00-\u9FFF]/g, ' ').match(/[a-zA-Z0-9]+/g) || []).length;
   const mins = cjk / 420 + latinWords / 220;
   return Math.max(1, Math.round(mins));
+}
+
+function countWords(text) {
+  const s = String(text || '');
+  const cjk = (s.match(/[\uAC00-\uD7A3\u3040-\u30FF\u4E00-\u9FFF]/g) || []).length;
+  const latinWords = (s.replace(/[\uAC00-\uD7A3\u3040-\u30FF\u4E00-\u9FFF]/g, ' ').match(/[a-zA-Z0-9]+/g) || []).length;
+  return cjk + latinWords;
+}
+
+function detectPostLang(text, explicit) {
+  const norm = String(explicit || '').trim().toLowerCase();
+  if (norm === 'ko' || norm === 'en') return norm;
+  const s = String(text || '');
+  const hangul = (s.match(/[\uAC00-\uD7A3]/g) || []).length;
+  const latin = (s.match(/[a-zA-Z]/g) || []).length;
+  if (hangul >= 20 || (hangul > 0 && hangul / Math.max(1, hangul + latin) >= 0.15)) return 'ko';
+  return 'en';
 }
 
 function parseDateIso(val, fallback) {
@@ -475,6 +501,11 @@ async function main() {
     const plain = htmlToPlainText(html);
     const excerpt = summary || clipText(plain, 165);
     const readingMinutes = estimateReadingMinutes(plain);
+    const wordCount = countWords(plain);
+    const postLang = detectPostLang(`${title} ${plain}`, item.lang);
+    const primaryFont = sanitizeFontName(item.font);
+    const rawFonts = Array.isArray(item.fonts) ? item.fonts : [];
+    const fonts = [...new Set([primaryFont, ...rawFonts.map(sanitizeFontName)].filter(Boolean))];
 
     // 첫 번째 이미지를 커버/공유 미리보기용으로 추출
     const firstImgMatch = html.match(/<img\b[^>]*\bsrc="([^"]+)"/i);
@@ -484,11 +515,15 @@ async function main() {
       id: item.id || slug,
       slug,
       title,
+      lang: postLang,
       excerpt,
       tags: uniqueTags(tags),
+      font: primaryFont,
+      fonts,
       publishedAt,
       updatedAt,
       readingMinutes,
+      wordCount,
       cover,
       html,
       searchText: [title, ...uniqueTags(tags), excerpt, plain.slice(0, 600)].filter(Boolean).join(' ').toLowerCase(),
@@ -504,7 +539,8 @@ async function main() {
   await writeFile(OUT_FULL, JSON.stringify({ generatedAt, configured, posts: fullPosts }, null, 2));
 
   const coverCount = fullPosts.filter((p) => p.cover).length;
-  console.log(`✓ ${fullPosts.length} thinks posts (covers: ${coverCount}) → ${OUT_INDEX} & ${OUT_FULL}`);
+  const allFonts = [...new Set(fullPosts.flatMap((p) => p.fonts || []))];
+  console.log(`✓ ${fullPosts.length} thinks posts (covers: ${coverCount}${allFonts.length ? `, fonts: ${allFonts.join(', ')}` : ''}) → ${OUT_INDEX} & ${OUT_FULL}`);
 }
 
 main().catch((err) => {

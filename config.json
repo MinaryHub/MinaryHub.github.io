@@ -29,7 +29,67 @@
     "uiwanginside"
   ],
   "order": [],
-  "apps": [],
+  "apps": [
+    {
+      "name": "global-ship-tracker-3d",
+      "displayName": "MarineGlobe 3D",
+      "web": "https://knoxxr.github.io/global-ship-tracker-3d/",
+      "subtitleEn": "Live Global AIS Ship Tracker on a 3D Globe",
+      "subtitleKo": "전 세계 실시간 선박 추적 3D 지구본",
+      "descriptionEn": "Watch real vessel positions from the global AIS network on an interactive 3D globe — live data only, no simulation. Click a ship to see its registered details and 24-hour track. Runs in your browser, no install.",
+      "descriptionKo": "가상 데이터 없이 전 세계 AIS 네트워크의 실제 선박 위치를 3D 지구본 위에 실시간으로 보여 주는 해양 관제 웹 앱. 선박을 누르면 제원과 24시간 항적을 확인할 수 있으며, 설치 없이 브라우저에서 실행됩니다.",
+      "featuresEn": [
+        "Live data only — Real vessel positions from open AIS feeds; no simulated ships.",
+        "Ship details and 24-hour track — Click any vessel for its registered particulars and recent route.",
+        "Scan any sea area — Scan and subscribe to whatever region you are viewing on the globe.",
+        "No install — Runs right in your browser."
+      ],
+      "featuresKo": [
+        "실데이터만 — 공개 AIS 피드의 실제 선박 위치만 표시하며 가상 선박은 없습니다.",
+        "제원과 24시간 항적 — 선박을 누르면 등록 제원과 최근 항로를 보여 줍니다.",
+        "원하는 해역 수신 — 지구본에서 보고 있는 해역을 바로 스캔·구독합니다.",
+        "설치 없이 실행 — 브라우저에서 바로 실행됩니다."
+      ],
+      "category": "UtilitiesApplication",
+      "language": "JavaScript",
+      "topics": [
+        "ais",
+        "ship-tracker",
+        "3d-globe",
+        "maritime"
+      ]
+    },
+    {
+      "name": "gyeonggi-traffic-map",
+      "displayName": "통신 트래픽 지도",
+      "displayNameEn": "Mobile Traffic Map",
+      "web": "https://knoxxr.github.io/gyeonggi-traffic-map/",
+      "subtitleEn": "Hourly Mobile Traffic Change Map of Korea",
+      "subtitleKo": "전국 행정동별 모바일 트래픽 변화 지도",
+      "descriptionEn": "An interactive map that visualizes how mobile network traffic changes by time of day across Korean administrative districts and hexagonal cells, rendered with WebGL2. Works on desktop and phones, no install.",
+      "descriptionKo": "전국 행정동·시군구·육각 셀 단위의 시간대별 모바일 통신 트래픽 변화량을 WebGL2로 보여 주는 인터랙티브 지도. PC와 스마트폰에서 설치 없이 바로 쓸 수 있습니다.",
+      "featuresEn": [
+        "Four spatial levels — Fine cells, base-station cells, districts, cities and provinces.",
+        "15-minute or hourly view — Switch metrics: change rate, Δ traffic, vs. daily average, total.",
+        "Fast WebGL2 rendering — Tens of thousands of cells at 60fps.",
+        "Bring your own data — Upload or export CSV/JSON, or poll a JSON API."
+      ],
+      "featuresKo": [
+        "4단계 공간 해상도 — 초미세 셀, 기지국 셀, 읍·면·동, 시·군·구·시·도.",
+        "15분·1시간 단위 — 변화율, Δ트래픽, 일평균 대비, 총 트래픽 지표 전환.",
+        "WebGL2 고속 렌더링 — 수만 개 셀을 60fps로 표시합니다.",
+        "내 데이터 연동 — CSV/JSON 업로드·내보내기, JSON API 폴링을 지원합니다."
+      ],
+      "category": "UtilitiesApplication",
+      "language": "HTML",
+      "topics": [
+        "traffic",
+        "map",
+        "webgl",
+        "korea"
+      ]
+    }
+  ],
   "thinks": {
     "feedUrl": "",
     "tagline": "도구를 만들며 떠올린 생각과 기록을 정리해 두는 공간입니다.",

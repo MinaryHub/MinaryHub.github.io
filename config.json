@@ -88,6 +88,35 @@
         "webgl",
         "korea"
       ]
+    },
+    {
+      "name": "satellite-tracker-3d",
+      "displayName": "OrbitPulse 3D",
+      "web": "https://knoxxr.github.io/satellite-tracker-3d/",
+      "subtitleEn": "Real-Time Satellite Tracker on a 3D Globe",
+      "subtitleKo": "실시간 인공위성 3D 추적기",
+      "descriptionEn": "Track real satellites — ISS, Tiangong, Hubble, Korean Arirang and GK-2A, GPS, Starlink and more — live on a 3D globe using CelesTrak orbital data and SGP4. Zoom in for 3D satellite models and see upcoming passes. Runs in your browser, no install.",
+      "descriptionKo": "ISS·톈궁·허블·아리랑·천리안·GPS·스타링크 등 실제 인공위성을 CelesTrak 궤도 데이터와 SGP4로 3D 지구본 위에 실시간 추적하는 웹 앱. 줌인하면 3D 위성 모델을 보고 상공 통과 시각을 확인할 수 있으며, 설치 없이 브라우저에서 실행됩니다.",
+      "featuresEn": [
+        "Real satellites, live — Positions computed from CelesTrak orbital elements with SGP4.",
+        "3D models up close — Zoom in to switch from glowing points to satellite models, including NASA CAD for ISS and Hubble.",
+        "Orbits and pass predictions — Past/future orbit, footprint, and the next 24 hours of passes from your location.",
+        "Time control — Speed up to 1000×, pause, or jump back to live."
+      ],
+      "featuresKo": [
+        "실제 위성 실시간 — CelesTrak 궤도 요소를 SGP4로 계산해 위치를 표시합니다.",
+        "가까이서 보는 3D 모델 — 줌인하면 발광 점이 위성 모델로 바뀌며, ISS·허블 등은 NASA 실물 CAD를 씁니다.",
+        "궤도와 통과 예측 — 과거·미래 궤도, 지상 커버리지, 내 위치 기준 향후 24시간 통과 시각.",
+        "시간 제어 — 최대 1000배속, 일시정지, 실시간 복귀."
+      ],
+      "category": "UtilitiesApplication",
+      "language": "JavaScript",
+      "topics": [
+        "satellite",
+        "orbit",
+        "3d-globe",
+        "sgp4"
+      ]
     }
   ],
   "thinks": {

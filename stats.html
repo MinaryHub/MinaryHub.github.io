@@ -33,9 +33,9 @@
   .range button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
     background: var(--surface); color: var(--text); cursor: pointer; }
   .range button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; margin-bottom: 16px; }
   .kpi, .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-  .kpi { padding: 16px 18px; min-width: 0; }
+  .kpi { padding: 14px 16px; min-width: 0; }
   .kpi .l { color: var(--muted); font-size: 13px; }
   .kpi .v { font: 600 28px "JetBrains Mono", monospace; letter-spacing: -.02em; margin-top: 2px; }
   .kpi .s { color: var(--muted); font-size: 12px; }
@@ -106,7 +106,8 @@
   </header>
   <main id="main"><div class="state">불러오는 중…</div></main>
   <section class="panel" id="rel" style="margin-top:16px"><h2>앱 버전별 다운로드</h2><div class="state" style="padding:24px 0">불러오는 중…</div></section>
-  <footer>방문자는 브라우저별 익명 ID로 셉니다(IP 미저장). 국가는 접속 IP로 서버가 판별한 값입니다. 다운로드 수는 GitHub 릴리스 파일의 누적 다운로드 기준이라 사이트를 거치지 않은 직접 다운로드와 앱의 자동 업데이트도 포함합니다. "사이트 클릭"은 이 사이트의 다운로드·웹 실행 버튼을 누른 횟수(기간별)로, 누적의 일부입니다. · <a href="./">MinaryHub로 돌아가기</a></footer>
+  <section class="panel" id="thinks" style="margin-top:16px" hidden><h2>Thinks 현황</h2></section>
+  <footer>방문자는 브라우저별 익명 ID로 셉니다(IP 미저장). 국가는 접속 IP로 서버가 판별한 값입니다. 다운로드 수는 GitHub 릴리스 파일의 누적 다운로드 기준이라 사이트를 거치지 않은 직접 다운로드와 앱의 자동 업데이트도 포함합니다. "사이트 다운로드 클릭"은 설치 파일 버튼을 누른 횟수, "웹 앱 실행"은 Web 탭 앱의 실행 버튼을 누른 횟수(기간별)이며 일별 추이 막대에는 둘이 함께 표시됩니다. · <a href="./">Apps</a> · <a href="web/">웹</a> · <a href="thinks/">Thinks</a></footer>
 </div>
 <script>
 (() => {
@@ -140,16 +141,20 @@
     list.forEach((d, i) => {
       const x = L + i * step + step * 0.1;
       g += `<rect class="bar" x="${x}" y="${y(d.visitors)}" width="${bw}" height="${H - B - y(d.visitors)}"><title>${d.d} 방문자 ${d.visitors} · 방문 ${d.visits}</title></rect>`;
-      g += `<rect class="bar2" x="${x + bw}" y="${y(d.downloads)}" width="${bw}" height="${H - B - y(d.downloads)}"><title>${d.d} 다운로드 ${d.downloads}</title></rect>`;
+      g += `<rect class="bar2" x="${x + bw}" y="${y(d.downloads)}" width="${bw}" height="${H - B - y(d.downloads)}"><title>${d.d} 다운로드·실행 ${d.downloads}</title></rect>`;
       if (i % every === 0) g += `<text x="${x + bw}" y="${H - 6}" text-anchor="middle">${d.d.slice(5).replace('-', '/')}</text>`;
     });
     return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="일별 방문자와 다운로드">${g}</svg>
-      <div class="legend"><span><i style="background:var(--accent)"></i>방문자</span><span><i style="background:var(--ok)"></i>다운로드·실행 클릭(사이트)</span></div>`;
+      <div class="legend"><span><i style="background:var(--accent)"></i>방문자</span><span><i style="background:var(--ok)"></i>다운로드·웹 실행 클릭(사이트)</span></div>`;
   }
 
-  // 사이트 클릭(서버 집계)과 GitHub 누적(downloads.json)을 한 화면에서 맞춰 보여 주려고 둘 다 기억해 둔다
-  let cur = null, curDays = 30, dl = null, dlErr = null;
-  const labelOf = (name) => dl?.apps.find((a) => a.name === name)?.displayName || name;
+  // 사이트 클릭(서버 집계), GitHub 누적(downloads.json), 전체 앱 메타(repos.json), Thinks(thinks.json)
+  let cur = null, curDays = 30, dl = null, dlErr = null, meta = {}, thinks = null;
+  const labelOf = (name) => meta[name]?.displayName || dl?.apps.find((a) => a.name === name)?.displayName || name || '(알 수 없음)';
+  // 사이트의 Web 탭과 같은 규칙: 웹 링크가 있고 설치 파일(릴리스 asset)이 없는 앱
+  const isWebApp = (name) => !!meta[name]?.isWeb;
+  const WEB_FILE = /^(web|웹 앱 실행|open the web app)$/i;
+  const webClicks = (a) => (a?.files || []).filter((f) => WEB_FILE.test(f.file)).reduce((n, f) => n + f.n, 0);
 
   async function load(days) {
     $('#main').innerHTML = '<div class="state">불러오는 중…</div>';
@@ -167,42 +172,54 @@
       const since = s.all.since ? new Date(s.all.since).toLocaleDateString('ko-KR') : null;
       $('#sub').textContent = since ? `${since}부터 수집 · 최근 ${days}일 기준` : '아직 수집된 기록이 없습니다';
       const maxC = Math.max(1, ...s.countries.map((c) => c.visitors));
-      const maxA = Math.max(1, ...s.apps.map((a) => a.downloads));
-      // 다운로드 기준: GitHub 릴리스 파일의 누적 다운로드(사이트를 거치지 않은 것 포함). 불러오지 못하면 사이트 클릭으로 대신한다
-      const apps = dl ? mergeApps(dl, s) : null;
+      const dlClickApps = s.apps.filter((a) => !isWebOnlyClick(a));
+      const maxA = Math.max(1, ...dlClickApps.map((a) => a.downloads));
+      // 다운로드 기준: GitHub 릴리스 파일의 누적 다운로드(사이트를 거치지 않은 것 포함). 웹 전용 앱은 아래 "웹 앱 실행" 표로 분리한다
+      const apps = dl ? mergeApps(dl, s).filter((a) => !isWebOnly(a)) : null;
       const ghTotal = dl ? dl.apps.reduce((n, a) => n + a.total, 0) : 0;
       const maxG = Math.max(1, ...(apps || []).map((a) => a.total));
-      const maxK = Math.max(1, ...(apps || []).map((a) => a.clicks?.downloads || 0));
+      const maxK = Math.max(1, ...(apps || []).map((a) => (a.clicks?.downloads || 0) - webClicks(a.clicks)));
+      const webSum = s.apps.reduce((n, a) => n + webClicks(a), 0);
+      const dlClickSum = Math.max(0, s.range.downloads - webSum);
+      const webApps = webAppRows(s);
+      const maxW = Math.max(1, ...webApps.map((w) => w.runs));
       const topVersions = (a) => a.releases.filter((v) => v.total).slice(0, 3).map((v) => `${esc(v.tag)} ${num(v.total)}`).join(' · ');
       const appsRows = apps ? apps.map((a) => {
-        const att = attribute(a), clickN = a.clicks?.downloads || 0;
+        const att = attribute(a), clickN = Math.max(0, (a.clicks?.downloads || 0) - att.web);
         const line = a.releases.length ? topVersions(a) + (att.web ? `${topVersions(a) ? ' · ' : ''}웹 실행 ${num(att.web)}` : '')
-          : `웹 실행 ${num(att.web)}${att.other ? ` · 기타 ${num(att.other)}` : ''}`;
+          : (att.other ? `기타 ${num(att.other)}` : '');
         return `<tr><td>${esc(a.displayName)}<div class="meter"><span style="width:${(a.total ? a.total / maxG : clickN / maxK * 0.2) * 100}%"></span></div>
           <div class="files">${line || '&nbsp;'}</div></td>
           <td class="n${a.total ? '' : ' zero'}">${a.releases.length ? num(a.total) : '—'}</td><td class="n${clickN ? '' : ' zero'}">${num(clickN)}</td></tr>`;
       }).join('') : '';
+      const webPanel = `<section class="panel" style="margin-top:16px"><h2>웹 앱 실행 <span class="sub">(Web 탭 · 최근 ${days}일)</span></h2>${webApps.length
+        ? `<table><thead><tr><th>웹 앱</th><th class="n">실행</th><th class="n">사람</th></tr></thead><tbody>${webApps.map((w) =>
+          `<tr><td>${esc(w.label)}<div class="meter"><span style="width:${w.runs ? w.runs / maxW * 100 : 0}%"></span></div></td>
+            <td class="n${w.runs ? '' : ' zero'}">${num(w.runs)}</td><td class="n${w.people ? '' : ' zero'}">${w.people != null ? num(w.people) : '—'}</td></tr>`).join('')}</tbody></table>`
+        : '<div class="empty">아직 웹 앱 실행 기록이 없습니다.</div>'}</section>`;
       $('#main').innerHTML = `
         <section class="kpis">
           <div class="kpi"><div class="l">방문자</div><div class="v">${num(s.range.visitors)}</div><div class="s">전체 ${num(s.all.visitors)}</div></div>
           <div class="kpi"><div class="l">방문 수</div><div class="v">${num(s.range.visits)}</div><div class="s">전체 ${num(s.all.visits)}</div></div>
           ${dl
             ? `<div class="kpi"><div class="l">다운로드 (누적)</div><div class="v">${num(ghTotal)}</div><div class="s">GitHub 릴리스 파일 · 사이트 밖 포함</div></div>`
-            : `<div class="kpi"><div class="l">다운로드 클릭</div><div class="v">${num(s.range.downloads)}</div><div class="s">전체 ${num(s.all.downloads)}</div></div>`}
+            : `<div class="kpi"><div class="l">다운로드·실행 클릭</div><div class="v">${num(s.range.downloads)}</div><div class="s">전체 ${num(s.all.downloads)}</div></div>`}
+          <div class="kpi"><div class="l">사이트 다운로드 클릭</div><div class="v">${num(dlClickSum)}</div><div class="s">최근 ${days}일 · 설치 파일 버튼</div></div>
+          <div class="kpi"><div class="l">웹 앱 실행</div><div class="v">${num(webSum)}</div><div class="s">최근 ${days}일 · Web 탭 ${num(webApps.length)}개</div></div>
           <div class="kpi"><div class="l">접속 국가</div><div class="v">${num(s.countries.filter((c) => c.country !== '??').length)}</div><div class="s">최근 ${days}일</div></div>
-          ${dl ? `<div class="kpi"><div class="l">사이트 경유 클릭</div><div class="v">${num(s.range.downloads)}</div><div class="s">최근 ${days}일 · 전체 ${num(s.all.downloads)} · 웹 실행 포함</div></div>` : ''}
         </section>
         <section class="panel"><h2>일별 추이</h2>${chart(s.daily, days)}</section>
         <div class="two">
-          ${apps ? `<section class="panel"><h2>앱별 다운로드 <span class="sub">(누적 · GitHub 릴리스 기준)</span></h2>${apps.length ? `<table><thead><tr><th>앱</th><th class="n">누적</th><th class="n">사이트 클릭<div class="files" style="margin:0">최근 ${days}일</div></th></tr></thead><tbody>${appsRows}</tbody></table>` : '<div class="empty">아직 다운로드 기록이 없습니다.</div>'}</section>` :
-          `<section class="panel"><h2>앱별 다운로드 <span class="sub">(사이트 클릭 · 최근 ${days}일)</span></h2>${s.apps.length ? `<table><thead><tr><th>앱</th><th class="n">클릭</th><th class="n">사람</th></tr></thead><tbody>
-            ${s.apps.map((a) => `<tr><td>${esc(a.app ? labelOf(a.app) : '(알 수 없음)')}<div class="meter"><span style="width:${a.downloads / maxA * 100}%"></span></div>
+          ${apps ? `<section class="panel"><h2>앱별 다운로드 <span class="sub">(Apps 탭 · 누적 GitHub 릴리스 기준)</span></h2>${apps.length ? `<table><thead><tr><th>앱</th><th class="n">누적</th><th class="n">사이트 클릭<div class="files" style="margin:0">최근 ${days}일</div></th></tr></thead><tbody>${appsRows}</tbody></table>` : '<div class="empty">아직 다운로드 기록이 없습니다.</div>'}</section>` :
+          `<section class="panel"><h2>앱별 다운로드 <span class="sub">(사이트 클릭 · 최근 ${days}일)</span></h2>${dlClickApps.length ? `<table><thead><tr><th>앱</th><th class="n">클릭</th><th class="n">사람</th></tr></thead><tbody>
+            ${dlClickApps.map((a) => `<tr><td>${esc(labelOf(a.app))}<div class="meter"><span style="width:${a.downloads / maxA * 100}%"></span></div>
               <div class="files">${a.files.slice(0, 3).map((f) => `${esc(f.file)} ${f.n}`).join(' · ')}${a.files.length > 3 ? ` 외 ${a.files.length - 3}개` : ''}</div></td>
               <td class="n">${num(a.downloads)}</td><td class="n">${num(a.people)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">아직 다운로드 기록이 없습니다.</div>'}</section>`}
-          <section class="panel"><h2>접속 국가</h2>${s.countries.length ? `<table><thead><tr><th>국가</th><th class="n">방문자</th><th class="n">방문</th><th class="n">다운로드</th></tr></thead><tbody>
+          <section class="panel"><h2>접속 국가</h2>${s.countries.length ? `<table><thead><tr><th>국가</th><th class="n">방문자</th><th class="n">방문</th><th class="n">클릭</th></tr></thead><tbody>
             ${s.countries.map((c) => `<tr><td>${country(c.country)}<div class="meter"><span style="width:${c.visitors / maxC * 100}%"></span></div></td>
               <td class="n">${num(c.visitors)}</td><td class="n">${num(c.visits)}</td><td class="n">${num(c.downloads)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">아직 방문 기록이 없습니다.</div>'}</section>
-        </div>`;
+        </div>
+        ${webPanel}`;
       renderReleases();
   }
 
@@ -230,7 +247,7 @@
     for (const f of app.clicks?.files || []) {
       listed += f.n;
       // "웹에서 바로 실행" 버튼도 다운로드 클릭으로 세어져 왔다 (파일 이름이 'web' 또는 옛 표기)
-      if (/^(web|웹 앱 실행|open the web app)$/i.test(f.file)) { web += f.n; continue; }
+      if (WEB_FILE.test(f.file)) { web += f.n; continue; }
       const tags = idx[f.file];
       if (!tags) { other += f.n; continue; }
       byTag[tags[0]] = (byTag[tags[0]] || 0) + f.n;
@@ -253,33 +270,46 @@
       <td>${chips || '<span class="zero">—</span>'}${files}</td></tr>`;
   }
 
-  // 같은 이름(저장소 이름)으로 두 데이터를 짝짓는다. 릴리스가 없는 앱(웹 앱 등)의 클릭도 빠뜨리지 않는다
+  // 웹 앱 줄: Web 탭의 모든 웹 앱(실행 0회 포함) + 목록에 없어도 웹 실행 클릭만 있는 앱
+  function webAppRows(s) {
+    const byApp = Object.fromEntries((s?.apps || []).map((a) => [a.app, a]));
+    const names = new Set([...Object.keys(meta).filter(isWebApp), ...(s?.apps || []).filter(isWebOnlyClick).map((a) => a.app)]);
+    return [...names].map((n) => {
+      const a = byApp[n];
+      const runs = webClicks(a);
+      return { name: n, label: labelOf(n), runs, people: runs && runs === (a?.downloads || 0) ? a.people : (runs ? null : 0) };
+    }).sort((a, b) => b.runs - a.runs || a.label.localeCompare(b.label, 'ko'));
+  }
+  const isWebOnlyClick = (a) => isWebApp(a.app) || (a.downloads > 0 && webClicks(a) === a.downloads && !dl?.apps.some((x) => x.name === a.app));
+  const isWebOnly = (a) => !a.releases.length && (isWebApp(a.name) || (a.clicks && isWebOnlyClick(a.clicks)));
+
+  // 같은 이름(저장소 이름)으로 두 데이터를 짝짓는다. 릴리스가 없는 앱의 클릭도 빠뜨리지 않는다
   function mergeApps(d, s) {
     const clicks = Object.fromEntries((s?.apps || []).map((a) => [a.app, a]));
-    const apps = d.apps.map((a) => ({ ...a, clicks: clicks[a.name] || null }));
+    const apps = d.apps.map((a) => ({ ...a, displayName: meta[a.name]?.displayName || a.displayName, clicks: clicks[a.name] || null }));
     for (const a of s?.apps || []) if (!d.apps.some((x) => x.name === a.app))
-      apps.push({ name: a.app, displayName: a.app || '(알 수 없음)', total: 0, releases: [], clicks: a });
-    apps.sort((a, b) => b.total - a.total || (b.clicks?.downloads || 0) - (a.clicks?.downloads || 0) || a.displayName.localeCompare(b.displayName));
+      apps.push({ name: a.app, displayName: labelOf(a.app), total: 0, releases: [], clicks: a });
+    apps.sort((a, b) => b.total - a.total || (b.clicks?.downloads || 0) - (a.clicks?.downloads || 0) || a.displayName.localeCompare(b.displayName, 'ko'));
     return apps;
   }
 
   function releasesPanel(d, s) {
-    const apps = mergeApps(d, s);
+    const apps = mergeApps(d, s).filter((a) => !isWebOnly(a));
     if (!apps.length) return '<div class="empty">릴리스가 있는 앱이 아직 없습니다.</div>';
     const grand = apps.reduce((n, a) => n + a.total, 0);
-    const clickSum = apps.reduce((n, a) => n + (a.clicks?.downloads || 0), 0);
-    const kpi = s ? s.range.downloads : null;
+    const clickSum = apps.reduce((n, a) => n + Math.max(0, (a.clicks?.downloads || 0) - webClicks(a.clicks)), 0);
+    const kpi = s ? Math.max(0, s.range.downloads - s.apps.reduce((n, a) => n + webClicks(a), 0)) : null;
     const tie = s ? (clickSum === kpi
-      ? `사이트 클릭 합계 <b>${num(clickSum)}</b>회는 위쪽 "사이트 경유 클릭"과 같은 값입니다.`
-      : `사이트 클릭 합계 <b>${num(clickSum)}</b>회 (위쪽 "사이트 경유 클릭" ${num(kpi)}회 중 앱별로 집계된 분).`) : '';
+      ? `사이트 클릭 합계 <b>${num(clickSum)}</b>회는 위쪽 "사이트 다운로드 클릭"과 같은 값입니다.`
+      : `사이트 클릭 합계 <b>${num(clickSum)}</b>회 (위쪽 "사이트 다운로드 클릭" ${num(kpi)}회 중 앱별로 집계된 분).`) : '';
     return `<div class="sub" style="margin:-6px 0 4px"><b>GitHub 누적</b>이 이 페이지의 다운로드 기준입니다. 모든 버전의 릴리스 파일을 받은 횟수 총 <b>${num(grand)}</b>회(앱 ${d.apps.length}개, ${ago(d.generatedAt)} 갱신·1시간마다)이며, 이 사이트를 거친 다운로드와 사이트 밖의 직접 링크·앱의 자동 업데이트 다운로드를 모두 포함합니다. 체크섬·업데이트 정보 파일은 뺐고, GitHub는 누적 값만 알려 주므로 기간 선택은 적용되지 않습니다.</div>
-      <div class="sub" style="margin:0 0 12px"><b>사이트 클릭</b>은 그중 최근 ${curDays}일 동안 이 사이트의 버튼을 거친 횟수(웹 실행 포함)입니다. ${tie}${s ? ' 같은 파일 이름을 쓰는 버전(예: 포터블 exe)의 클릭은 가장 최신 버전에 합쳐 ≈로 표시합니다.' : ' (사이트 클릭 통계를 불러오지 못해 GitHub 누적만 표시합니다.)'}</div>` +
+      <div class="sub" style="margin:0 0 12px"><b>사이트 클릭</b>은 그중 최근 ${curDays}일 동안 이 사이트의 다운로드 버튼을 거친 횟수입니다. 웹 앱 실행은 위쪽 "웹 앱 실행" 표에 따로 모았습니다. ${tie}${s ? ' 같은 파일 이름을 쓰는 버전(예: 포터블 exe)의 클릭은 가장 최신 버전에 합쳐 ≈로 표시합니다.' : ' (사이트 클릭 통계를 불러오지 못해 GitHub 누적만 표시합니다.)'}</div>` +
       apps.map((a, i) => {
         const att = attribute(a);
         const max = Math.max(1, ...a.releases.map((v) => v.total));
         const head = a.releases.slice(0, SHOWN), rest = a.releases.slice(SHOWN);
-        const clickTot = a.clicks?.downloads || 0;
-        const webRow = att.web ? `<tr><td colspan="2"><span class="zero">웹에서 바로 실행 (설치 없음)</span></td><td class="n">${num(att.web)}</td><td class="zero">실행 버튼도 다운로드 클릭으로 함께 집계됩니다</td></tr>` : '';
+        const clickTot = Math.max(0, (a.clicks?.downloads || 0) - att.web);
+        const webRow = att.web ? `<tr><td colspan="2"><span class="zero">웹에서 바로 실행 (설치 없음)</span></td><td class="n">${num(att.web)}</td><td class="zero">웹 실행 클릭</td></tr>` : '';
         const otherRow = att.other ? `<tr><td colspan="2"><span class="zero">버전을 알 수 없는 클릭</span></td><td class="n">${num(att.other)}</td><td class="zero">릴리스에 없는 파일(이전 이름·삭제된 릴리스 등)</td></tr>` : '';
         return `<details class="rel-app"${i === 0 ? ' open' : ''}><summary><span class="nm">${esc(a.displayName)}</span><span class="sub">버전 ${a.releases.length}개</span>
             <span class="tots"><span class="gh">GitHub 누적<b>${num(a.total)}</b></span><span>사이트 클릭<b>${num(clickTot)}</b></span></span></summary>
@@ -290,7 +320,22 @@
       }).join('');
   }
 
-  // 데이터 두 가지(사이트 클릭, GitHub 누적)가 모두 준비되거나 바뀔 때마다 그린다
+  function renderThinks() {
+    const box = $('#thinks');
+    const posts = thinks?.posts || [];
+    if (!posts.length) { box.hidden = true; return; }
+    box.hidden = false;
+    const upd = thinks.generatedAt ? ` · ${ago(thinks.generatedAt)} 갱신` : '';
+    box.innerHTML = `<h2>Thinks 현황 <span class="sub">(발행 글 ${num(posts.length)}편${upd})</span></h2>
+      <div class="sub" style="margin:-6px 0 12px">Thinks 글 방문은 위쪽 전체 방문자·방문 수에 합산됩니다(글별 조회수 분리 집계는 미지원).</div>
+      <table><thead><tr><th>제목</th><th>태그</th><th class="n">읽기 시간</th><th class="n">수정일</th></tr></thead><tbody>${posts.map((p) =>
+        `<tr><td><a href="ko/thinks/${encodeURIComponent(p.slug)}/">${esc(p.title)}</a></td>
+          <td>${(p.tags || []).map((tg) => `<span class="chip">${esc(tg)}</span>`).join('') || '<span class="zero">—</span>'}</td>
+          <td class="n">${p.readingMinutes ? `약 ${num(p.readingMinutes)}분` : '—'}</td>
+          <td class="n">${esc(day(p.updatedAt || p.publishedAt) || '—')}</td></tr>`).join('')}</tbody></table>`;
+  }
+
+  // 데이터(사이트 클릭, GitHub 누적, 앱 메타, Thinks)가 준비되거나 바뀔 때마다 그린다
   function renderReleases() {
     const box = $('#rel');
     if (!dl) {
@@ -300,11 +345,18 @@
     }
     box.innerHTML = '<h2>앱 버전별 다운로드</h2>' + releasesPanel(dl, cur);
   }
-  async function loadReleases() {
-    try {
-      dl = await fetch('data/downloads.json', { cache: 'no-cache' }).then((r) => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)));
-    } catch (e) { dlErr = e; }
-    if (cur) renderMain(cur, curDays);   // 앱 이름 표기(표시 이름)도 맞추려고 위쪽까지 다시 그린다
+  async function loadMeta() {
+    const [d, r, th] = await Promise.allSettled([
+      fetch('data/downloads.json', { cache: 'no-cache' }).then((x) => x.ok ? x.json() : Promise.reject(new Error('HTTP ' + x.status))),
+      fetch('data/repos.json', { cache: 'no-cache' }).then((x) => x.ok ? x.json() : Promise.reject(new Error('HTTP ' + x.status))),
+      fetch('data/thinks.json', { cache: 'no-cache' }).then((x) => x.ok ? x.json() : Promise.reject(new Error('HTTP ' + x.status))),
+    ]);
+    if (d.status === 'fulfilled') dl = d.value; else dlErr = d.reason;
+    if (r.status === 'fulfilled') meta = Object.fromEntries((r.value.repos || []).map((x) =>
+      [x.name, { displayName: x.displayNameKo || x.displayName || x.name, isWeb: !!x.web && !(x.release?.assets?.length) }]));
+    if (th.status === 'fulfilled') thinks = th.value;
+    renderThinks();
+    if (cur) renderMain(cur, curDays);   // 표시 이름·웹 앱 목록까지 맞춰 위쪽을 다시 그린다
     else renderReleases();
   }
   $('#rel').addEventListener('click', (e) => {
@@ -318,7 +370,7 @@
     load(+b.dataset.d);
   });
   load(30);
-  loadReleases();
+  loadMeta();
 })();
 </script>
 </body>

@@ -41,9 +41,9 @@ const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|c
 const IMG = /\.(png|jpe?g|webp|gif)$/i;
 const SHOT_PATH = /(^|\/)(screenshots?|docs\/(images|img|screenshots?)|\.github\/screenshots?)\/[^/]+$|(^|\/)screenshot[^/]*$/i;
 const ICON_GUESS = [/(^|\/)(app[_-]?)?icon(-?(512|256))?\.png$/i, /(^|\/)logo\.png$/i, /targetsize-256_altform-unplated\.png$/i, /Square310x310Logo\.png$/i];
-// 언어별 표시 이름·설명 (displayNameEn, descriptionKo …) — 페이지의 한/영 전환에서 사용
+// 언어별 표시 이름·부제·설명 (displayNameEn, subtitleKo, descriptionKo …) — 페이지의 한/영 전환 및 SEO에서 사용
 // (featuresEn / featuresKo: 앱 소개 페이지의 '주요 기능' 목록)
-const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|description|features)(En|Ko)$/.test(k)));
+const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|subtitle|description|features)(En|Ko)$/.test(k)));
 const raw = (r, p) => `https://raw.githubusercontent.com/${ORG}/${r.name}/${r.default_branch}/${p.split('/').map(encodeURIComponent).join('/')}`;
 
 async function localShots(name) {

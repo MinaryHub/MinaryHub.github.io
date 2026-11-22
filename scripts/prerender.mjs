@@ -88,55 +88,76 @@ const org = { '@type': 'Organization', '@id': siteUrl + '#org', name: 'MinaryHub
 // name / alternateName feed the "site name" Google shows above the result
 const website = { '@type': 'WebSite', '@id': siteUrl + '#website', name: title, alternateName: cfg.alternateNames || undefined, url: siteUrl, inLanguage: LANGS, publisher: { '@id': siteUrl + '#org' } };
 
-const appLd = (r, lang) => ({
-  '@type': 'SoftwareApplication',
-  '@id': siteUrl + appPath(r, 'en') + '#app',
-  name: nameOf(r, lang),
-  alternateName: LANGS.map((l) => nameOf(r, l)).find((n) => n !== nameOf(r, lang)),
-  description: loc(r, 'description', lang) || undefined,
-  url: siteUrl + appPath(r, lang),
-  sameAs: [r.url, r.web].filter((u) => u && u !== siteUrl + appPath(r, lang)),
-  applicationCategory: r.category || 'UtilitiesApplication',
-  operatingSystem: osList(r).join(', ') || undefined,
-  softwareVersion: r.release?.tag || undefined,
-  datePublished: r.release?.publishedAt || undefined,
-  dateModified: r.release?.publishedAt || r.pushedAt || undefined,
-  downloadUrl: r.release?.url || undefined,
-  installUrl: r.web || undefined,
-  image: abs(r.icon) || undefined,
-  featureList: featuresFor(r, lang).length ? featuresFor(r, lang) : undefined,
-  screenshot: shotsFor(r, lang).slice(0, 5).map(abs),
-  author: { '@id': siteUrl + '#org' },
-  publisher: { '@id': siteUrl + '#org' },
-  inLanguage: lang,
-  isAccessibleForFree: true,
-  mainEntityOfPage: siteUrl + appPath(r, lang),
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
-});
+const postLangOf = (p) => {
+  if (p?.lang === 'ko' || p?.lang === 'en') return p.lang;
+  return /[\uAC00-\uD7A3]/.test(`${p?.title || ''} ${p?.excerpt || ''}`) ? 'ko' : 'en';
+};
+const postCanonicalPath = (p) => postPathUrl(p, postLangOf(p));
 
-// 공통 <head>: 제목·설명·canonical·hreflang·OG·트위터
-function headTags({ lang, path, pageTitle, desc, image, type = 'website', alt, extraMeta = [] }) {
+const appLd = (r, lang) => {
+  const subtitle = loc(r, 'subtitle', lang);
+  const kw = [subtitle, ...(r.topics || [])].filter(Boolean).join(', ');
+  const firstAsset = r.release?.assets?.[0];
+  return {
+    '@type': 'SoftwareApplication',
+    '@id': siteUrl + appPath(r, 'en') + '#app',
+    name: nameOf(r, lang),
+    alternateName: LANGS.map((l) => nameOf(r, l)).find((n) => n !== nameOf(r, lang)),
+    description: loc(r, 'description', lang) || undefined,
+    keywords: kw || undefined,
+    url: siteUrl + appPath(r, lang),
+    sameAs: [r.url, r.web].filter((u) => u && u !== siteUrl + appPath(r, lang)),
+    applicationCategory: r.category || 'UtilitiesApplication',
+    operatingSystem: osList(r).join(', ') || undefined,
+    softwareVersion: r.release?.tag || undefined,
+    fileSize: firstAsset?.size ? fmtSize(firstAsset.size) : undefined,
+    datePublished: r.release?.publishedAt || undefined,
+    dateModified: r.release?.publishedAt || r.pushedAt || undefined,
+    downloadUrl: r.release?.url || undefined,
+    installUrl: r.web || undefined,
+    image: abs(r.icon) || undefined,
+    featureList: featuresFor(r, lang).length ? featuresFor(r, lang) : undefined,
+    screenshot: shotsFor(r, lang).slice(0, 5).map(abs),
+    author: { '@id': siteUrl + '#org' },
+    publisher: { '@id': siteUrl + '#org' },
+    inLanguage: lang,
+    isAccessibleForFree: true,
+    mainEntityOfPage: siteUrl + appPath(r, lang),
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+  };
+};
+
+// 공통 <head>: 제목·설명·canonical·hreflang·RSS·OG·트위터
+function headTags({
+  lang, path, canonicalPath = path, pageTitle, desc, image, type = 'website', alt,
+  robots = 'index, follow, max-image-preview:large', includeHreflang = true, keywords = '', extraMeta = [],
+}) {
   const url = siteUrl + path;
+  const canonicalUrl = siteUrl + canonicalPath;
   const v = cfg.verification || {};
   return [
     `<title>${esc(pageTitle)}</title>`,
     `<meta name="description" content="${esc(desc)}">`,
-    `<meta name="robots" content="index, follow, max-image-preview:large">`,
-    `<link rel="canonical" href="${esc(url)}">`,
-    ...LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${esc(siteUrl + alt[l])}">`),
-    `<link rel="alternate" hreflang="x-default" href="${esc(siteUrl + alt.en)}">`,
+    keywords && `<meta name="keywords" content="${esc(keywords)}">`,
+    `<meta name="robots" content="${esc(robots)}">`,
+    `<link rel="canonical" href="${esc(canonicalUrl)}">`,
+    ...(includeHreflang && alt ? [
+      ...LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${esc(siteUrl + alt[l])}">`),
+      `<link rel="alternate" hreflang="x-default" href="${esc(siteUrl + alt.en)}">`,
+    ] : []),
+    `<link rel="alternate" type="application/rss+xml" title="${esc(title)} RSS" href="${esc(siteUrl)}rss.xml">`,
     `<link rel="sitemap" type="application/xml" href="${esc(siteUrl)}sitemap.xml">`,
     `<meta property="og:type" content="${type}">`,
     `<meta property="og:site_name" content="${esc(title)}">`,
     `<meta property="og:title" content="${esc(pageTitle)}">`,
     `<meta property="og:description" content="${esc(desc)}">`,
-    `<meta property="og:url" content="${esc(url)}">`,
+    `<meta property="og:url" content="${esc(canonicalUrl)}">`,
     `<meta property="og:image" content="${esc(image)}">`,
     image === ogImage && `<meta property="og:image:width" content="1200">`,
     image === ogImage && `<meta property="og:image:height" content="630">`,
     `<meta property="og:image:alt" content="${esc(pageTitle)}">`,
     `<meta property="og:locale" content="${LOCALE[lang]}">`,
-    ...LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${LOCALE[l]}">`),
+    ...(includeHreflang ? LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${LOCALE[l]}">`) : []),
     ...extraMeta,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${esc(pageTitle)}">`,
@@ -153,12 +174,32 @@ function headTags({ lang, path, pageTitle, desc, image, type = 'website', alt, e
 // 하위 폴더 페이지가 사이트 루트 기준 상대 경로(logo.webp, screenshots/…)를 그대로 쓰도록
 const baseFor = (path) => (path ? '../'.repeat(path.split('/').filter(Boolean).length) : '');
 
-const pages = [];   // sitemap: { alt: {en, ko}, lastmod }
+const pages = [];   // sitemap: { alt: {en, ko}, singleLang?, lastmod, priority, images }
 const ogImage = siteUrl + (cfg.ogImage || 'og.png');
 const generated = (data.generatedAt || new Date().toISOString()).slice(0, 10);
 const thinksGenerated = (thinksFull.generatedAt || data.generatedAt || new Date().toISOString()).slice(0, 10);
+const siteKeywords = Array.isArray(cfg.keywords) ? cfg.keywords.join(', ') : '';
 // 배포마다 바뀌는 버전 — 브라우저가 예전 contact.js를 캐시에서 쓰지 않게
 const ver = Date.now().toString(36);
+
+const appsStaticList = (lang) => {
+  if (!repos.length) return '';
+  const t = T[lang];
+  const list = repos.map((r) => {
+    const d = loc(r, 'description', lang);
+    return `<li><a href="${esc(appPath(r, lang))}"><strong>${esc(nameOf(r, lang))}</strong></a>${d ? ` — ${esc(d)}` : ''}</li>`;
+  }).join('');
+  return `<div class="state" id="loading"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${t.projects}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`;
+};
+
+const thinksStaticList = (lang) => {
+  if (!posts.length) return '';
+  const t = T[lang];
+  const list = posts.map((p) =>
+    `<li><a href="${esc(postCanonicalPath(p))}"><strong>${esc(p.title)}</strong></a>${p.excerpt ? ` — ${esc(p.excerpt)}` : ''}</li>`
+  ).join('');
+  return `<div class="state" id="thinksLoading"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${t.thinks}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`;
+};
 
 // ── 첫 페이지 (영어 /, 한국어 /ko/) — Apps 탭 기본 ──
 for (const lang of LANGS) {
@@ -175,19 +216,12 @@ for (const lang of LANGS) {
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="apps" data-prerendered="1"`)
     .replace('<meta charset="utf-8">', `<meta charset="utf-8">${baseFor(path) ? `\n<base href="${baseFor(path)}">` : ''}`)
     .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
-      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: home('en'), ko: home('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
+      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: home('en'), ko: home('ko') }, keywords: siteKeywords }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
     .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
     .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
     .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`);
-  if (repos.length) {
-    // JS가 카드를 그리기 전(또는 JS 미실행 크롤러)에 보일 목록 — 앱 소개 페이지로 이어지는 내부 링크
-    const list = repos.map((r) => {
-      const d = loc(r, 'description', lang);
-      return `<li><a href="${esc(appPath(r, lang))}"><strong>${esc(nameOf(r, lang))}</strong></a>${d ? ` — ${esc(d)}` : ''}</li>`;
-    }).join('');
-    html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/,
-      `<div class="state" id="loading"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${t.projects}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`);
-  }
+  if (repos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (posts.length) html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/, thinksStaticList(lang));
   await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
   await writeFile(`${SITE_DIR}/${path}index.html`, html);
 }
@@ -202,7 +236,7 @@ for (const lang of LANGS) {
   const graph = [org, website, {
     '@type': 'CollectionPage', '@id': siteUrl + path + '#page', url: siteUrl + path, name: pageTitle, description: desc, inLanguage: lang,
     isPartOf: { '@id': siteUrl + '#website' },
-    mainEntity: { '@type': 'ItemList', itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + postPathUrl(p, lang), name: p.title })) },
+    mainEntity: { '@type': 'ItemList', itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + postCanonicalPath(p), name: p.title })) },
   }];
   let html = indexSrc
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="thinks" data-prerendered="1"`)
@@ -220,13 +254,8 @@ for (const lang of LANGS) {
       '<section id="panelApps" role="tabpanel" aria-labelledby="tabApps" hidden>')
     .replace('<section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks" hidden>',
       '<section id="panelThinks" role="tabpanel" aria-labelledby="tabThinks">');
-  if (posts.length) {
-    const list = posts.map((p) =>
-      `<li><a href="${esc(postPathUrl(p, lang))}"><strong>${esc(p.title)}</strong></a>${p.excerpt ? ` — ${esc(p.excerpt)}` : ''}</li>`
-    ).join('');
-    html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/,
-      `<div class="state" id="thinksLoading"><h2 style="font-size:16px;margin:0 0 8px">${esc(title)} ${t.thinks}</h2><ul style="text-align:left;margin:0;padding-left:20px">${list}</ul></div>`);
-  }
+  if (repos.length) html = html.replace(/<div class="state" id="loading">[^<]*<\/div>/, appsStaticList(lang));
+  if (posts.length) html = html.replace(/<div class="state" id="thinksLoading">[^<]*<\/div>/, thinksStaticList(lang));
   await mkdir(`${SITE_DIR}/${path}`, { recursive: true });
   await writeFile(`${SITE_DIR}/${path}index.html`, html);
 }
@@ -288,12 +317,16 @@ const appScript = (lang, alt) => `<script>
 function appPage(r, lang) {
   const t = T[lang], path = appPath(r, lang), name = nameOf(r, lang);
   const desc = loc(r, 'description', lang);
+  const subtitle = loc(r, 'subtitle', lang);
   const alt = { en: appPath(r, 'en'), ko: appPath(r, 'ko') };
-  const pageTitle = `${name} — ${t.kind(r)} | ${title}`;
+  const kindText = t.kind(r);
+  const fullTitle = subtitle ? `${name} — ${subtitle} · ${kindText} | ${title}` : `${name} — ${kindText} | ${title}`;
+  const pageTitle = fullTitle.length <= 72 ? fullTitle : (subtitle ? `${name} — ${subtitle} | ${title}` : `${name} — ${kindText} | ${title}`);
+  const appKeywords = [name, subtitle, ...(r.topics || [])].filter(Boolean).join(', ');
   // A very short description (e.g. a few words from the repo's About box) is filled out with the first feature.
   const first = featuresFor(r, lang)[0];
   const metaDesc = clip(
-    desc && desc.length >= 40 ? desc : [desc, first].filter(Boolean).join(desc ? ' — ' : '') || `${name} — ${t.kind(r)}`,
+    desc && desc.length >= 40 ? desc : [desc, first].filter(Boolean).join(desc ? ' — ' : '') || `${name} — ${subtitle || kindText}`,
   );
   const shots = shotsFor(r, lang);
   // Share previews: a PNG/JPEG/GIF screenshot, else a PNG icon, else the site image (WebP is not read by every chat app).
@@ -329,7 +362,7 @@ function appPage(r, lang) {
 <meta charset="utf-8">
 <base href="${baseFor(path)}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-${headTags({ lang, path, pageTitle, desc: metaDesc, image, alt })}
+${headTags({ lang, path, pageTitle, desc: metaDesc, image, alt, keywords: appKeywords })}
 ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 <link rel="icon" type="image/webp" href="logo.webp">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -351,7 +384,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   </header>
   <nav class="crumbs" aria-label="Breadcrumb"><a href="${home(lang) || './'}">${esc(t.allApps)}</a> › ${esc(name)}</nav>
   <main class="app">
-    <div class="app-head">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="${esc(name)}" width="72" height="72">` : ''}<div><h1>${esc(name)}</h1><p class="kind">${esc(t.kind(r))}</p></div></div>
+    <div class="app-head">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="${esc(name)}" width="72" height="72">` : ''}<div><h1>${esc(name)}</h1><p class="kind">${esc(subtitle ? `${subtitle} · ${kindText}` : kindText)}</p></div></div>
     ${desc ? `<p class="lead">${esc(desc)}</p>` : ''}
     <div class="actions">${actions}</div>
     <p class="facts">${esc(facts)}</p>
@@ -525,6 +558,44 @@ const postLightboxScript = (closeLabel) => `<script>
 })();
 </script>`;
 
+const SYSTEM_FONTS = new Set([
+  'arial', 'georgia', 'times new roman', 'times', 'verdana', 'tahoma', 'trebuchet ms',
+  'courier new', 'courier', 'comic sans ms', 'impact', 'calibri', 'cambria', 'helvetica',
+  'segoe ui', 'malgun gothic', '맑은 고딕', 'gulim', '굴림', 'dotum', '돋움', 'batang', '바탕',
+  'gungsuh', '궁서', 'apple sd gothic neo', 'sans-serif', 'serif', 'monospace',
+  'noto sans kr', 'jetbrains mono',
+]);
+const MULTI_WEIGHT_GFONTS = new Set([
+  'noto serif kr', 'nanum myeongjo', 'nanum gothic', 'gowun batang', 'hahmlet',
+  'ibm plex sans kr', 'gothic a1', 'merriweather', 'lora', 'playfair display',
+  'roboto', 'roboto serif', 'roboto slab', 'open sans', 'lato', 'montserrat',
+  'source serif 4', 'source sans 3', 'pt serif', 'eb garamond', 'libre baskerville',
+  'inter', 'crimson pro', 'spectral', 'bitter', 'nunito', 'raleway', 'poppins',
+  'oswald', 'ubuntu', 'lexend', 'cormorant garamond', 'work sans', 'dm sans', 'plus jakarta sans',
+]);
+const safeFontName = (f) => {
+  const s = String(f || '').trim().replace(/\s+/g, ' ');
+  return s && s.length <= 60 && /^[a-zA-Z0-9\s\-_가-힣]+$/.test(s) ? s : '';
+};
+const postFontStack = (font) => {
+  const f = safeFontName(font);
+  if (!f) return '';
+  const isSerif = /serif|myeongjo|batang|명조|바탕|garamond|georgia|baskerville|lora|merriweather|song myung|hahmlet|times|cambria/i.test(f);
+  const fallback = isSerif ? '"Noto Serif KR", Georgia, serif' : '"Noto Sans KR", system-ui, -apple-system, sans-serif';
+  return `'${f}', ${fallback}`;
+};
+const postFontLinks = (fonts) => {
+  const list = [...new Set((fonts || []).map(safeFontName).filter(Boolean))];
+  return list
+    .filter((f) => !SYSTEM_FONTS.has(f.toLowerCase()) && !/[가-힣]/.test(f))
+    .map((f) => {
+      const param = encodeURIComponent(f).replace(/%20/g, '+');
+      const w = MULTI_WEIGHT_GFONTS.has(f.toLowerCase()) ? ':wght@400;700' : '';
+      return `<link href="https://fonts.googleapis.com/css2?family=${param}${w}&display=swap" rel="stylesheet">`;
+    })
+    .join('\n');
+};
+
 function postPage(p, idx, lang, prepared) {
   const t = T[lang];
   const pathUrl = postPathUrl(p, lang);
@@ -574,27 +645,40 @@ function postPage(p, idx, lang, prepared) {
       </nav>`
     : '';
 
+  const postLang = postLangOf(p);
+  const canonicalPath = postPathUrl(p, postLang);
+  const isCanonical = lang === postLang;
+  const robots = isCanonical ? 'index, follow, max-image-preview:large' : 'noindex, follow';
+  const fontStack = postFontStack(p.font);
+  const extraFontLinks = postFontLinks([p.font, ...(p.fonts || [])]);
+  const fontCss = fontStack
+    ? `\n  .article-wrap article { --post-font: ${fontStack}; }\n  .article-wrap article .article-head h1, .article-wrap article .prose { font-family: var(--post-font); }`
+    : '';
+
   const blogLd = {
     '@type': 'BlogPosting',
-    '@id': siteUrl + postPathUrl(p, 'en') + '#post',
+    '@id': siteUrl + canonicalPath + '#post',
     headline: p.title,
     description: desc,
-    url: siteUrl + pathUrl,
-    mainEntityOfPage: siteUrl + pathUrl,
+    url: siteUrl + canonicalPath,
+    mainEntityOfPage: siteUrl + canonicalPath,
     datePublished: p.publishedAt || undefined,
     dateModified: p.updatedAt || p.publishedAt || undefined,
     image: image,
+    articleSection: p.tags?.[0] || undefined,
     keywords: (p.tags || []).length ? p.tags.join(', ') : undefined,
+    wordCount: p.wordCount || undefined,
+    timeRequired: p.readingMinutes ? `PT${p.readingMinutes}M` : undefined,
     author: { '@id': siteUrl + '#org' },
     publisher: { '@id': siteUrl + '#org' },
-    inLanguage: lang,
+    inLanguage: postLang,
   };
   const graph = [org, website, blogLd, {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: title, item: siteUrl + home(lang) },
       { '@type': 'ListItem', position: 2, name: t.thinks, item: siteUrl + thinksHome(lang) },
-      { '@type': 'ListItem', position: 3, name: p.title, item: siteUrl + pathUrl },
+      { '@type': 'ListItem', position: 3, name: p.title, item: siteUrl + canonicalPath },
     ],
   }];
 
@@ -604,7 +688,10 @@ function postPage(p, idx, lang, prepared) {
 <meta charset="utf-8">
 <base href="${baseFor(pathDisk)}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-${headTags({ lang, path: pathUrl, pageTitle, desc, image, type: 'article', alt, extraMeta })}
+${headTags({
+    lang: postLang, path: pathUrl, canonicalPath, pageTitle, desc, image, type: 'article', alt,
+    robots, includeHreflang: false, keywords: (p.tags || []).join(', '), extraMeta,
+  })}
 ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 <link rel="icon" type="image/webp" href="logo.webp">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -612,7 +699,8 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>${style}${APP_CSS}${POST_CSS}</style>
+${extraFontLinks}
+<style>${style}${APP_CSS}${POST_CSS}${fontCss}</style>
 </head>
 <body>
 <div class="wrap">
@@ -627,7 +715,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   <nav class="crumbs" aria-label="Breadcrumb"><a href="${thinksHome(lang)}">${esc(t.thinks)}</a> › ${esc(p.title)}</nav>
   <div class="post-layout${hasToc ? ' has-toc' : ''}">
     <main class="article-wrap">
-      <article>
+      <article lang="${postLang}">
         <div class="article-head">
           <h1>${esc(p.title)}</h1>
           ${metaParts ? `<div class="article-meta">${metaParts}</div>` : ''}
@@ -666,26 +754,126 @@ for (let i = 0; i < posts.length; i++) {
     await mkdir(`${SITE_DIR}/${dirPath}`, { recursive: true });
     await writeFile(`${SITE_DIR}/${dirPath}index.html`, postPage(p, i, lang, prepared));
   }
+  const pLang = postLangOf(p);
   pages.push({
-    alt: { en: postPathUrl(p, 'en'), ko: postPathUrl(p, 'ko') },
+    singleLang: pLang,
+    loc: postPathUrl(p, pLang),
     lastmod: (p.updatedAt || p.publishedAt || thinksGenerated).slice(0, 10),
-    priority: '0.7',
-    images: p.cover ? Object.fromEntries(LANGS.map((l) => [l, [abs(p.cover)]])) : undefined,
+    priority: '0.8',
+    images: p.cover ? { [pLang]: [abs(p.cover)] } : undefined,
   });
 }
 
-// ── sitemap.xml (언어별 주소를 hreflang으로 묶음) / robots.txt ──
-const urls = pages.flatMap((p) => LANGS.map((lang) => `  <url>
+// ── sitemap.xml (다국어 페이지는 hreflang 묶음, 단일 언어 글은 대표 URL 1개만) / robots.txt ──
+const urlEntries = pages.flatMap((p) => {
+  if (p.singleLang) {
+    return [`  <url>
+    <loc>${esc(siteUrl + p.loc)}</loc>
+    <lastmod>${p.lastmod}</lastmod>
+    <priority>${p.priority}</priority>${(p.images?.[p.singleLang] || []).map((u) => `
+    <image:image><image:loc>${esc(u)}</image:loc></image:image>`).join('')}
+  </url>`];
+  }
+  return LANGS.map((lang) => `  <url>
     <loc>${esc(siteUrl + p.alt[lang])}</loc>
 ${LANGS.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${esc(siteUrl + p.alt[l])}"/>`).join('\n')}
     <xhtml:link rel="alternate" hreflang="x-default" href="${esc(siteUrl + p.alt.en)}"/>
     <lastmod>${p.lastmod}</lastmod>
     <priority>${p.priority}</priority>${(p.images?.[lang] || []).map((u) => `
     <image:image><image:loc>${esc(u)}</image:loc></image:image>`).join('')}
-  </url>`)).join('\n');
+  </url>`);
+});
 await writeFile(`${SITE_DIR}/sitemap.xml`,
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls}\n</urlset>\n`);
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urlEntries.join('\n')}\n</urlset>\n`);
 await writeFile(`${SITE_DIR}/robots.txt`, `User-agent: *\nAllow: /\nDisallow: /stats.html\n\nSitemap: ${siteUrl}sitemap.xml\n`);
+
+// ── RSS 2.0 피드 (/rss.xml) — 네이버 서치어드바이저 RSS 제출 및 피드 구독용 ──
+const rssItems = [
+  ...posts.map((p) => ({
+    title: p.title,
+    link: siteUrl + postCanonicalPath(p),
+    guid: siteUrl + postCanonicalPath(p),
+    pubDate: new Date(p.publishedAt || thinksFull.generatedAt || Date.now()),
+    desc: p.excerpt || p.title,
+    categories: ['Thinks', ...(p.tags || [])],
+  })),
+  ...repos.map((r) => ({
+    title: `${nameOf(r, 'ko')}${loc(r, 'subtitle', 'ko') ? ` — ${loc(r, 'subtitle', 'ko')}` : ''}`,
+    link: siteUrl + appPath(r, 'ko'),
+    guid: `${siteUrl}${appPath(r, 'ko')}#${r.release?.tag || 'latest'}`,
+    pubDate: new Date(r.release?.publishedAt || r.pushedAt || data.generatedAt || Date.now()),
+    desc: loc(r, 'description', 'ko') || loc(r, 'description', 'en') || nameOf(r, 'ko'),
+    categories: ['Apps', ...(r.topics || []).slice(0, 4)],
+  })),
+].sort((a, b) => b.pubDate - a.pubDate).slice(0, 50);
+
+const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>${esc(title)}</title>
+  <link>${esc(siteUrl)}</link>
+  <description>${esc(loc(cfg, 'tagline', 'ko') || loc(cfg, 'tagline', 'en') || title)}</description>
+  <language>ko</language>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+  <atom:link href="${esc(siteUrl)}rss.xml" rel="self" type="application/rss+xml"/>
+${rssItems.map((it) => `  <item>
+    <title>${esc(it.title)}</title>
+    <link>${esc(it.link)}</link>
+    <guid isPermaLink="${it.guid === it.link ? 'true' : 'false'}">${esc(it.guid)}</guid>
+    <pubDate>${it.pubDate.toUTCString()}</pubDate>
+    <description>${esc(it.desc)}</description>${it.categories.map((c) => `
+    <category>${esc(c)}</category>`).join('')}
+  </item>`).join('\n')}
+</channel>
+</rss>
+`;
+await writeFile(`${SITE_DIR}/rss.xml`, rssXml);
+
+// ── AI 검색(GEO)용 /llms.txt ──
+const llmsLines = [
+  `# ${title}`,
+  '',
+  `> ${loc(cfg, 'tagline', 'en')}`,
+  `> ${loc(cfg, 'tagline', 'ko')}`,
+  '',
+  `- Site (EN): ${siteUrl}`,
+  `- Site (KO): ${siteUrl}ko/`,
+  `- Thinks (EN/KO): ${siteUrl}thinks/ · ${siteUrl}ko/thinks/`,
+  `- Sitemap: ${siteUrl}sitemap.xml`,
+  `- RSS Feed: ${siteUrl}rss.xml`,
+  '',
+  '## Apps',
+  '',
+  ...repos.map((r) => {
+    const subEn = loc(r, 'subtitle', 'en');
+    const subKo = loc(r, 'subtitle', 'ko');
+    const descEn = loc(r, 'description', 'en');
+    const descKo = loc(r, 'description', 'ko');
+    const os = osList(r).join(', ');
+    return [
+      `### ${nameOf(r, 'en')}${nameOf(r, 'ko') !== nameOf(r, 'en') ? ` (${nameOf(r, 'ko')})` : ''}`,
+      `- EN: ${siteUrl}${appPath(r, 'en')}`,
+      `- KO: ${siteUrl}${appPath(r, 'ko')}`,
+      os && `- Platforms: ${os}${r.release?.tag ? ` (Latest: ${r.release.tag})` : ''}`,
+      (subEn || descEn) && `- Summary (EN): ${[subEn, descEn].filter(Boolean).join(' — ')}`,
+      (subKo || descKo) && `- 요약 (KO): ${[subKo, descKo].filter(Boolean).join(' — ')}`,
+      '',
+    ].filter((x) => x !== false && x !== undefined).join('\n');
+  }),
+  ...(posts.length ? [
+    '## Thinks (Essays & Books)',
+    '',
+    ...posts.map((p) => {
+      const url = siteUrl + postCanonicalPath(p);
+      return [
+        `- [${p.title}](${url})${p.tags?.length ? ` [${p.tags.join(', ')}]` : ''}`,
+        p.excerpt ? `  ${p.excerpt}` : '',
+      ].filter(Boolean).join('\n');
+    }),
+    '',
+  ] : []),
+];
+await writeFile(`${SITE_DIR}/llms.txt`, llmsLines.join('\n'));
 
 // ── 404.html (GitHub Pages가 없는 주소에서 보여 줌) — 검색에 넣지 않고 홈으로 안내 ──
 await writeFile(`${SITE_DIR}/404.html`, `<!doctype html>
@@ -714,4 +902,4 @@ await writeFile(`${SITE_DIR}/404.html`, `<!doctype html>
 </html>
 `);
 
-console.log(`✓ prerender: ${repos.length} apps + ${posts.length} thinks posts (toc headings: ${totalTocHeadings}) × ${LANGS.length} languages, ${pages.length * LANGS.length} URLs, canonical ${siteUrl}`);
+console.log(`✓ prerender: ${repos.length} apps + ${posts.length} thinks posts (toc headings: ${totalTocHeadings}), ${urlEntries.length} sitemap URLs, rss.xml (${rssItems.length} items), llms.txt, canonical ${siteUrl}`);

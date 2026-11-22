@@ -111,6 +111,7 @@ function testRun() {
     Logger.log(
       '- ' + p.title +
       ' (' + p.format +
+      ', font=' + (p.font || 'default') +
       ', images=' + (p.images ? p.images.length : 0) +
       ', coverImage=' + (p.coverImage ? 'yes' : 'no') +
       ', tags=' + (p.tags || []).join(',') + ')'
@@ -242,6 +243,10 @@ function readGoogleDoc_(file, folderTags) {
   const htmlParts = [];
   let listStack = []; // [{ tag: 'ul'|'ol', level: number }]
   let codeLines = [];
+  const bodyAttrs = body.getAttributes() || {};
+  const docDefaultFont = String(bodyAttrs[DocumentApp.Attribute.FONT_FAMILY] || '').trim();
+  const fontCtx = { defaultFont: docDefaultFont, counts: {}, used: {} };
+  if (docDefaultFont) fontCtx.used[docDefaultFont] = true;
 
   function flushCode() {
     if (!codeLines.length) return;
@@ -277,7 +282,8 @@ function readGoogleDoc_(file, folderTags) {
         htmlParts.push('<' + tag + '>');
       }
 
-      const content = renderContainer_(item, images);
+      const itemFont = getElementFont_(item) || docDefaultFont;
+      const content = renderContainer_(item, images, fontCtx, itemFont);
       if (content) htmlParts.push('<li>' + content + '</li>');
       continue;
     }
@@ -296,7 +302,8 @@ function readGoogleDoc_(file, folderTags) {
 
       flushCode();
 
-      const inner = renderContainer_(p, images);
+      const pFont = getElementFont_(p) || docDefaultFont;
+      const inner = renderContainer_(p, images, fontCtx, pFont);
       if (!inner || !inner.trim()) continue;
 
       const hTag = headingToTag_(heading);
@@ -316,12 +323,28 @@ function readGoogleDoc_(file, folderTags) {
       htmlParts.push('<hr>');
     } else if (type === DocumentApp.ElementType.TABLE) {
       flushCode();
-      htmlParts.push(renderTable_(el.asTable(), images));
+      htmlParts.push(renderTable_(el.asTable(), images, fontCtx, docDefaultFont));
     }
   }
 
   flushCode();
   closeLists(0);
+
+  // 가장 많이 쓰인 본문 폰트를 대표 폰트로 결정하고, 대표 폰트와 같은 중복 span 제거
+  let primaryFont = docDefaultFont;
+  let maxCount = 0;
+  Object.keys(fontCtx.counts).forEach(function (f) {
+    if (fontCtx.counts[f] > maxCount) {
+      maxCount = fontCtx.counts[f];
+      primaryFont = f;
+    }
+  });
+  let finalHtml = htmlParts.join('\n');
+  if (primaryFont) {
+    const escapedPrimary = escAttr_(primaryFont).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    finalHtml = finalHtml.replace(new RegExp('<span data-font="' + escapedPrimary + '">([\\s\\S]*?)<\\/span>', 'g'), '$1');
+  }
+  const usedFonts = Object.keys(fontCtx.used);
 
   const coverImage = images.length ? null : extractFallbackCover_(doc, body, file);
 
@@ -340,13 +363,26 @@ function readGoogleDoc_(file, folderTags) {
     slug: meta.slug || '',
     summary: meta.summary || '',
     tags: allTags,
+    font: meta.font || primaryFont || '',
+    fonts: usedFonts,
     publishedAt: publishedAt,
     updatedAt: updatedAt,
     format: 'html',
-    html: htmlParts.join('\n'),
+    html: finalHtml,
     images: images,
     coverImage: coverImage,
   };
+}
+
+function getElementFont_(el) {
+  try {
+    const attrs = el.getAttributes();
+    return attrs && attrs[DocumentApp.Attribute.FONT_FAMILY]
+      ? String(attrs[DocumentApp.Attribute.FONT_FAMILY]).trim()
+      : '';
+  } catch (err) {
+    return '';
+  }
 }
 
 function hasImages_(p) {
@@ -430,7 +466,7 @@ function extractFallbackCover_(doc, body, file) {
   return null;
 }
 
-function renderContainer_(container, images) {
+function renderContainer_(container, images, fontCtx, parentFont) {
   const out = [];
   if (typeof container.getPositionedImages === 'function') {
     const posImgs = container.getPositionedImages();
@@ -443,7 +479,7 @@ function renderContainer_(container, images) {
     const child = container.getChild(i);
     const type = child.getType();
     if (type === DocumentApp.ElementType.TEXT) {
-      out.push(renderText_(child.asText()));
+      out.push(renderText_(child.asText(), fontCtx, parentFont));
     } else if (type === DocumentApp.ElementType.INLINE_IMAGE) {
       out.push(renderImage_(child.asInlineImage(), images));
     } else if (type === DocumentApp.ElementType.HORIZONTAL_RULE) {
@@ -453,7 +489,7 @@ function renderContainer_(container, images) {
   return out.join('');
 }
 
-function renderText_(textEl) {
+function renderText_(textEl, fontCtx, parentFont) {
   const full = textEl.getText();
   if (!full) return '';
   const indices = textEl.getTextAttributeIndices();
@@ -466,8 +502,15 @@ function renderText_(textEl) {
     if (!slice) continue;
 
     let html = escHtml_(slice).replace(/\r?\n/g, '<br>');
-    const font = textEl.getFontFamily(start) || '';
-    const isMono = /mono|consolas|courier|menlo|monaco|fira code|source code/i.test(font);
+    const runFont = String(textEl.getFontFamily(start) || '').trim();
+    const effectiveFont = runFont || parentFont || (fontCtx ? fontCtx.defaultFont : '');
+    const isMono = /mono|consolas|courier|menlo|monaco|fira code|source code/i.test(effectiveFont);
+    if (fontCtx && effectiveFont && !isMono) {
+      fontCtx.used[effectiveFont] = true;
+      const len = slice.trim().length;
+      if (len > 0) fontCtx.counts[effectiveFont] = (fontCtx.counts[effectiveFont] || 0) + len;
+    }
+
     const bold = textEl.isBold(start);
     const italic = textEl.isItalic(start);
     const strike = textEl.isStrikethrough(start);
@@ -481,6 +524,9 @@ function renderText_(textEl) {
     if (underline && !link) html = '<u>' + html + '</u>';
     if (link && /^https?:\/\//i.test(link)) {
       html = '<a href="' + escAttr_(link) + '" target="_blank" rel="noopener">' + html + '</a>';
+    }
+    if (!isMono && effectiveFont) {
+      html = '<span data-font="' + escAttr_(effectiveFont) + '">' + html + '</span>';
     }
     out.push(html);
   }
@@ -509,7 +555,7 @@ function renderImage_(imgEl, images) {
   }
 }
 
-function renderTable_(table, images) {
+function renderTable_(table, images, fontCtx, defaultFont) {
   const rows = table.getNumRows();
   if (!rows) return '';
   const parts = ['<div class="tbl-wrap"><table>'];
@@ -526,7 +572,8 @@ function renderTable_(table, images) {
       for (let k = 0; k < cell.getNumChildren(); k++) {
         const ch = cell.getChild(k);
         if (ch.getType() === DocumentApp.ElementType.PARAGRAPH) {
-          const s = renderContainer_(ch.asParagraph(), images);
+          const cp = ch.asParagraph();
+          const s = renderContainer_(cp, images, fontCtx, getElementFont_(cp) || defaultFont);
           if (s) cellParts.push(s);
         }
       }

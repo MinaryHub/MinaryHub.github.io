@@ -45,8 +45,9 @@ jobs:
           if [ -d screenshots ]; then cp -r screenshots _site/; fi
           if [ -d icons ]; then cp -r icons _site/; fi
           if [ -f og.png ]; then cp og.png _site/; fi
-          # search-engine ownership files (Google Search Console: google*.html, Naver: naver*.html, Bing: BingSiteAuth.xml)
+          # search-engine ownership & IndexNow key files
           for f in google*.html naver*.html BingSiteAuth.xml; do if [ -f "$f" ]; then cp "$f" _site/; fi; done
+          for f in *.txt; do if [[ "$f" =~ ^[0-9a-fA-F]{32}\.txt$ ]]; then cp "$f" _site/; fi; done
           touch _site/.nojekyll
       - name: Prerender for search engines (SEO)
         run: node scripts/prerender.mjs
@@ -63,3 +64,14 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Checkout for IndexNow
+        if: github.event_name != 'schedule'
+        uses: actions/checkout@v4
+      - name: Setup Node for IndexNow
+        if: github.event_name != 'schedule'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Notify IndexNow (Bing / Naver / ChatGPT Search)
+        if: github.event_name != 'schedule'
+        run: node scripts/indexnow.mjs

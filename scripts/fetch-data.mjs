@@ -40,7 +40,7 @@ const SKIP_ASSET = /\.(sha256|sha512|sig|asc|blockmap|ya?ml|txt|json|cer|aab)$|c
 // 아이콘·스크린샷: config.overrides → 이 사이트의 screenshots/<저장소>/ → 앱 저장소의 screenshots/, docs/images/ 등
 const IMG = /\.(png|jpe?g|webp|gif)$/i;
 const SHOT_PATH = /(^|\/)(screenshots?|docs\/(images|img|screenshots?)|\.github\/screenshots?)\/[^/]+$|(^|\/)screenshot[^/]*$/i;
-const ICON_GUESS = [/(^|\/)(app[_-]?)?icon(-?(512|256))?\.png$/i, /(^|\/)logo\.png$/i, /targetsize-256_altform-unplated\.png$/i, /Square310x310Logo\.png$/i];
+const ICON_GUESS = [/(^|\/)(app[_-]?)?icon(-?(512|256))?\.png$/i, /(^|\/)logo\.png$/i, /targetsize-256_altform-unplated\.png$/i, /Square310x310Logo\.png$/i, /(^|\/)apple-touch-icon\.png$/i, /mipmap-xxxhdpi\/ic_launcher\.png$/i];
 // 언어별 표시 이름·부제·설명 (displayNameEn, subtitleKo, descriptionKo …) — 페이지의 한/영 전환 및 SEO에서 사용
 // (featuresEn / featuresKo: 앱 소개 페이지의 '주요 기능' 목록)
 const i18nFields = (o) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /^(displayName|subtitle|description|features)(En|Ko)$/.test(k)));

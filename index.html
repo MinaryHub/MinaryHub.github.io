@@ -126,6 +126,8 @@
   footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--border);
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
   footer .credit { color: var(--muted); white-space: nowrap; }
+  footer .credit a { color: inherit; }
+  footer .credit a:hover { color: var(--text); text-decoration: underline; }
   footer .foot-r { display: flex; gap: 16px; align-items: center; }
   .contact-link { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
   /* 문의하기 창 (contact.js) */
@@ -278,7 +280,7 @@
   <footer>
     <span><span id="footNote">This page refreshes release info periodically via GitHub Actions.</span></span>
     <span class="foot-r"><button type="button" class="contact-link" data-contact>Contact</button>
-    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
+    <span class="credit">Produced with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> and <a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a></span></span>
   </footer>
 </div>
 

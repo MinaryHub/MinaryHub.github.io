@@ -138,7 +138,8 @@ for (const r of repos) {
   const all = await releasesOf(r.name);
   const rel = pickLatest(all);
   const o = overrides[r.name] || {};
-  const media = await repoMedia(r, o);
+  const branch = o.branch || r.default_branch;
+  const media = await repoMedia({ ...r, default_branch: branch }, o);
   const versions = all.map((x) => {
     const assets = (x.assets || []).filter((a) => !SKIP_ASSET.test(a.name))
       .map((a) => ({ name: a.name, size: a.size, downloads: a.download_count || 0 }));
@@ -155,7 +156,7 @@ for (const r of repos) {
     homepage: o.homepage || r.homepage || '',
     web: o.web || '',
     ...i18nFields(o),
-    branch: r.default_branch,
+    branch,
     category: o.category || undefined,   // schema.org applicationCategory (검색엔진용 앱 소개 페이지)
     language: r.language,
     topics: r.topics || [],

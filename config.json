@@ -526,7 +526,8 @@
         "어디서나 — DB 게이트웨이를 내장한 Windows·macOS·Linux 데스크톱 앱, Android 앱, 설치형 웹앱을 영어·한국어로. 데스크톱 앱이 같은 Wi-Fi의 휴대폰에 앱을 제공.",
         "늘 최신 — 백그라운드 업데이트, 자동 확인 켜기·끄기, 업데이트 후 새로운 점, 이전 버전을 다시 설치할 수 있는 버전 기록.",
         "문의·후원 — 앱에서 GitHub Issues로 버그 신고·기능 요청·질문, GitHub Sponsors로 개발 후원."
-      ]
+      ],
+      "branch": "main"
     },
     "ezBoard": {
       "displayName": "ezBoard",

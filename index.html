@@ -508,7 +508,7 @@
   // 언어 폴더(screenshots/en, screenshots/ko)가 있으면 지금 언어 것을 쓴다. 10분 캐시, 읽지 못하면 빌드 때 목록 그대로
   let liveShots = {};
   async function loadRepoShots(repos) {
-    const KEY = 'mh-shots-v1', TTL = 10*60*1000, IMG = /\.(png|jpe?g|webp|gif)$/i;
+    const KEY = 'mh-shots-v2', TTL = 10*60*1000, IMG = /\.(png|jpe?g|webp|gif)$/i;
     let cache = {};
     try { cache = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
     // GitHub는 로그인하지 않은 방문자에게 시간당 60번까지만 답한다. 한도에 걸리면 풀리는 시각까지 다시 묻지 않는다
@@ -522,7 +522,7 @@
       }
       return Promise.reject(new Error('GitHub API ' + r.status));
     });
-    const images = (items) => (Array.isArray(items) ? items : []).filter((f) => f.type === 'file' && IMG.test(f.name))
+    const images = (items) => (Array.isArray(items) ? items : []).filter((f) => f.type === 'file' && IMG.test(f.name) && !/feature-graphic|icon/i.test(f.name))
       .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).map((f) => f.download_url);
     await Promise.all(repos.filter((r) => !r.external && !r.shotsFixed).map(async (r) => {
       if (cache[r.name] && Date.now() - cache[r.name].t < TTL) return;

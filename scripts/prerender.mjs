@@ -440,7 +440,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   <footer>
     <span></span>
     <span class="foot-r"><button type="button" class="contact-link" data-contact data-app="${esc(r.name)}">${lang === 'ko' ? '문의하기' : 'Contact'}</button>
-    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
+    <span class="credit">Produced with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> and <a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a></span></span>
   </footer>
 </div>
 ${appScript(lang, alt)}
@@ -811,7 +811,7 @@ ${extraFontLinks}
   <footer>
     <span></span>
     <span class="foot-r"><button type="button" class="contact-link" data-contact>${lang === 'ko' ? '문의하기' : 'Contact'}</button>
-    <a class="credit" href="https://claude.ai" target="_blank" rel="noopener">Produced with Claude</a></span>
+    <span class="credit">Produced with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> and <a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a></span></span>
   </footer>
 </div>
 ${appScript(lang, alt)}

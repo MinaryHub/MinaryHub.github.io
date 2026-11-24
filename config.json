@@ -136,6 +136,42 @@
         "screenshots/satellite-tracker-3d/01.webp",
         "screenshots/satellite-tracker-3d/02.webp"
       ]
+    },
+    {
+      "name": "flight-tracker-3d",
+      "displayName": "AeroGlobe 3D",
+      "web": "https://flight-tracker-3d.onrender.com/",
+      "subtitleEn": "Real-Time Global ADS-B Flight Tracker on a 3D Globe",
+      "subtitleKo": "전 세계 실시간 항공기 추적 3D 지구본",
+      "descriptionEn": "Track real aircraft flying worldwide in real time on an interactive 3D globe using live OpenSky Network and adsb.fi ADS-B transponder data — 100% live data, no simulated flights. Follow any flight with 3D tracks, altitude charts, and live day/night lighting. Runs in your browser, no install.",
+      "descriptionKo": "OpenSky Network와 adsb.fi의 실제 ADS-B 트랜스폰더 데이터만으로 전 세계 비행 중인 항공기를 3D 지구본 위에 실시간 추적하는 웹 앱. 항공기를 선택해 3D 비행 궤적, 고도 추이, 실시간 밤/낮 그림자를 확인할 수 있으며 설치 없이 브라우저에서 바로 실행됩니다.",
+      "featuresEn": [
+        "100% live ADS-B data — Real aircraft from OpenSky Network and adsb.fi with automatic fallback and dead-reckoning smoothing.",
+        "Interactive 3D globe — Inertial rotation, zoom, regional camera presets (Korea/East Asia, Europe, North America, Pacific, etc.), and live day/night shadows.",
+        "Flight track and telemetry — Follow any selected aircraft with its 3D flight path, heading vector, and live altitude chart.",
+        "No install — Runs right in your browser on desktop and mobile."
+      ],
+      "featuresKo": [
+        "100% 실시간 ADS-B 데이터 — OpenSky Network와 adsb.fi 실제 항공기 피드를 자동 전환하며 부드럽게 보간합니다.",
+        "3D 구면 지구본 — 관성 회전·줌, 지역별 카메라 프리셋(한국·동아시아, 유럽, 북미, 태평양 등), 실시간 태양광 밤/낮 그림자.",
+        "비행 궤적·추적 — 선택한 항공기의 3D 누적 궤적, 진행 방향 벡터, 실시간 고도 그래프 및 카메라 자동 추적.",
+        "설치 없이 실행 — PC와 스마트폰 브라우저에서 바로 실행됩니다."
+      ],
+      "category": "UtilitiesApplication",
+      "language": "JavaScript",
+      "topics": [
+        "ads-b",
+        "flight-tracker",
+        "3d-globe",
+        "aviation"
+      ],
+      "icon": "icons/flight-tracker-3d.webp",
+      "screenshots": [
+        "screenshots/flight-tracker-3d/01.webp",
+        "screenshots/flight-tracker-3d/02.webp",
+        "screenshots/flight-tracker-3d/03.webp",
+        "screenshots/flight-tracker-3d/04.webp"
+      ]
     }
   ],
   "thinks": {

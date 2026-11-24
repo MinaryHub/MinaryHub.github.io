@@ -12,6 +12,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 const SITE_DIR = process.env.SITE_DIR || '_site';
 const cfg = JSON.parse(await readFile('config.json', 'utf8').catch(() => '{}'));
 const data = JSON.parse(await readFile('data/repos.json', 'utf8').catch(() => '{"repos":[]}'));
+const changelogs = JSON.parse(await readFile('data/changelogs.json', 'utf8').catch(() => '{"apps":{}}')).apps || {};
 const thinksFull = JSON.parse(await readFile('data/thinks-full.json', 'utf8').catch(() => '{"posts":[]}'));
 const indexSrc = await readFile(`${SITE_DIR}/index.html`, 'utf8');
 
@@ -73,6 +74,7 @@ const T = {
     thinks: 'Thinks', web: 'Web', allPosts: 'All posts', readMin: (m) => `${m} min read`,
     postUpdated: (d) => `Updated ${d}`, prevPost: 'Previous', nextPost: 'Next', morePosts: 'More posts',
     backToThinks: '← Back to Thinks', toc: 'Contents',
+    changelog: 'Release notes', latestBadge: 'Latest', olderReleases: (n) => `Show ${n} older release${n === 1 ? '' : 's'}`,
   },
   ko: {
     headline: loc(cfg, 'headline', 'ko') || '무료 데스크톱·웹 앱',
@@ -85,6 +87,7 @@ const T = {
     thinks: 'Thinks', web: '웹', allPosts: '전체 글', readMin: (m) => `약 ${m}분`,
     postUpdated: (d) => `${d} 수정`, prevPost: '이전 글', nextPost: '다음 글', morePosts: '다른 글',
     backToThinks: '← Thinks 목록으로', toc: '목차',
+    changelog: '버전 변경 내용', latestBadge: '최신', olderReleases: (n) => `이전 버전 ${n}개 더 보기`,
   },
 };
 
@@ -332,6 +335,30 @@ const APP_CSS = `
   .gallery a { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); aspect-ratio: 16 / 10; }
   .gallery img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
   .files { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 640px; }
+  .changelog { display: grid; gap: 10px; max-width: 760px; }
+  .rel-note { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .rel-note > summary { cursor: pointer; padding: 12px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; list-style: none; }
+  .rel-note > summary::-webkit-details-marker { display: none; }
+  .rel-note > summary::before { content: "▸"; color: var(--muted); font-size: 12px; width: 12px; }
+  .rel-note[open] > summary::before { content: "▾"; }
+  .rel-tag { font: 600 14.5px "JetBrains Mono", monospace; color: var(--text); }
+  .rel-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+  .rel-badge.pre { background: var(--surface-2); color: #c98a12; }
+  .rel-date { margin-left: auto; font-size: 12.5px; color: var(--muted); }
+  .rel-note-body { padding: 4px 16px 16px 36px; border-top: 1px solid var(--border); font-size: 14.5px; line-height: 1.65; color: var(--text); }
+  .rel-note-body h3, .rel-note-body h4 { font-size: 14px; font-weight: 600; margin: 14px 0 6px; color: var(--text); }
+  .rel-note-body h3:first-child, .rel-note-body h4:first-child { margin-top: 8px; }
+  .rel-note-body p { margin: 8px 0; }
+  .rel-note-body ul { margin: 6px 0 8px; padding-left: 18px; display: grid; gap: 5px; }
+  .rel-note-body ul ul { margin: 4px 0 2px; }
+  .rel-note-body li::marker { color: var(--muted); }
+  .rel-note-body code { font: 12.5px "JetBrains Mono", monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+  .rel-note-body a { color: var(--accent); text-decoration: none; }
+  .rel-note-body a:hover { text-decoration: underline; }
+  .rel-more > summary { cursor: pointer; font-size: 13.5px; color: var(--accent); padding: 6px 2px; list-style: none; }
+  .rel-more > summary::-webkit-details-marker { display: none; }
+  .rel-more[open] > summary { margin-bottom: 10px; }
+  .rel-more-list { display: grid; gap: 10px; }
   .others { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0 0 48px; }
   .others a { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
     background: var(--surface); text-decoration: none; font-size: 14px; }
@@ -356,6 +383,117 @@ const appScript = (lang, alt) => `<script>
   document.addEventListener('click', (e) => { const a = e.target.closest('a.btn[data-app]'); if (a) track({ type: 'download', app: a.dataset.app, file: a.title || '' }); });
 })();
 </script>`;
+
+function renderReleaseInline(raw) {
+  const codes = [];
+  let s = String(raw || '').replace(/`([^`\n]+)`/g, (_, c) => {
+    codes.push(`<code>${esc(c)}</code>`);
+    return `\x00C${codes.length - 1}\x00`;
+  });
+  s = esc(s);
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, label, url) => `<a href="${url}" target="_blank" rel="noopener">${label}</a>`);
+  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g, '$1<em>$2</em>');
+  return s.replace(/\x00C(\d+)\x00/g, (_, i) => codes[Number(i)]);
+}
+
+function renderReleaseMd(md, tag) {
+  const lines = String(md || '').replace(/\r\n?/g, '\n').split('\n');
+  const out = [];
+  let listOpen = false;
+  let subOpen = false;
+  let para = [];
+  const flushPara = () => {
+    if (!para.length) return;
+    out.push(`<p>${renderReleaseInline(para.join(' '))}</p>`);
+    para = [];
+  };
+  const closeLists = () => {
+    if (subOpen) { out.push('</ul></li>'); subOpen = false; }
+    else if (listOpen && out.length && out[out.length - 1].startsWith('<li')) out[out.length - 1] += '</li>';
+    if (listOpen) { out.push('</ul>'); listOpen = false; }
+  };
+  let seenContent = false;
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\s+$/, '');
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushPara();
+      continue;
+    }
+    // 맨 첫 줄이 릴리스 태그 제목(예: "## v0.6.0 — ...")과 중복이면 요약 헤더와 겹치므로 건너뜀
+    const hMatch = trimmed.match(/^(#{1,4})\s+(.+)$/);
+    if (hMatch) {
+      flushPara();
+      closeLists();
+      const text = hMatch[2].trim();
+      if (!seenContent && tag && text.toLowerCase().includes(String(tag).toLowerCase().replace(/^v/, ''))) {
+        seenContent = true;
+        continue;
+      }
+      seenContent = true;
+      const lvl = hMatch[1].length <= 2 ? 'h3' : 'h4';
+      out.push(`<${lvl}>${renderReleaseInline(text)}</${lvl}>`);
+      continue;
+    }
+    const liMatch = line.match(/^(\s*)[-*•]\s+(.+)$/);
+    if (liMatch) {
+      flushPara();
+      seenContent = true;
+      const indent = liMatch[1].length;
+      const content = renderReleaseInline(liMatch[2].trim());
+      if (indent >= 2 && listOpen) {
+        if (!subOpen) { out.push('<ul>'); subOpen = true; }
+        out.push(`<li>${content}</li>`);
+      } else {
+        if (subOpen) { out.push('</ul></li>'); subOpen = false; }
+        else if (listOpen && out.length && out[out.length - 1].startsWith('<li')) out[out.length - 1] += '</li>';
+        if (!listOpen) { out.push('<ul>'); listOpen = true; }
+        out.push(`<li>${content}`);
+      }
+      continue;
+    }
+    // 불릿 항목의 줄바꿈 이어쓰기 (2칸 이상 들여쓰기)
+    if (listOpen && /^\s{2,}/.test(line)) {
+      const target = out.length - 1;
+      if (subOpen && out[target]?.endsWith('</li>')) {
+        out[target] = out[target].slice(0, -5) + ' ' + renderReleaseInline(trimmed) + '</li>';
+      } else if (out[target]?.startsWith('<li')) {
+        out[target] += ' ' + renderReleaseInline(trimmed);
+      }
+      continue;
+    }
+    closeLists();
+    seenContent = true;
+    para.push(trimmed);
+  }
+  flushPara();
+  closeLists();
+  return out.join('\n');
+}
+
+function changelogHtml(r, lang) {
+  const list = changelogs[r.name] || [];
+  if (!list.length) return '';
+  const t = T[lang];
+  const renderItem = (v, idx) => {
+    const body = renderReleaseMd(v.body, v.tag);
+    if (!body) return '';
+    return `<details class="rel-note"${idx === 0 ? ' open' : ''}>
+      <summary><span class="rel-tag">${esc(v.tag)}</span>${idx === 0 ? `<span class="rel-badge">${esc(t.latestBadge)}</span>` : ''}${v.prerelease ? '<span class="rel-badge pre">pre</span>' : ''}${v.publishedAt ? `<span class="rel-date">${esc(fmtDate(v.publishedAt, lang))}</span>` : ''}</summary>
+      <div class="rel-note-body">${body}</div>
+    </details>`;
+  };
+  const items = list.map(renderItem).filter(Boolean);
+  if (!items.length) return '';
+  const SHOWN = 5;
+  const head = items.slice(0, SHOWN).join('');
+  const rest = items.slice(SHOWN);
+  const more = rest.length
+    ? `<details class="rel-more"><summary>${esc(t.olderReleases(rest.length))}</summary><div class="rel-more-list">${rest.join('')}</div></details>`
+    : '';
+  return `<h2 id="changelog">${esc(t.changelog)}</h2><div class="changelog">${head}${more}</div>`;
+}
 
 function appPage(r, lang) {
   const t = T[lang], path = appPath(r, lang), name = nameOf(r, lang);
@@ -385,6 +523,7 @@ function appPage(r, lang) {
   const files = rel?.assets?.length ? `<h2 id="downloads">${esc(t.downloads)} · ${esc(rel.tag)}</h2><ul class="files">${rel.assets.map((a) =>
     `<li><a class="btn" href="${esc(a.url)}" data-app="${esc(r.name)}" title="${esc(a.name)}" rel="nofollow"><span class="l"><span class="fname">${esc(a.name)}</span></span><span class="sz">${esc([osOfAsset(a.name), fmtSize(a.size)].filter(Boolean).join(' · '))}</span></a></li>`).join('')}</ul>`
     : r.web ? '' : `<p class="norel">${esc(t.noBuild)}</p>`;
+  const changelog = changelogHtml(r, lang);
   // 'Head — body' items show their head in bold.
   const featureItems = featuresFor(r, lang).map((f) => {
     const [head, ...rest] = String(f).split(' — ');
@@ -435,6 +574,7 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
     ${featuresHtml}
     ${gallery}
     ${files}
+    ${changelog}
     ${others ? `<h2>${esc(t.more)}</h2><ul class="others">${others}</ul>` : ''}
   </main>
   <footer>
@@ -865,7 +1005,7 @@ ${LANGS.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${esc(
 });
 await writeFile(`${SITE_DIR}/sitemap.xml`,
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urlEntries.join('\n')}\n</urlset>\n`);
-await writeFile(`${SITE_DIR}/robots.txt`, `User-agent: *\nAllow: /\nDisallow: /stats.html\n\nSitemap: ${siteUrl}sitemap.xml\n`);
+await writeFile(`${SITE_DIR}/robots.txt`, `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}sitemap.xml\n`);
 
 // ── RSS 2.0 피드 (/rss.xml) — 네이버 서치어드바이저 RSS 제출 및 피드 구독용 ──
 const rssItems = [

@@ -134,6 +134,7 @@ const repos = (await listRepos()).filter(
 
 const result = [];
 const downloads = [];   // 앱별·버전별 누적 다운로드 (GitHub 릴리스 파일의 download_count)
+const changelogs = {};  // 앱별 버전 변경 내용 (사전 렌더링 전용 data/changelogs.json)
 for (const r of repos) {
   const all = await releasesOf(r.name);
   const rel = pickLatest(all);
@@ -148,6 +149,17 @@ for (const r of repos) {
   });
   if (versions.length) downloads.push({ name: r.name, displayName: o.displayName || r.name, url: r.html_url,
     total: versions.reduce((n, v) => n + v.total, 0), releases: versions });
+  const notes = all
+    .map((x) => ({
+      tag: x.tag_name,
+      name: x.name || x.tag_name,
+      publishedAt: x.published_at,
+      prerelease: !!x.prerelease,
+      body: String(x.body || '').trim(),
+    }))
+    .filter((x) => x.body)
+    .slice(0, 15);
+  if (notes.length) changelogs[r.name] = notes;
   result.push({
     name: r.name,
     displayName: o.displayName || r.name,
@@ -220,4 +232,6 @@ await writeFile(OUT, JSON.stringify({ org: ORG, generatedAt, repos: result }, nu
 // 통계 페이지용: 체크섬·업데이트 정보 같은 부가 파일은 사용자가 받은 것이 아니므로 뺀다
 const DL_OUT = OUT.replace(/[^/]*$/, 'downloads.json');
 await writeFile(DL_OUT, JSON.stringify({ org: ORG, generatedAt, apps: downloads }, null, 2));
-console.log(`✓ ${result.length} repos → ${OUT} (releases: ${result.filter((r) => r.release).length}), downloads → ${DL_OUT}`);
+const CL_OUT = OUT.replace(/[^/]*$/, 'changelogs.json');
+await writeFile(CL_OUT, JSON.stringify({ org: ORG, generatedAt, apps: changelogs }, null, 2));
+console.log(`✓ ${result.length} repos → ${OUT} (releases: ${result.filter((r) => r.release).length}), downloads → ${DL_OUT}, changelogs (${Object.keys(changelogs).length} apps) → ${CL_OUT}`);

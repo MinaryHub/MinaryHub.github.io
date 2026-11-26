@@ -241,6 +241,43 @@
       "screenshots": [
         "screenshots/global-market-globe/01.webp"
       ]
+    },
+    {
+      "name": "wind-tunnel-3d",
+      "displayName": "AERO LAB 3D",
+      "web": "https://wind-tunnel-3d.vercel.app/",
+      "subtitleEn": "Interactive 3D Wind Tunnel CFD Simulation in Browser",
+      "subtitleKo": "브라우저 3D 풍동 실험 · 공력(CFD) 시뮬레이션",
+      "descriptionEn": "Run a real-time 3D wind tunnel and voxel CFD simulation right in your browser with WebGL2. Test the default GT sports car, SUV, F1 racer, NACA 2412 airfoil, or upload your own .glb/.gltf/.obj/.stl 3D model to inspect drag, downforce, surface pressure (Cp) heatmaps, and volumetric smoke streamlines — no install.",
+      "descriptionKo": "별도 설치 없이 브라우저 WebGL2에서 실시간 3D 풍동 실험과 복셀 CFD 유동 해석을 실행하는 웹 앱. GT 스포츠카·SUV·F1 레이서·에어포일 프리셋과 사용자 3D 모델(.glb/.gltf/.obj/.stl) 업로드를 지원하며, 항력·다운포스·표면 압력(Cp) 히트맵·스모크 유선을 시각화합니다.",
+      "featuresEn": [
+        "Preset vehicles & custom 3D upload — GT sports car, SUV, F1 racer, NACA 2412 airfoil, sphere, plus .glb/.gltf/.obj/.stl upload (up to 50 MB).",
+        "Real-time 3D voxel CFD — Computes drag coefficient (Cd), drag force, lift/downforce (CL, FL), side force, frontal area, Reynolds number, and centerline Cp chart.",
+        "Rich 3D visualization — Volumetric smoke streamlines, airflow particles, surface Cp heatmap, movable 2D slice plane, rolling road, and yaw turntable.",
+        "PBR studio graphics & shareable links — Clearcoat car paints, studio IBL lighting, dark/light themes, and URL sharing of test setups — runs 100% in your browser."
+      ],
+      "featuresKo": [
+        "프리셋 모델 & 3D 파일 업로드 — GT 스포츠카·SUV·F1 레이서·NACA 2412 에어포일·구체 및 .glb/.gltf/.obj/.stl 업로드(최대 50MB).",
+        "실시간 3D 복셀 CFD 해석 — 항력 계수(Cd), 항력, 다운포스·양력(CL·FL), 횡력, 전면 투영 면적, 레이놀즈 수, 중심선 Cp 그래프 계산.",
+        "3D 풍동 시각화 — 볼류메트릭 스모크 유선, 기류 파티클, 표면 압력(Cp) 히트맵, 이동식 2D 단면 슬라이스, 롤링 로드·요각 턴테이블.",
+        "PBR 스튜디오 그래픽 & 조건 공유 — 5종 클리어코트 페인트, 다크/라이트 스튜디오 테마, 실험 조건 URL 공유 지원 (설치 없음)."
+      ],
+      "category": "UtilitiesApplication",
+      "language": "HTML",
+      "topics": [
+        "wind-tunnel",
+        "cfd",
+        "aerodynamics",
+        "webgl2"
+      ],
+      "icon": "icons/wind-tunnel-3d.webp",
+      "screenshots": [
+        "screenshots/wind-tunnel-3d/01.webp",
+        "screenshots/wind-tunnel-3d/02.webp",
+        "screenshots/wind-tunnel-3d/03.webp",
+        "screenshots/wind-tunnel-3d/04.webp",
+        "screenshots/wind-tunnel-3d/05.webp"
+      ]
     }
   ],
   "thinks": {

@@ -315,6 +315,38 @@
         "screenshots/origami-3d-studio/04.webp",
         "screenshots/origami-3d-studio/05.webp"
       ]
+    },
+    {
+      "name": "brickcraft-3d",
+      "displayName": "BrickCraft 3D",
+      "web": "https://brickcraft-3d-eight.vercel.app/",
+      "subtitleEn": "3D Lego Brick Assembly Studio & Instruction/GIF Exporter",
+      "subtitleKo": "93종 브릭 3D 레고 조립 · 설명서·GIF 스튜디오",
+      "descriptionEn": "Build 3D models with 93 Lego-style brick types and 24 colors right in your browser, group assembly steps, and export step-by-step GIFs, 60fps videos, transparent PNG snapshots, or instruction manuals (PDF/BOM) — no install.",
+      "descriptionKo": "브라우저에서 93종의 레고 시스템 브릭과 24종 컬러로 3D 모델을 조립하고, 조립 순서를 GIF · 60fps 영상 · 투명 PNG · 공식 스타일 조립 설명서(PDF/BOM)로 내보내는 올인원 3D 브릭 스튜디오입니다. 설치 없이 PC·모바일에서 바로 실행됩니다.",
+      "featuresEn": [
+        "93 brick types & 24 colors — Bricks, plates, tiles, slopes, arches, windows, doors, Technic/SNOT, wheels, metallic gold, and transparent parts.",
+        "Export studio — Step-by-step GIF89a with parts callout, 60fps WebM/MP4 video, transparent PNG snapshot, and printable PDF/PNG instruction manuals with BOM.",
+        "Smart 3D editing — Mirror symmetry (X/Z/4-way), real-time shadows, outline mode, multi-select, eyedropper, and switchable 16×16 / 24×24 / 32×32 baseplates.",
+        "Instant sharing & sound — Compress your entire build into a shareable URL hash, with mobile touch controls and synthesized brick click sounds."
+      ],
+      "featuresKo": [
+        "93종 브릭 & 24종 컬러 — 기본 브릭·플레이트·타일·슬로프·아치·창문·문·테크닉·SNOT·바퀴·메탈릭 골드·투명 파츠 지원.",
+        "올인원 내보내기 스튜디오 — 부품 콜아웃이 포함된 단계별 GIF89a, 60fps 영상, 투명 PNG, 부품 목록(BOM)이 담긴 조립 설명서(PDF/PNG) 저장.",
+        "편리한 3D 편집 — X/Z/4방 대칭 조립, 실시간 그림자·윤곽선 모드, 다중 선택·복제, 스포이드, 16×16·24×24·32×32 베이스판 전환.",
+        "URL 링크 공유 & 사운드 — 서버 없이 모델 전체를 URL로 즉시 공유하고, 모바일 터치 제스처와 브릭 결합 효과음 지원."
+      ],
+      "category": "DesignApplication",
+      "language": "HTML",
+      "topics": [
+        "lego",
+        "brick",
+        "3d-builder",
+        "gif-exporter"
+      ],
+      "screenshots": [
+        "screenshots/brickcraft-3d/01.webp"
+      ]
     }
   ],
   "thinks": {

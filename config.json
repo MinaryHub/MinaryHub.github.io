@@ -200,6 +200,14 @@
         "weather",
         "air-quality",
         "3d-globe"
+      ],
+      "icon": "icons/terra-pulse-3d.svg",
+      "screenshots": [
+        "screenshots/terra-pulse-3d/01.webp",
+        "screenshots/terra-pulse-3d/02.webp",
+        "screenshots/terra-pulse-3d/03.webp",
+        "screenshots/terra-pulse-3d/04.webp",
+        "screenshots/terra-pulse-3d/05.webp"
       ]
     },
     {

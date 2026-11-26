@@ -348,7 +348,7 @@
       thinksSearch: 'Search posts…', thinksAll: 'All',
       thinksEmpty: 'No posts yet.', thinksNoMatch: 'No posts match your search.',
       thinksMeta: (n, agoStr) => `<b>${n}</b> post${n === 1 ? '' : 's'}` + (agoStr ? ` · updated ${agoStr}` : ''),
-      readMin: (m) => `${m} min read`,
+      readMin: (m) => `${m} min read`, pages: (n) => `~${Number(n).toLocaleString('en-US')} page${n === 1 ? '' : 's'}`,
     },
     ko: {
       search: '프로젝트 검색…', all: '전체', rel: '다운로드 가능', loading: '불러오는 중…',
@@ -373,7 +373,7 @@
       thinksSearch: '글 검색…', thinksAll: '전체',
       thinksEmpty: '아직 등록된 글이 없습니다.', thinksNoMatch: '조건에 맞는 글이 없습니다.',
       thinksMeta: (n, agoStr) => `글 <b>${n}</b>편` + (agoStr ? ` · 정보 갱신 ${agoStr}` : ''),
-      readMin: (m) => `약 ${m}분`,
+      readMin: (m) => `약 ${m}분`, pages: (n) => `약 ${Number(n).toLocaleString('ko-KR')}쪽`,
     },
   };
   const t = (k, ...a) => { const v = I18N[lang][k]; return typeof v === 'function' ? v(...a) : v; };
@@ -774,7 +774,7 @@
 
   function thinkCard(p) {
     const href = postHref(p.slug);
-    const meta = [fmtDate(p.publishedAt), p.readingMinutes ? t('readMin', p.readingMinutes) : ''].filter(Boolean).join(' · ');
+    const meta = [fmtDate(p.publishedAt), p.pageCount ? t('pages', p.pageCount) : '', p.readingMinutes ? t('readMin', p.readingMinutes) : ''].filter(Boolean).join(' · ');
     const tags = (p.tags || []).map((tg) => `<span class="tag">${esc(tg)}</span>`).join('');
     const q = (p.searchText || [p.title, ...(p.tags || []), p.excerpt].join(' ')).toLowerCase();
     const tagAttr = (p.tags || []).map((x) => x.toLowerCase()).join('|');
@@ -852,7 +852,7 @@
       });
       document.body.appendChild(readerDlg);
     }
-    const meta = [fmtDate(post.publishedAt), post.readingMinutes ? t('readMin', post.readingMinutes) : ''].filter(Boolean).join(' · ');
+    const meta = [fmtDate(post.publishedAt), post.pageCount ? t('pages', post.pageCount) : '', post.readingMinutes ? t('readMin', post.readingMinutes) : ''].filter(Boolean).join(' · ');
     readerDlg.innerHTML = `<div class="rd-top">
       <div><h2>${esc(post.title)}</h2><div class="think-meta">${esc(meta)}</div></div>
       <button type="button" class="rd-close" aria-label="${esc(t('close'))}">×</button>

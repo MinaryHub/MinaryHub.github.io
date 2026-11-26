@@ -72,6 +72,7 @@ const T = {
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? 'Free browser game' : 'Free game')
       : r.release?.assets?.length ? `Free download for ${osList(r).filter((o) => o !== 'Web').join(', ')}` : r.web ? 'Free web app' : 'Open-source app'),
     thinks: 'Thinks', web: 'Web', allPosts: 'All posts', readMin: (m) => `${m} min read`,
+    pages: (n) => `~${Number(n).toLocaleString('en-US')} page${n === 1 ? '' : 's'}`,
     postUpdated: (d) => `Updated ${d}`, prevPost: 'Previous', nextPost: 'Next', morePosts: 'More posts',
     backToThinks: '← Back to Thinks', toc: 'Contents',
     changelog: 'Release notes', latestBadge: 'Latest', olderReleases: (n) => `Show ${n} older release${n === 1 ? '' : 's'}`,
@@ -85,6 +86,7 @@ const T = {
     kind: (r) => (r.category === 'GameApplication' ? (r.web ? '무료 웹 게임' : '무료 게임')
       : r.release?.assets?.length ? `${osList(r).filter((o) => o !== 'Web').join('·')} 무료 다운로드` : r.web ? '무료 웹 앱' : '오픈소스 앱'),
     thinks: 'Thinks', web: '웹', allPosts: '전체 글', readMin: (m) => `약 ${m}분`,
+    pages: (n) => `약 ${Number(n).toLocaleString('ko-KR')}쪽`,
     postUpdated: (d) => `${d} 수정`, prevPost: '이전 글', nextPost: '다음 글', morePosts: '다른 글',
     backToThinks: '← Thinks 목록으로', toc: '목차',
     changelog: '버전 변경 내용', latestBadge: '최신', olderReleases: (n) => `이전 버전 ${n}개 더 보기`,
@@ -832,6 +834,7 @@ function postPage(p, idx, lang, prepared) {
   const metaParts = [
     p.publishedAt && `<time datetime="${esc(p.publishedAt)}">${esc(fmtDate(p.publishedAt, lang))}</time>`,
     updDay && pubDay && updDay > pubDay && `<span>${esc(t.postUpdated(fmtDate(p.updatedAt, lang)))}</span>`,
+    p.pageCount && `<span>${esc(t.pages(p.pageCount))}</span>`,
     p.readingMinutes && `<span>${esc(t.readMin(p.readingMinutes))}</span>`,
   ].filter(Boolean).join(' · ');
 

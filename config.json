@@ -278,6 +278,43 @@
         "screenshots/wind-tunnel-3d/04.webp",
         "screenshots/wind-tunnel-3d/05.webp"
       ]
+    },
+    {
+      "name": "origami-3d-studio",
+      "displayName": "종이공방 3D",
+      "displayNameEn": "Origami 3D Studio",
+      "web": "https://origami-3d-studio.vercel.app/",
+      "subtitleEn": "3D Origami Folding Simulator & Animated GIF Exporter",
+      "subtitleKo": "20종 종이접기 3D 시뮬레이터 · GIF 내보내기",
+      "descriptionEn": "Explore 20 origami folding techniques and 5 step-by-step 3D models (paper crane, dart airplane, cup, kabuto, heart), fold freely by dragging on a 3D canvas with a live 2D crease pattern, and export the entire folding sequence as an animated GIF — right in your browser, no install.",
+      "descriptionKo": "알려진 종이접기 기술 20종과 5종 완성 작품(종이학·종이비행기·종이컵·투구·하트)을 3D 강체 기구학으로 시뮬레이션하고, 자유 드래그 접기와 실시간 2D 전개도 확인, 전 과정 애니메이션 GIF 내보내기까지 브라우저에서 바로 실행하는 3D 종이접기 웹 앱입니다.",
+      "featuresEn": [
+        "20 3D origami techniques — Valley, mountain, cushion, pleat, squash, petal, inside/outside reverse, rabbit ear, crimp, swivel, open/closed sink, pocket tuck, 3D inflate, Miura-ori, and Square Twist.",
+        "5 step-by-step models — Traditional paper crane, classic dart airplane, drinking cup, samurai kabuto, and origami heart.",
+        "Free Fold Studio — Intuitive drag & 3-click snap folding on 3D paper with angle control, undo/redo, and a live synchronized 2D crease pattern.",
+        "Pure-browser GIF export — Built-in GIF89a encoder exports the entire folding process plus an optional 360° 3D turntable finale with step captions."
+      ],
+      "featuresKo": [
+        "20종 3D 종이접기 기법 — 계곡·산·방석·계단·주머니·꽃잎·뒤집어 접기·토끼귀·크림프·싱크·입체 부풀리기·미우라 접기·스퀘어 트위스트 구현.",
+        "5종 단계별 완성 작품 — 종이학(10단계), 종이비행기(7단계), 종이컵(5단계), 종이 투구(6단계), 종이 하트(8단계).",
+        "자유 창작 스튜디오 — 3D 종이 위 직관적 드래그·스냅 접기, 각도 조절, 실행 취소, 실시간 2D 전개도(Crease Pattern) 동기화.",
+        "브라우저 내 GIF 내보내기 — 서버 없이 내장 GIF89a 인코더로 전 과정과 360° 회전 피날레, 단계 자막까지 바로 GIF로 저장."
+      ],
+      "category": "DesignApplication",
+      "language": "JavaScript",
+      "topics": [
+        "origami",
+        "3d-simulation",
+        "gif-exporter",
+        "crease-pattern"
+      ],
+      "screenshots": [
+        "screenshots/origami-3d-studio/01.webp",
+        "screenshots/origami-3d-studio/02.webp",
+        "screenshots/origami-3d-studio/03.webp",
+        "screenshots/origami-3d-studio/04.webp",
+        "screenshots/origami-3d-studio/05.webp"
+      ]
     }
   ],
   "thinks": {

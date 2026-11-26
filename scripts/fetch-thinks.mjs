@@ -362,6 +362,14 @@ function countWords(text) {
   return cjk + latinWords;
 }
 
+function estimatePageCount(text) {
+  const s = String(text || '');
+  // 단행본(A5) 표준 분량 기준: 한글/CJK 공백 제외 ~650자/쪽 + 영문 ~275단어/쪽
+  const cjk = (s.match(/[\uAC00-\uD7A3\u3040-\u30FF\u4E00-\u9FFF]/g) || []).length;
+  const latinWords = (s.replace(/[\uAC00-\uD7A3\u3040-\u30FF\u4E00-\u9FFF]/g, ' ').match(/[a-zA-Z0-9]+/g) || []).length;
+  return Math.max(1, Math.round(cjk / 650 + latinWords / 275));
+}
+
 function detectPostLang(text, explicit) {
   const norm = String(explicit || '').trim().toLowerCase();
   if (norm === 'ko' || norm === 'en') return norm;
@@ -502,6 +510,8 @@ async function main() {
     const excerpt = summary || clipText(plain, 165);
     const readingMinutes = estimateReadingMinutes(plain);
     const wordCount = countWords(plain);
+    const explicitPages = Number(item.pageCount || item.pages || 0);
+    const pageCount = explicitPages > 0 ? Math.round(explicitPages) : estimatePageCount(plain);
     const postLang = detectPostLang(`${title} ${plain}`, item.lang);
     const primaryFont = sanitizeFontName(item.font);
     const rawFonts = Array.isArray(item.fonts) ? item.fonts : [];
@@ -523,6 +533,7 @@ async function main() {
       publishedAt,
       updatedAt,
       readingMinutes,
+      pageCount,
       wordCount,
       cover,
       html,

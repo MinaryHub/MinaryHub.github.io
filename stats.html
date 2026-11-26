@@ -328,9 +328,10 @@
     const upd = thinks.generatedAt ? ` · ${ago(thinks.generatedAt)} 갱신` : '';
     box.innerHTML = `<h2>Thinks 현황 <span class="sub">(발행 글 ${num(posts.length)}편${upd})</span></h2>
       <div class="sub" style="margin:-6px 0 12px">Thinks 글 방문은 위쪽 전체 방문자·방문 수에 합산됩니다(글별 조회수 분리 집계는 미지원).</div>
-      <table><thead><tr><th>제목</th><th>태그</th><th class="n">읽기 시간</th><th class="n">수정일</th></tr></thead><tbody>${posts.map((p) =>
+      <table><thead><tr><th>제목</th><th>태그</th><th class="n">분량</th><th class="n">읽기 시간</th><th class="n">수정일</th></tr></thead><tbody>${posts.map((p) =>
         `<tr><td><a href="ko/thinks/${encodeURIComponent(p.slug)}/">${esc(p.title)}</a></td>
           <td>${(p.tags || []).map((tg) => `<span class="chip">${esc(tg)}</span>`).join('') || '<span class="zero">—</span>'}</td>
+          <td class="n">${p.pageCount ? `약 ${num(p.pageCount)}쪽` : '—'}</td>
           <td class="n">${p.readingMinutes ? `약 ${num(p.readingMinutes)}분` : '—'}</td>
           <td class="n">${esc(day(p.updatedAt || p.publishedAt) || '—')}</td></tr>`).join('')}</tbody></table>`;
   }

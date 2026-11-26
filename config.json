@@ -20,7 +20,10 @@
   ],
   "verification": {
     "google": "m6C3CrRDpvmtvFct91EsfnFD1-hzAoVFYwwhjzvD9vg",
-    "naver": "6be2ac72dbce18e778cc2b354c0df2f79ac3b6ea"
+    "naver": [
+      "6be2ac72dbce18e778cc2b354c0df2f79ac3b6ea",
+      "3d07f546fc6686fece11f8f6c8d560a8bc05844f"
+    ]
   },
   "hide": [
     "Kerminal.Release",

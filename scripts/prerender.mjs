@@ -108,6 +108,10 @@ const appLd = (r, lang) => {
   const subtitle = loc(r, 'subtitle', lang);
   const kw = [subtitle, ...(r.topics || [])].filter(Boolean).join(', ');
   const firstAsset = r.release?.assets?.[0];
+  const latestNote = (changelogs[r.name] || [])[0];
+  const releaseNotes = latestNote?.body
+    ? clip(latestNote.body.replace(/[#*`>\[\]()_-]+/g, ' ').replace(/\s+/g, ' ').trim(), 280)
+    : undefined;
   return {
     '@type': 'SoftwareApplication',
     '@id': siteUrl + appPath(r, 'en') + '#app',
@@ -120,6 +124,7 @@ const appLd = (r, lang) => {
     applicationCategory: r.category || 'UtilitiesApplication',
     operatingSystem: osList(r).join(', ') || undefined,
     softwareVersion: r.release?.tag || undefined,
+    releaseNotes,
     fileSize: firstAsset?.size ? fmtSize(firstAsset.size) : undefined,
     datePublished: r.release?.publishedAt || undefined,
     dateModified: r.release?.publishedAt || r.pushedAt || undefined,
@@ -176,9 +181,9 @@ function headTags({
     `<meta name="twitter:image:alt" content="${esc(pageTitle)}">`,
     `<meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">`,
     `<meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">`,
-    v.google && `<meta name="google-site-verification" content="${esc(v.google)}">`,
-    v.naver && `<meta name="naver-site-verification" content="${esc(v.naver)}">`,
-    v.bing && `<meta name="msvalidate.01" content="${esc(v.bing)}">`,
+    ...(Array.isArray(v.google) ? v.google : [v.google]).filter(Boolean).map((c) => `<meta name="google-site-verification" content="${esc(c)}">`),
+    ...(Array.isArray(v.naver) ? v.naver : [v.naver]).filter(Boolean).map((c) => `<meta name="naver-site-verification" content="${esc(c)}">`),
+    ...(Array.isArray(v.bing) ? v.bing : [v.bing]).filter(Boolean).map((c) => `<meta name="msvalidate.01" content="${esc(c)}">`),
   ].filter(Boolean).join('\n');
 }
 // 하위 폴더 페이지가 사이트 루트 기준 상대 경로(logo.webp, screenshots/…)를 그대로 쓰도록
@@ -243,8 +248,17 @@ pages.push({ alt: { en: home('en'), ko: home('ko') }, lastmod: generated, priori
 for (const lang of LANGS) {
   const t = T[lang], path = thinksHome(lang);
   const tagline = loc(cfg.thinks, 'tagline', lang) || loc(cfg, 'tagline', lang);
-  const pageTitle = `${title} · ${t.thinks}`;
-  const desc = clip(tagline || `${title} — ${t.thinks}`);
+  const pageTitle = lang === 'ko'
+    ? `Thinks — 기술 에세이·생각·단행본 아카이브 | ${title}`
+    : `Thinks — Essays, Technical Notes & Books | ${title}`;
+  const desc = clip(
+    lang === 'ko'
+      ? `${tagline ? tagline + ' — ' : ''}AI·소프트웨어·개발에 대한 에세이와 단행본을 웹에서 바로 읽을 수 있는 ${title} Thinks 아카이브입니다.`
+      : `${tagline ? tagline + ' — ' : ''}Read essays, technical notes, and long-form books on AI and software directly in the browser on ${title} Thinks.`,
+  );
+  const thinksKeywords = lang === 'ko'
+    ? 'MinaryHub, Thinks, 기술 에세이, AI, 단행본, 소프트웨어 개발, 아카이브'
+    : 'MinaryHub, Thinks, essays, AI, books, software engineering, archive';
   const graph = [org, website, {
     '@type': 'CollectionPage', '@id': siteUrl + path + '#page', url: siteUrl + path, name: pageTitle, description: desc, inLanguage: lang,
     isPartOf: { '@id': siteUrl + '#website' },
@@ -254,7 +268,7 @@ for (const lang of LANGS) {
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="thinks" data-prerendered="1"`)
     .replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<base href="${baseFor(path)}">`)
     .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
-      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: thinksHome('en'), ko: thinksHome('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
+      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: thinksHome('en'), ko: thinksHome('ko') }, keywords: thinksKeywords }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
     .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
     .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
     .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`)
@@ -278,8 +292,18 @@ pages.push({ alt: { en: thinksHome('en'), ko: thinksHome('ko') }, lastmod: think
 for (const lang of LANGS) {
   const t = T[lang], path = webHome(lang);
   const tagline = loc(cfg, 'tagline', lang);
-  const pageTitle = `${title} · ${t.web}`;
-  const desc = clip(`${title} — ${lang === 'ko' ? '설치 없이 브라우저에서 바로 쓰는 웹 앱 모음' : 'Web apps you can run right in the browser — no install'}`);
+  const pageTitle = lang === 'ko'
+    ? `무료 3D 웹 앱 · 시뮬레이션 모음 (설치 없음) | ${title}`
+    : `Free Browser & 3D Web Apps (No Install) | ${title}`;
+  const webNames = webRepos.slice(0, 5).map((r) => nameOf(r, lang)).join(', ');
+  const desc = clip(
+    lang === 'ko'
+      ? `설치 없이 브라우저에서 바로 실행하는 무료 웹 앱 모음${webNames ? ` — ${webNames} 등` : ''}. PC와 모바일에서 바로 사용할 수 있습니다.`
+      : `Free interactive web apps and 3D simulations you can run right in your browser with no install${webNames ? ` — including ${webNames}` : ''}.`,
+  );
+  const webKeywords = lang === 'ko'
+    ? 'MinaryHub, 무료 웹 앱, 3D 시뮬레이션, 풍동 실험, 실시간 지구본, 브라우저 앱, 설치 없음'
+    : 'MinaryHub, free web apps, 3D simulations, wind tunnel CFD, live 3D globe, browser apps, no install';
   const graph = [org, website, {
     '@type': 'CollectionPage', '@id': siteUrl + path + '#page', url: siteUrl + path, name: pageTitle, description: desc, inLanguage: lang,
     isPartOf: { '@id': siteUrl + '#website' },
@@ -289,7 +313,7 @@ for (const lang of LANGS) {
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}" data-lang="${lang}" data-tab="web" data-prerendered="1"`)
     .replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<base href="${baseFor(path)}">`)
     .replace(/<title>[\s\S]*?<\/title>\s*(<meta name="description"[^>]*>)?/,
-      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: webHome('en'), ko: webHome('ko') } }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
+      headTags({ lang, path, pageTitle, desc, image: ogImage, alt: { en: webHome('en'), ko: webHome('ko') }, keywords: webKeywords }) + '\n' + ld({ '@context': 'https://schema.org', '@graph': graph }))
     .replace('<script src="contact.js" defer>', `<script src="contact.js?v=${ver}" defer>`)
     .replace(/(<h1 id="title">)[\s\S]*?(<\/h1>)/, `$1${esc(title)}$2`)
     .replace(/(<p class="tagline" id="tagline">)[\s\S]*?(<\/p>)/, `$1${esc(tagline)}$2`)
@@ -512,9 +536,10 @@ function appPage(r, lang) {
     desc && desc.length >= 40 ? desc : [desc, first].filter(Boolean).join(desc ? ' — ' : '') || `${name} — ${subtitle || kindText}`,
   );
   const shots = shotsFor(r, lang);
-  // Share previews: a PNG/JPEG/GIF screenshot, else a PNG icon, else the site image (WebP is not read by every chat app).
+  // Share previews: prefer PNG/JPEG/GIF, then WebP screenshot/icon before falling back to site og.png.
   const common = (u) => /\.(png|jpe?g|gif)(\?|$)/i.test(u || '');
-  const image = abs(shots.find(common)) || (common(r.icon) ? abs(r.icon) : '') || ogImage;
+  const imgOk = (u) => /\.(png|jpe?g|gif|webp)(\?|$)/i.test(u || '');
+  const image = abs(shots.find(common) || shots.find(imgOk)) || (imgOk(r.icon) ? abs(r.icon) : '') || ogImage;
   const rel = r.release;
   const actions = [
     r.web && `<a class="btn primary" href="${esc(r.web)}" data-app="${esc(r.name)}" title="web" target="_blank" rel="noopener"><span class="l">${esc(t.run)}</span><span class="sz">${esc(t.noInstall)}</span></a>`,
@@ -536,10 +561,18 @@ function appPage(r, lang) {
   const gallery = shots.length ? `<h2>${esc(t.shots)}</h2><div class="gallery">${shots.map((s, i) =>
     `<a href="${esc(s)}" target="_blank" rel="noopener"><img src="${esc(s)}" alt="${esc(t.shotAlt(name, i + 1))}" loading="${i ? 'lazy' : 'eager'}"></a>`).join('')}</div>` : '';
   const others = repos.filter((x) => x !== r).map((x) => `<li><a href="${esc(appPath(x, lang))}">${x.icon ? `<img src="${esc(x.icon)}" alt="" loading="lazy">` : ''}${esc(nameOf(x, lang))}</a></li>`).join('');
-  const graph = [org, website, appLd(r, lang), {
-    '@type': 'BreadcrumbList',
-    itemListElement: [{ '@type': 'ListItem', position: 1, name: title, item: siteUrl + home(lang) }, { '@type': 'ListItem', position: 2, name, item: siteUrl + path }],
-  }];
+  const webApp = isWebApp(r);
+  const crumbsLd = webApp
+    ? [
+        { '@type': 'ListItem', position: 1, name: title, item: siteUrl + home(lang) },
+        { '@type': 'ListItem', position: 2, name: t.web, item: siteUrl + webHome(lang) },
+        { '@type': 'ListItem', position: 3, name, item: siteUrl + path },
+      ]
+    : [
+        { '@type': 'ListItem', position: 1, name: title, item: siteUrl + home(lang) },
+        { '@type': 'ListItem', position: 2, name, item: siteUrl + path },
+      ];
+  const graph = [org, website, appLd(r, lang), { '@type': 'BreadcrumbList', itemListElement: crumbsLd }];
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -561,13 +594,13 @@ ${ld({ '@context': 'https://schema.org', '@graph': graph })}
   <header class="top">
     <a class="home" href="${home(lang) || './'}"><img class="logo" src="logo.webp" alt="" width="32" height="32">${esc(title)}</a>
     <nav class="top-nav" aria-label="Sections">
-      <a href="${home(lang) || './'}"${isWebApp(r) ? '' : ' aria-current="section"'}>Apps</a>
-      ${webRepos.length ? `<a href="${webHome(lang)}"${isWebApp(r) ? ' aria-current="section"' : ''}>${esc(t.web)}</a>` : ''}
+      <a href="${home(lang) || './'}"${webApp ? '' : ' aria-current="section"'}>Apps</a>
+      ${webRepos.length ? `<a href="${webHome(lang)}"${webApp ? ' aria-current="section"' : ''}>${esc(t.web)}</a>` : ''}
       <a href="${thinksHome(lang)}">${esc(t.thinks)}</a>
     </nav>
     <nav class="lang-sw" aria-label="Language"><a href="${alt.en}" data-lang="en" lang="en" hreflang="en"${lang === 'en' ? ' aria-current="page"' : ''}>EN</a><a href="${alt.ko}" data-lang="ko" lang="ko" hreflang="ko"${lang === 'ko' ? ' aria-current="page"' : ''}>한국어</a></nav>
   </header>
-  <nav class="crumbs" aria-label="Breadcrumb"><a href="${home(lang) || './'}">${esc(t.allApps)}</a> › ${esc(name)}</nav>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="${webApp ? webHome(lang) : (home(lang) || './')}">${esc(webApp ? t.web : t.allApps)}</a> › ${esc(name)}</nav>
   <main class="app">
     <div class="app-head">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="${esc(name)}" width="72" height="72">` : ''}<div><h1>${esc(name)}</h1><p class="kind">${esc(subtitle ? `${subtitle} · ${kindText}` : kindText)}</p></div></div>
     ${desc ? `<p class="lead">${esc(desc)}</p>` : ''}
@@ -803,8 +836,12 @@ const postFontStack = (font) => {
   const fallback = isSerif ? '"Noto Serif KR", Georgia, serif' : '"Noto Sans KR", system-ui, -apple-system, sans-serif';
   return `'${f}', ${fallback}`;
 };
+const FONT_ALIASES = {
+  'noto serif cjk kr': 'Noto Serif KR',
+  'noto sans cjk kr': 'Noto Sans KR',
+};
 const postFontLinks = (fonts) => {
-  const list = [...new Set((fonts || []).map(safeFontName).filter(Boolean))];
+  const list = [...new Set((fonts || []).map(safeFontName).filter(Boolean).map((f) => FONT_ALIASES[f.toLowerCase()] || f))];
   return list
     .filter((f) => !SYSTEM_FONTS.has(f.toLowerCase()) && !/[가-힣]/.test(f))
     .map((f) => {
@@ -822,8 +859,8 @@ function postPage(p, idx, lang, prepared) {
   const alt = { en: postPathUrl(p, 'en'), ko: postPathUrl(p, 'ko') };
   const pageTitle = `${p.title} · ${t.thinks} | ${title}`;
   const desc = clip(p.excerpt || p.title);
-  const common = (u) => /\.(png|jpe?g|gif)(\?|$)/i.test(u || '');
-  const image = (common(p.cover) ? abs(p.cover) : '') || ogImage;
+  const imgOk = (u) => /\.(png|jpe?g|gif|webp)(\?|$)/i.test(u || '');
+  const image = (imgOk(p.cover) ? abs(p.cover) : '') || ogImage;
   const extraMeta = [
     p.publishedAt && `<meta property="article:published_time" content="${esc(p.publishedAt)}">`,
     p.updatedAt && `<meta property="article:modified_time" content="${esc(p.updatedAt)}">`,

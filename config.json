@@ -172,6 +172,67 @@
         "screenshots/flight-tracker-3d/03.webp",
         "screenshots/flight-tracker-3d/04.webp"
       ]
+    },
+    {
+      "name": "terra-pulse-3d",
+      "displayName": "TerraPulse 3D",
+      "web": "https://terra-pulse-3d.vercel.app/",
+      "subtitleEn": "Real-Time Global Earthquake, Weather, Ocean & Air Quality 3D Globe",
+      "subtitleKo": "글로벌 실시간 지진·기상·해양·환경 센서 3D 지구본",
+      "descriptionEn": "Visualize live global earthquakes (USGS), weather & ocean waves/currents (Open-Meteo NOAA/ECMWF), and 15,000+ environmental air-quality sensors (Sensor.Community & AirKorea) on a 60fps 3D WebGL globe. Tap any point for local weather, wave height, nearest quake, and air quality — runs in your browser, no install.",
+      "descriptionKo": "USGS 실시간 지진, Open-Meteo(NOAA/ECMWF) 글로벌 기상·해양 파고·해류, 전 세계 15,000개 이상 환경 센서(Sensor.Community·에어코리아)의 초미세먼지 데이터를 3D WebGL 지구본 위에 실시간 시각화하는 웹 앱. 임의의 지점을 눌러 기상·파고·최근접 지진·대기질을 즉시 확인할 수 있으며 설치 없이 브라우저에서 실행됩니다.",
+      "featuresEn": [
+        "Live earthquakes (USGS) — Updated every minute with magnitude scaling, ripple rings, depth, tsunami alerts, and official reports.",
+        "Global weather & ocean — 72 major cities with moving wind particles plus 48 ocean regions showing wave height, period, and surface currents.",
+        "15,000+ air-quality sensors — PM2.5, PM10, temperature, and humidity rendered as 3D radial columns, with AirKorea support.",
+        "Point inspection & mobile ready — Tap anywhere on the globe for a 24-hour temperature sparkline, wave data, and nearest events."
+      ],
+      "featuresKo": [
+        "실시간 지진 (USGS) — 1분 주기 갱신, 규모별 색상·파동 링, 진원 깊이·쓰나미 여부·공식 리포트 연동.",
+        "글로벌 기상·해양 — 72개 주요 도시의 실시간 바람 파티클과 48개 해역의 유의 파고·파주기·표층 해류 시각화.",
+        "15,000+ 환경 센서 — Sensor.Community·에어코리아의 PM2.5/PM10·온습도 데이터를 3D 방사형 기둥으로 표시.",
+        "임의 좌표 탐색 — 지구본 어디든 클릭·탭해 24시간 기온 그래프, 해양 파고, 최근접 지진·센서를 즉시 확인."
+      ],
+      "category": "UtilitiesApplication",
+      "language": "TypeScript",
+      "topics": [
+        "earthquake",
+        "weather",
+        "air-quality",
+        "3d-globe"
+      ]
+    },
+    {
+      "name": "global-market-globe",
+      "displayName": "Orbital Markets",
+      "web": "https://global-market-globe-hxxl.vercel.app/",
+      "subtitleEn": "Real-Time Global Stocks, FX & Commodities 3D Globe",
+      "subtitleKo": "실시간 글로벌 주가·외환·원자재 3D 지구본",
+      "descriptionEn": "Watch 14 global stock indices, 9 live FX currency corridors, and 8 commodity hubs stream onto an interactive 3D globe with real-time day/night lighting. Runs right in your browser on desktop and mobile — no install.",
+      "descriptionKo": "전 세계 14개 주요 주가지수, 9개 실시간 외환(FX) 통화쌍, 8개 원자재 허브를 실시간 태양광 주야간 경계가 반영된 3D 지구본 위에 시각화하는 금융 웹 앱. PC와 모바일 브라우저에서 설치 없이 바로 실행됩니다.",
+      "featuresEn": [
+        "14 global stock indices — Vertical glowing pillars scaled by daily change, with pulse rings on open exchanges.",
+        "9 live FX corridors — 3D geodesic arcs connecting financial hubs (USD/KRW, EUR/USD, etc.) with directional flow animation.",
+        "8 commodity hubs — Rotating metallic markers for gold, WTI & Brent crude, LNG, copper, silver, wheat, and iron ore.",
+        "Live solar terminator & mobile UI — Real-time UTC day/night shadow, region quick jumps, and snap bottom sheet."
+      ],
+      "featuresKo": [
+        "14개 주가지수 — 거래소 위치에 등락률 크기의 발광 기둥과 개장 거래소 실시간 펄스 링 표시.",
+        "9개 실시간 외환 아크 — 금융 허브(뉴욕↔서울 USD/KRW, 프랑크푸르트↔뉴욕 EUR/USD 등)를 잇는 3D 대권 아크.",
+        "8개 원자재 허브 — 금, WTI·브렌트유, LNG, 구리, 은, 소맥, 철광석 거점의 실시간 시세 마커.",
+        "실시간 주야간 경계·모바일 최적화 — UTC 태양광 셰이더, 권역 빠른 이동, 스냅 바텀 시트 지원."
+      ],
+      "category": "FinanceApplication",
+      "language": "TypeScript",
+      "topics": [
+        "markets",
+        "stocks",
+        "forex",
+        "3d-globe"
+      ],
+      "screenshots": [
+        "screenshots/global-market-globe/01.webp"
+      ]
     }
   ],
   "thinks": {

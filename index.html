@@ -52,7 +52,9 @@
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; padding-bottom: 64px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); min-width: 0; }
+    padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); min-width: 0;
+    transition: border-color .18s, box-shadow .18s; }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
   .card-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
   .ttl { display: flex; align-items: center; gap: 12px; min-width: 0; }
   .app-ico { width: 40px; height: 40px; border-radius: 10px; flex: none; object-fit: contain; }
@@ -87,14 +89,15 @@
   .card h2 a:hover { text-decoration: underline; }
   .ver { font: 600 12px "JetBrains Mono", monospace; color: var(--ok); white-space: nowrap; text-decoration: none; }
   .ver.pre { color: #c98a12; }
-  .desc { color: var(--muted); margin: 0; flex: 1; }
+  .desc { color: var(--muted); margin: 0; font-size: 14.5px; line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 4.65em; }
   .desc.empty { font-style: italic; opacity: .7; }
-  .tags { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; }
-  .tag { background: var(--surface-2); color: var(--muted); padding: 2px 8px; border-radius: 6px; }
+  .tags { display: flex; gap: 6px; flex-wrap: nowrap; overflow: hidden; font-size: 12px; }
+  .tag { background: var(--surface-2); color: var(--muted); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
   .lang::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
     background: var(--dot, #999); margin-right: 6px; vertical-align: 1px; }
 
-  .dl { display: flex; flex-direction: column; gap: 8px; }
+  .dl { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
   .btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none;
     padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2);
     font-size: 14px; min-width: 0; }
@@ -107,9 +110,11 @@
   .more { font-size: 13px; color: var(--muted); }
   .more summary { cursor: pointer; }
   .more .dl { margin-top: 8px; }
-  .foot { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted);
+  .foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; color: var(--muted);
     border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; }
   .foot a { color: var(--accent); text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  .detail-link { font-size: 12.5px; font-weight: 500; white-space: nowrap; }
   .foot-r { display: flex; align-items: center; gap: 8px; }
   .dcount { font: 500 12px "JetBrains Mono", monospace; color: var(--ok); background: var(--surface-2); border-radius: 8px; padding: 3px 9px; white-space: nowrap; cursor: help; }
   .norel { font-size: 13px; color: var(--muted); background: var(--surface-2); border-radius: 10px; padding: 10px 14px; }
@@ -348,7 +353,7 @@
       thinksSearch: 'Search posts…', thinksAll: 'All',
       thinksEmpty: 'No posts yet.', thinksNoMatch: 'No posts match your search.',
       thinksMeta: (n, agoStr) => `<b>${n}</b> post${n === 1 ? '' : 's'}` + (agoStr ? ` · updated ${agoStr}` : ''),
-      readMin: (m) => `${m} min read`, pages: (n) => `~${Number(n).toLocaleString('en-US')} page${n === 1 ? '' : 's'}`,
+      readMin: (m) => `${m} min read`, pages: (n) => `~${Number(n).toLocaleString('en-US')} page${n === 1 ? '' : 's'}`, details: 'Details →',
     },
     ko: {
       search: '프로젝트 검색…', all: '전체', rel: '다운로드 가능', loading: '불러오는 중…',
@@ -373,7 +378,7 @@
       thinksSearch: '글 검색…', thinksAll: '전체',
       thinksEmpty: '아직 등록된 글이 없습니다.', thinksNoMatch: '조건에 맞는 글이 없습니다.',
       thinksMeta: (n, agoStr) => `글 <b>${n}</b>편` + (agoStr ? ` · 정보 갱신 ${agoStr}` : ''),
-      readMin: (m) => `약 ${m}분`, pages: (n) => `약 ${Number(n).toLocaleString('ko-KR')}쪽`,
+      readMin: (m) => `약 ${m}분`, pages: (n) => `약 ${Number(n).toLocaleString('ko-KR')}쪽`, details: '자세히 →',
     },
   };
   const t = (k, ...a) => { const v = I18N[lang][k]; return typeof v === 'function' ? v(...a) : v; };
@@ -630,15 +635,16 @@
     // 검색은 두 언어 이름·설명 모두에서
     const q = [name, r.name, r.displayName, r.displayNameEn, r.displayNameKo, desc, r.description, r.descriptionEn, r.descriptionKo,
       r.language, ...r.topics].filter(Boolean).join(' ').toLowerCase();
+    const pageHref = r.page ? `${lang === 'ko' ? 'ko/' : ''}apps/${esc(slugOf(r.name))}/` : '';
     return `<article class="card" data-app="${esc(r.name)}" data-rel="${rel ? 1 : 0}" data-q="${esc(q)}">
-      <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((name || '?')[0])}</span>`}<h2>${r.page ? `<a href="${lang === 'ko' ? 'ko/' : ''}apps/${esc(slugOf(r.name))}/">${esc(name)}</a>` : esc(name)}</h2></div>
+      <div class="card-top"><div class="ttl">${r.icon ? `<img class="app-ico" src="${esc(r.icon)}" alt="" width="40" height="40" loading="lazy">` : `<span class="app-ico ph">${esc((name || '?')[0])}</span>`}<h2>${pageHref ? `<a href="${pageHref}">${esc(name)}</a>` : esc(name)}</h2></div>
         ${rel ? `<span class="ver${rel.prerelease ? ' pre' : ''}" title="${esc(rel.name)}">${esc(rel.tag)}${rel.prerelease ? ' · pre' : ''}</span>` : ''}</div>
       <p class="desc${desc ? '' : ' empty'}">${esc(desc || t('noDesc'))}</p>
-      <div class="tags">${r.language ? `<span class="tag lang" style="--dot:${color}">${esc(r.language)}</span>` : ''}${r.topics.slice(0, 4).map((tp) => `<span class="tag">${esc(tp)}</span>`).join('')}</div>
+      <div class="tags">${r.language ? `<span class="tag lang" style="--dot:${color}">${esc(r.language)}</span>` : ''}${r.topics.slice(0, 2).map((tp) => `<span class="tag">${esc(tp)}</span>`).join('')}</div>
       ${shotsHtml(r)}
       ${dl}
       <div class="foot"><span>${rel ? t('released', fmtDate(rel.publishedAt)) : t('updated', fmtDate(r.pushedAt))}</span>
-        <div class="foot-r"><span class="dcount" data-app="${esc(r.name)}" hidden></span>${r.external ? '' : `<button class="star" type="button" data-repo="${esc(r.name)}" aria-pressed="false" title="${t('starGive')}"><span class="si">☆</span><span class="sn">${Number(r.stars) || 0}</span></button>`}</div></div>
+        <div class="foot-r">${pageHref ? `<a class="detail-link" href="${pageHref}">${esc(t('details'))}</a>` : ''}<span class="dcount" data-app="${esc(r.name)}" hidden></span>${r.external ? '' : `<button class="star" type="button" data-repo="${esc(r.name)}" aria-pressed="false" title="${t('starGive')}"><span class="si">☆</span><span class="sn">${Number(r.stars) || 0}</span></button>`}</div></div>
     </article>`;
   }
 

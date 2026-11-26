@@ -727,6 +727,25 @@ const POST_CSS = `
   .cm-author { color: var(--text); font-weight: 600; font-size: 14px; }
   .cm-badge { font-size: 11.5px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
   .cm-body { margin: 0; font-size: 14.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+
+  /* 단행본 독서 편의 UI (진행률 바 · 글자 크기 · 이어보기) */
+  .read-prog { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--accent);
+    z-index: 40; pointer-events: none; transition: width .08s linear; }
+  .read-tools { display: flex; align-items: center; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  .read-btn { font: inherit; font-size: 12.5px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer; line-height: 1.3; }
+  .read-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .read-pct { font: 500 12px "JetBrains Mono", monospace; color: var(--muted); margin-left: auto; }
+  .read-resume { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    margin: 0 0 20px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--accent-soft); color: var(--text); font-size: 13.5px; }
+  .read-resume[hidden] { display: none; }
+  .read-resume-acts { display: flex; align-items: center; gap: 8px; }
+  .read-resume .go { font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 8px;
+    border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .read-resume .x { font: inherit; font-size: 16px; line-height: 1; padding: 4px 8px; border: 0;
+    background: none; color: var(--muted); cursor: pointer; }
+  .article-wrap .prose { font-size: calc(16px * var(--read-scale, 1)); }
 `;
 
 const decodeEntities = (s) =>
@@ -807,6 +826,84 @@ const postLightboxScript = (closeLabel) => `<script>
   }));
   lb.addEventListener('click', (e) => { if (e.target === lb || e.target.closest('.lb-x')) lb.hidden = true; });
   document.addEventListener('keydown', (e) => { if (!lb.hidden && e.key === 'Escape') lb.hidden = true; });
+})();
+</script>`;
+
+const postReaderScript = (slug, lang) => `<script>
+(() => {
+  const prose = document.querySelector('.article-wrap .prose');
+  const bar = document.getElementById('readProg');
+  const pctEl = document.getElementById('readPct');
+  const dec = document.getElementById('fsDec');
+  const rst = document.getElementById('fsRst');
+  const inc = document.getElementById('fsInc');
+  const resBox = document.getElementById('readResume');
+  if (!prose) return;
+
+  const SCALE_KEY = 'mh-font-scale';
+  const POS_KEY = 'mh-read-pos:' + ${JSON.stringify(slug)};
+  const MIN = 0.85, MAX = 1.4, STEP = 0.1;
+  let scale = 1;
+  try {
+    const s = parseFloat(localStorage.getItem(SCALE_KEY));
+    if (s >= MIN && s <= MAX) scale = Math.round(s * 100) / 100;
+  } catch {}
+  const applyScale = (v) => {
+    scale = Math.max(MIN, Math.min(MAX, Math.round(v * 100) / 100));
+    prose.style.setProperty('--read-scale', String(scale));
+    if (rst) rst.textContent = Math.round(scale * 100) + '%';
+    try { localStorage.setItem(SCALE_KEY, String(scale)); } catch {}
+  };
+  applyScale(scale);
+  if (dec) dec.addEventListener('click', () => applyScale(scale - STEP));
+  if (rst) rst.addEventListener('click', () => applyScale(1));
+  if (inc) inc.addEventListener('click', () => applyScale(scale + STEP));
+
+  const getRatio = () => {
+    const rect = prose.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
+    const span = Math.max(1, prose.offsetHeight - window.innerHeight * 0.6);
+    return Math.max(0, Math.min(1, (window.scrollY - top) / span));
+  };
+
+  // 이전 읽기 위치 복원 배너 (해시 링크로 직접 들어온 경우는 제외)
+  try {
+    const saved = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
+    if (resBox && !location.hash && saved && saved.r >= 0.05 && saved.r <= 0.96) {
+      const p = Math.round(saved.r * 100);
+      const txt = resBox.querySelector('.rr-txt');
+      if (txt) txt.textContent = ${lang === 'ko' ? '`마지막으로 읽던 위치(${p}%)가 있습니다.`' : '`Resume where you left off (${p}%)?`'};
+      resBox.hidden = false;
+      resBox.querySelector('.go')?.addEventListener('click', () => {
+        const top = prose.getBoundingClientRect().top + window.scrollY;
+        const span = Math.max(1, prose.offsetHeight - window.innerHeight * 0.6);
+        window.scrollTo({ top: Math.max(0, top + span * saved.r), behavior: 'smooth' });
+        resBox.hidden = true;
+      });
+      resBox.querySelector('.x')?.addEventListener('click', () => { resBox.hidden = true; });
+    }
+  } catch {}
+
+  let ticking = false, saveTimer = 0;
+  const update = () => {
+    const r = getRatio();
+    const p = Math.round(r * 100);
+    if (bar) bar.style.width = p + '%';
+    if (pctEl) pctEl.textContent = p + '%';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try {
+        if (r >= 0.04 && r <= 0.97) localStorage.setItem(POS_KEY, JSON.stringify({ r: Math.round(r * 1000) / 1000, t: Date.now() }));
+        else if (r > 0.97) localStorage.removeItem(POS_KEY);
+      } catch {}
+    }, 500);
+  };
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { ticking = false; update(); });
+  }, { passive: true });
+  update();
 })();
 </script>`;
 
@@ -960,6 +1057,7 @@ ${extraFontLinks}
 <style>${style}${APP_CSS}${POST_CSS}${fontCss}</style>
 </head>
 <body>
+<div class="read-prog" id="readProg" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top">
     <a class="home" href="${home(lang) || './'}"><img class="logo" src="logo.webp" alt="" width="32" height="32">${esc(title)}</a>
@@ -978,6 +1076,19 @@ ${extraFontLinks}
           <h1>${esc(p.title)}</h1>
           ${metaParts ? `<div class="article-meta">${metaParts}</div>` : ''}
           ${tagsHtml}
+          <div class="read-tools" aria-label="${lang === 'ko' ? '읽기 도구' : 'Reading tools'}">
+            <button type="button" class="read-btn" id="fsDec" aria-label="${lang === 'ko' ? '글자 작게' : 'Decrease font size'}">${lang === 'ko' ? '가-' : 'A-'}</button>
+            <button type="button" class="read-btn" id="fsRst" aria-label="${lang === 'ko' ? '기본 글자 크기' : 'Reset font size'}">100%</button>
+            <button type="button" class="read-btn" id="fsInc" aria-label="${lang === 'ko' ? '글자 크게' : 'Increase font size'}">${lang === 'ko' ? '가+' : 'A+'}</button>
+            <span class="read-pct" id="readPct" aria-label="${lang === 'ko' ? '읽기 진행률' : 'Reading progress'}">0%</span>
+          </div>
+        </div>
+        <div class="read-resume" id="readResume" hidden>
+          <span class="rr-txt"></span>
+          <span class="read-resume-acts">
+            <button type="button" class="go">${lang === 'ko' ? '이어보기' : 'Resume'}</button>
+            <button type="button" class="x" aria-label="${lang === 'ko' ? '닫기' : 'Dismiss'}">×</button>
+          </span>
         </div>
         ${tocMobileHtml}
         <div class="prose">${bodyHtml}</div>
@@ -997,6 +1108,7 @@ ${extraFontLinks}
 ${appScript(lang, alt)}
 ${hasToc ? postTocScript() : ''}
 ${postLightboxScript(lang === 'ko' ? '닫기' : 'Close')}
+${postReaderScript(p.slug, lang)}
 ${commentsApi ? `<script src="comments.js?v=${ver}" defer></script>` : ''}
 <script src="contact.js?v=${ver}" defer></script>
 </body>

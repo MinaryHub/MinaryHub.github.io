@@ -240,7 +240,8 @@
       ],
       "screenshots": [
         "screenshots/global-market-globe/01.webp"
-      ]
+      ],
+      "icon": "icons/global-market-globe.webp"
     },
     {
       "name": "wind-tunnel-3d",
@@ -314,7 +315,8 @@
         "screenshots/origami-3d-studio/03.webp",
         "screenshots/origami-3d-studio/04.webp",
         "screenshots/origami-3d-studio/05.webp"
-      ]
+      ],
+      "icon": "icons/origami-3d-studio.webp"
     },
     {
       "name": "brickcraft-3d",
@@ -346,7 +348,8 @@
       ],
       "screenshots": [
         "screenshots/brickcraft-3d/01.webp"
-      ]
+      ],
+      "icon": "icons/brickcraft-3d.webp"
     }
   ],
   "thinks": {

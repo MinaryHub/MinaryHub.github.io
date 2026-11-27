@@ -64,7 +64,8 @@
         "screenshots/global-ship-tracker-3d/02.webp",
         "screenshots/global-ship-tracker-3d/03.webp",
         "screenshots/global-ship-tracker-3d/04.webp"
-      ]
+      ],
+      "repo": "knoxxr/global-ship-tracker-3d"
     },
     {
       "name": "gyeonggi-traffic-map",
@@ -101,7 +102,8 @@
         "screenshots/gyeonggi-traffic-map/02.webp",
         "screenshots/gyeonggi-traffic-map/03.webp",
         "screenshots/gyeonggi-traffic-map/04.webp"
-      ]
+      ],
+      "repo": "knoxxr/gyeonggi-traffic-map"
     },
     {
       "name": "satellite-tracker-3d",
@@ -135,7 +137,8 @@
       "screenshots": [
         "screenshots/satellite-tracker-3d/01.webp",
         "screenshots/satellite-tracker-3d/02.webp"
-      ]
+      ],
+      "repo": "knoxxr/satellite-tracker-3d"
     },
     {
       "name": "flight-tracker-3d",
@@ -171,7 +174,8 @@
         "screenshots/flight-tracker-3d/02.webp",
         "screenshots/flight-tracker-3d/03.webp",
         "screenshots/flight-tracker-3d/04.webp"
-      ]
+      ],
+      "repo": "knoxxr/flight-tracker-3d"
     },
     {
       "name": "terra-pulse-3d",
@@ -208,7 +212,8 @@
         "screenshots/terra-pulse-3d/03.webp",
         "screenshots/terra-pulse-3d/04.webp",
         "screenshots/terra-pulse-3d/05.webp"
-      ]
+      ],
+      "repo": "knoxxr/terra-pulse-3d"
     },
     {
       "name": "global-market-globe",
@@ -241,7 +246,8 @@
       "screenshots": [
         "screenshots/global-market-globe/01.webp"
       ],
-      "icon": "icons/global-market-globe.webp"
+      "icon": "icons/global-market-globe.webp",
+      "repo": "knoxxr/global-market-globe"
     },
     {
       "name": "wind-tunnel-3d",
@@ -278,7 +284,8 @@
         "screenshots/wind-tunnel-3d/03.webp",
         "screenshots/wind-tunnel-3d/04.webp",
         "screenshots/wind-tunnel-3d/05.webp"
-      ]
+      ],
+      "repo": "knoxxr/wind-tunnel-3d"
     },
     {
       "name": "origami-3d-studio",
@@ -316,7 +323,8 @@
         "screenshots/origami-3d-studio/04.webp",
         "screenshots/origami-3d-studio/05.webp"
       ],
-      "icon": "icons/origami-3d-studio.webp"
+      "icon": "icons/origami-3d-studio.webp",
+      "repo": "knoxxr/origami-3d-studio"
     },
     {
       "name": "brickcraft-3d",
@@ -349,7 +357,8 @@
       "screenshots": [
         "screenshots/brickcraft-3d/01.webp"
       ],
-      "icon": "icons/brickcraft-3d.webp"
+      "icon": "icons/brickcraft-3d.webp",
+      "repo": "knoxxr/brickcraft-3d"
     },
     {
       "name": "math-av-simulator",
@@ -386,7 +395,8 @@
         "screenshots/math-av-simulator/03.webp",
         "screenshots/math-av-simulator/04.webp",
         "screenshots/math-av-simulator/05.webp"
-      ]
+      ],
+      "repo": "knoxxr/math-av-simulator"
     },
     {
       "name": "cosmos-voyager",
@@ -418,7 +428,8 @@
       ],
       "screenshots": [
         "screenshots/cosmos-voyager/01.webp"
-      ]
+      ],
+      "repo": "knoxxr/cosmos-voyager"
     },
     {
       "name": "intersection-simulator-3d",
@@ -449,7 +460,8 @@
         "3d",
         "ai-signals"
       ],
-      "icon": "icons/intersection-simulator-3d.webp"
+      "icon": "icons/intersection-simulator-3d.webp",
+      "repo": "knoxxr/intersection-simulator-3d"
     }
   ],
   "thinks": {

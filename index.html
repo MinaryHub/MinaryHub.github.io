@@ -514,8 +514,8 @@
   // 앱 저장소의 screenshots/ 폴더를 방문할 때마다 다시 읽어, 빌드 뒤에 추가·교체한 이미지도 바로 보이게 한다.
   // 언어 폴더(screenshots/en, screenshots/ko)가 있으면 지금 언어 것을 쓴다. 10분 캐시, 읽지 못하면 빌드 때 목록 그대로
   let liveShots = {};
-  async function loadRepoShots(repos) {
-    const KEY = 'mh-shots-v2', TTL = 10*60*1000, IMG = /\.(png|jpe?g|webp|gif)$/i;
+  async function loadRepoShots(list) {
+    const KEY = 'mh-shots-v3', TTL = 10*60*1000, IMG = /\.(png|jpe?g|webp)$/i;
     let cache = {};
     try { cache = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
     // GitHub는 로그인하지 않은 방문자에게 시간당 60번까지만 답한다. 한도에 걸리면 풀리는 시각까지 다시 묻지 않는다
@@ -530,15 +530,16 @@
       return Promise.reject(new Error('GitHub API ' + r.status));
     });
     const images = (items) => (Array.isArray(items) ? items : []).filter((f) => f.type === 'file' && IMG.test(f.name) && !/feature-graphic|icon/i.test(f.name))
-      .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).map((f) => f.download_url);
-    await Promise.all(repos.filter((r) => !r.external && !r.shotsFixed).map(async (r) => {
+      .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).slice(0, 8).map((f) => f.download_url);
+    await Promise.all(list.filter((r) => (!r.external || r.repo) && !r.shotsFixed).map(async (r) => {
       if (cache[r.name] && Date.now() - cache[r.name].t < TTL) return;
       try {
+        const slug = r.repo || `${ORG}/${r.name}`;
         const ref = r.branch ? '?ref=' + encodeURIComponent(r.branch) : '';
-        const root = await api(`/repos/${ORG}/${r.name}/contents/screenshots${ref}`);
+        const root = await api(`/repos/${slug}/contents/screenshots${ref}`);
         const v = { t: Date.now(), all: images(root), lang: {} };
         for (const d of (Array.isArray(root) ? root : []).filter((f) => f.type === 'dir' && /^(en|ko)$/i.test(f.name)))
-          v.lang[d.name.toLowerCase()] = images(await api(`/repos/${ORG}/${r.name}/contents/${d.path}${ref}`));
+          v.lang[d.name.toLowerCase()] = images(await api(`/repos/${slug}/contents/${d.path}${ref}`));
         cache[r.name] = v;
       } catch {}
     }));
@@ -1024,7 +1025,7 @@
           (cfg.hide || []).some((h) => h.toLowerCase() === a.name.toLowerCase())) continue;
         repos.push({ name: a.name, displayName: a.displayName || a.name, description: a.description || '',
           url: a.url || a.web || '', homepage: a.homepage || a.web || '', web: a.web || '', language: a.language || null,
-          topics: a.topics || [], stars: null, pushedAt: a.updated || data.generatedAt, external: true,
+          repo: a.repo || null, topics: a.topics || [], stars: null, pushedAt: a.updated || data.generatedAt, external: true,
           icon: a.icon || null, screenshots: a.screenshots || [], release: null, ...i18nFields(a) });
       }
       const render = (nLive) => {
@@ -1047,8 +1048,21 @@
       loadCounts();
       rerender = () => { applyHeader(); render(lastLive); renderThinks(); paintAuth(); };
       const shotsKey = () => JSON.stringify(repos.map(shotsOf));
-      const before = shotsKey();
-      loadRepoShots(repos).then((c) => { liveShots = c; if (shotsKey() !== before) render(lastLive); }).catch(() => {});
+      const fetchedTabs = new Set();
+      const syncTabShots = () => {
+        if (activeTab !== 'apps' && activeTab !== 'web') return;
+        if (fetchedTabs.has(activeTab)) return;
+        fetchedTabs.add(activeTab);
+        const subset = repos.filter((r) => (activeTab === 'web' ? isWebApp(r) : !isWebApp(r)));
+        const before = shotsKey();
+        loadRepoShots(subset).then((c) => {
+          liveShots = { ...liveShots, ...c };
+          if (shotsKey() !== before) render(lastLive);
+        }).catch(() => {});
+      };
+      syncTabShots();
+      $('#tabs').addEventListener('click', () => setTimeout(syncTabShots, 0));
+      window.addEventListener('popstate', () => setTimeout(syncTabShots, 0));
       paintAuth(); loadStarState();
       if (!data.live) liveReleases(data, cfg).then((d) => {
         let n = 0;

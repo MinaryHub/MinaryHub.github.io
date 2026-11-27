@@ -196,6 +196,17 @@ for (const r of repos) {
 // config.apps: GitHub 공개 저장소 없이 직접 등록하는 앱 (웹 앱, 비공개 저장소의 앱 등)
 for (const a of config.apps || []) {
   if (!a.name || hidden.has(a.name.toLowerCase()) || result.some((r) => r.name.toLowerCase() === a.name.toLowerCase())) continue;
+  let extShots = a.screenshots || [];
+  if (!extShots.length && a.repo) {
+    const items = await gh(`/repos/${a.repo}/contents/screenshots`).catch(() => null);
+    if (Array.isArray(items)) {
+      extShots = items
+        .filter((f) => f.type === 'file' && /\.(png|jpe?g|webp)$/i.test(f.name) && !/feature-graphic|icon/i.test(f.name))
+        .sort((x, y) => x.name.localeCompare(y.name, 'en', { numeric: true }))
+        .slice(0, 8)
+        .map((f) => f.download_url);
+    }
+  }
   result.push({
     name: a.name,
     displayName: a.displayName || a.name,
@@ -204,6 +215,7 @@ for (const a of config.apps || []) {
     homepage: a.homepage || a.web || '',
     web: a.web || '',
     ...i18nFields(a),
+    repo: a.repo || null,
     category: a.category || undefined,
     language: a.language || null,
     topics: a.topics || [],
@@ -211,7 +223,7 @@ for (const a of config.apps || []) {
     pushedAt: a.updated ? new Date(a.updated).toISOString() : new Date().toISOString(),
     external: true,
     icon: a.icon || null,
-    screenshots: a.screenshots || [],
+    screenshots: extShots,
     release: null,
   });
 }

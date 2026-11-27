@@ -387,6 +387,38 @@
         "screenshots/math-av-simulator/04.webp",
         "screenshots/math-av-simulator/05.webp"
       ]
+    },
+    {
+      "name": "cosmos-voyager",
+      "displayName": "COSMOS VOYAGER",
+      "web": "https://cosmos-voyager-ten.vercel.app/",
+      "subtitleEn": "3D Universe & Galaxy Navigation Simulator (AU to 46.5 Gly)",
+      "subtitleKo": "전 우주 은하·항성 3D 항법 시뮬레이터",
+      "descriptionEn": "Fly and warp across 18 orders of magnitude — from our Solar System and nearby stars to the Milky Way, Laniakea Supercluster, JWST farthest galaxies (JADES-GS-z14-0), and the 46.5-billion-light-year observable universe — with real astrodynamics, Kepler orbits, galaxy collisions, and Hubble expansion right in your browser. No install.",
+      "descriptionKo": "태양계와 근접 항성부터 우리 은하, 라니아케아 초은하단, JWST 최원거리 은하(JADES-GS-z14-0)와 관측 가능한 우주 경계(465억 광년)까지 18자릿수 로그 스케일로 자유 비행·워프하는 3D 우주 항법 시뮬레이터입니다. 실제 천문 좌표·천체 역학·안드로메다 충돌·허블 팽창을 설치 없이 브라우저에서 체험할 수 있습니다.",
+      "featuresEn": [
+        "Real 3D astronomical catalog — 140+ stars, galaxies, nebulae, globular clusters, supermassive black holes, quasars, superclusters, and cosmic voids placed from RA/Dec/distance.",
+        "Universal catalog resolver — Search NGC, IC, Messier, HIP, HD, GJ, Kepler, TOI, Gaia DR3, or Abell IDs to warp straight to any object and explore 120 interior star systems inside any galaxy.",
+        "Full-scale Cosmic Time Engine — Keplerian planetary & binary orbits, 3D stellar proper motion (Barnard’s Star, Proxima, S5-HVS1), Andromeda–Milky Way collision, and Hubble expansion.",
+        "Hyper-warp drive & guided tours — Relativistic Doppler warp effects, 4 guided cosmic tours, free WASD 3D flight, and touch controls."
+      ],
+      "featuresKo": [
+        "실제 천문 좌표 3D 카탈로그 — 적경·적위·거리 기반으로 배치된 140여 개 항성·은하·성운·블랙홀·퀘이사·초은하단·우주 거대 공동.",
+        "전 우주 카탈로그 검색 & 은하 내부 탐험 — NGC·IC·M·HIP·Kepler·Gaia 등 공식 코드로 즉시 워프하고, 모든 은하 내부의 120개 항성계와 중심 블랙홀까지 탐험.",
+        "전 스케일 천체 역학 (Cosmic Time Engine) — 케플러 공전, 항성 3D 고유운동, 45억 년 뒤 안드로메다–우리 은하 충돌, 허블 팽창 및 빅뱅 역행 시뮬레이션.",
+        "하이퍼 워프 & 가이드 투어 — 상대론적 도플러 워프 연출, 4종 가이드 투어, 자유 3D 비행(WASD) 및 모바일 터치 지원."
+      ],
+      "category": "EducationalApplication",
+      "language": "HTML",
+      "topics": [
+        "astronomy",
+        "universe",
+        "3d-navigation",
+        "astrophysics"
+      ],
+      "screenshots": [
+        "screenshots/cosmos-voyager/01.webp"
+      ]
     }
   ],
   "thinks": {

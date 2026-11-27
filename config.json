@@ -350,6 +350,43 @@
         "screenshots/brickcraft-3d/01.webp"
       ],
       "icon": "icons/brickcraft-3d.webp"
+    },
+    {
+      "name": "math-av-simulator",
+      "displayName": "Beauty of Math",
+      "web": "https://math-av-simulator.vercel.app/",
+      "subtitleEn": "3D Audio-Visual Mathematical Simulator (8 Worlds)",
+      "subtitleKo": "8가지 아름다운 수학 공식 3D 시청각 시뮬레이터",
+      "descriptionEn": "Experience 8 iconic mathematical worlds — Riemann Zeta critical line, Euler identity Taylor series, 50K-particle Lorenz attractor, Fourier epicycles, golden-angle phyllotaxis, GPU Julia/Mandelbrot fractals, 4D Hopf fibration, and 36K-particle Chladni resonance — rendered in real-time Three.js WebGL with generative Web Audio sound. No install.",
+      "descriptionKo": "리만 제타 함수, 오일러 항등식, 5만 파티클 로렌츠 끌개, 푸리에 주전원, 황금각 나선, GPU 프랙탈, 4D 호프 파이버레이션, 3.6만 입자 클라드니 음향 공명까지 8가지 아름다운 수학 공식을 GPU WebGL과 제너레이티브 사운드로 체험하는 3D 시청각 웹 앱입니다.",
+      "featuresEn": [
+        "8 interactive math worlds (keys 1–8) — Riemann Zeta zeros, Euler Taylor series, 50K GPU Lorenz attractor, Fourier epicycles, golden-angle phyllotaxis, Julia/Mandelbrot GPU fractals, 4D Hopf fibration, and 36K Chladni plates.",
+        "Real-time GPU WebGL — Custom Three.js ShaderMaterial & BufferGeometry with live parameter sliders, camera orbit, and smooth zoom.",
+        "Generative Web Audio engine — Lydian & Pentatonic harmonic synth pads, low-pass filter mapped to trajectory speed/curvature, and procedural reverb.",
+        "Browser native — Runs right in your browser with KaTeX formula overlays and no installation."
+      ],
+      "featuresKo": [
+        "8가지 수학 세계 (단축키 1–8) — 리만 제타 영점, 오일러 테일러 급수, 5만 GPU 로렌츠 끌개, 푸리에 주전원, 황금각 필로택시스, GPU 프랙탈, 4D 호프 파이버레이션, 3.6만 클라드니 공명.",
+        "실시간 GPU WebGL — Three.js 커스텀 셰이더로 수만 개 입자와 프랙탈을 부드럽게 렌더링하고 파라미터를 실시간 조작.",
+        "제너레이티브 사운드 엔진 — Lydian·Pentatonic 스케일 배음 신스와 궤적 속도·곡률 연동 필터, 프로시저럴 리버브.",
+        "설치 없이 바로 실행 — KaTeX 수식 안내와 함께 브라우저에서 즉시 감상·탐구할 수 있습니다."
+      ],
+      "category": "EducationalApplication",
+      "language": "TypeScript",
+      "topics": [
+        "mathematics",
+        "3d-visualization",
+        "webgl",
+        "web-audio"
+      ],
+      "icon": "icons/math-av-simulator.webp",
+      "screenshots": [
+        "screenshots/math-av-simulator/01.webp",
+        "screenshots/math-av-simulator/02.webp",
+        "screenshots/math-av-simulator/03.webp",
+        "screenshots/math-av-simulator/04.webp",
+        "screenshots/math-av-simulator/05.webp"
+      ]
     }
   ],
   "thinks": {

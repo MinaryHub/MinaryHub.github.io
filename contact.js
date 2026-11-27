@@ -70,7 +70,12 @@
           body: JSON.stringify({ ...v, lang: lang(), page: location.href.split('#')[0], openedMs: Date.now() - openedAt }) });
         const j = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(j.error || 'fail');
-        f.innerHTML = `<h2>${t('title')}</h2><p class="status ok" role="status">${t('ok')}</p><div class="row"><button class="btn primary" value="cancel">${t('cancel')}</button></div>`;
+        // 보낸 뒤 화면: 닫기 버튼은 제출 버튼이 아니어야 한다 (제출이면 위 onsubmit이 다시 돌다 멈춰 창이 안 닫힘)
+        f.onsubmit = (ev) => { ev.preventDefault(); dlg.close(); };
+        f.innerHTML = `<h2>${t('title')}</h2><p class="status ok" role="status">${t('ok')}</p><div class="row"><button type="button" class="btn primary">${t('cancel')}</button></div>`;
+        const done = f.querySelector('.btn.primary');
+        done.onclick = () => dlg.close();
+        done.focus();
       } catch (err) {
         st.textContent = t(['invalid', 'rate'].includes(err.message) ? err.message : 'fail'); st.className = 'status err';
         sendBtn.disabled = false; sendBtn.textContent = t('send');

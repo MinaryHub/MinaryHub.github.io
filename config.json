@@ -26,7 +26,8 @@
     "Kerminal.Release",
     "DeskCue.Release",
     "VirtualDesktopIndicator",
-    "uiwanginside"
+    "uiwanginside",
+    "FactoryBuilder"
   ],
   "order": [],
   "apps": [

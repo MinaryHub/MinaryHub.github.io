@@ -31,116 +31,6 @@
   "order": [],
   "apps": [
     {
-      "name": "global-ship-tracker-3d",
-      "displayName": "MarineGlobe 3D",
-      "web": "https://knoxxr.github.io/global-ship-tracker-3d/",
-      "subtitleEn": "Live Global AIS Ship Tracker on a 3D Globe",
-      "subtitleKo": "전 세계 실시간 선박 추적 3D 지구본",
-      "descriptionEn": "Watch real vessel positions from the global AIS network on an interactive 3D globe — live data only, no simulation. Click a ship to see its registered details and 24-hour track. Runs in your browser, no install.",
-      "descriptionKo": "가상 데이터 없이 전 세계 AIS 네트워크의 실제 선박 위치를 3D 지구본 위에 실시간으로 보여 주는 해양 관제 웹 앱. 선박을 누르면 제원과 24시간 항적을 확인할 수 있으며, 설치 없이 브라우저에서 실행됩니다.",
-      "featuresEn": [
-        "Live data only — Real vessel positions from open AIS feeds; no simulated ships.",
-        "Ship details and 24-hour track — Click any vessel for its registered particulars and recent route.",
-        "Scan any sea area — Scan and subscribe to whatever region you are viewing on the globe.",
-        "No install — Runs right in your browser."
-      ],
-      "featuresKo": [
-        "실데이터만 — 공개 AIS 피드의 실제 선박 위치만 표시하며 가상 선박은 없습니다.",
-        "제원과 24시간 항적 — 선박을 누르면 등록 제원과 최근 항로를 보여 줍니다.",
-        "원하는 해역 수신 — 지구본에서 보고 있는 해역을 바로 스캔·구독합니다.",
-        "설치 없이 실행 — 브라우저에서 바로 실행됩니다."
-      ],
-      "category": "UtilitiesApplication",
-      "language": "JavaScript",
-      "topics": [
-        "ais",
-        "ship-tracker",
-        "3d-globe",
-        "maritime"
-      ],
-      "icon": "icons/global-ship-tracker-3d.webp",
-      "screenshots": [
-        "screenshots/global-ship-tracker-3d/01.webp",
-        "screenshots/global-ship-tracker-3d/02.webp",
-        "screenshots/global-ship-tracker-3d/03.webp",
-        "screenshots/global-ship-tracker-3d/04.webp"
-      ],
-      "repo": "knoxxr/global-ship-tracker-3d"
-    },
-    {
-      "name": "gyeonggi-traffic-map",
-      "displayName": "통신 트래픽 지도",
-      "displayNameEn": "Mobile Traffic Map",
-      "web": "https://knoxxr.github.io/gyeonggi-traffic-map/",
-      "subtitleEn": "Hourly Mobile Traffic Change Map of Korea",
-      "subtitleKo": "전국 행정동별 모바일 트래픽 변화 지도",
-      "descriptionEn": "An interactive map that visualizes how mobile network traffic changes by time of day across Korean administrative districts and hexagonal cells, rendered with WebGL2. Works on desktop and phones, no install.",
-      "descriptionKo": "전국 행정동·시군구·육각 셀 단위의 시간대별 모바일 통신 트래픽 변화량을 WebGL2로 보여 주는 인터랙티브 지도. PC와 스마트폰에서 설치 없이 바로 쓸 수 있습니다.",
-      "featuresEn": [
-        "Four spatial levels — Fine cells, base-station cells, districts, cities and provinces.",
-        "15-minute or hourly view — Switch metrics: change rate, Δ traffic, vs. daily average, total.",
-        "Fast WebGL2 rendering — Tens of thousands of cells at 60fps.",
-        "Bring your own data — Upload or export CSV/JSON, or poll a JSON API."
-      ],
-      "featuresKo": [
-        "4단계 공간 해상도 — 초미세 셀, 기지국 셀, 읍·면·동, 시·군·구·시·도.",
-        "15분·1시간 단위 — 변화율, Δ트래픽, 일평균 대비, 총 트래픽 지표 전환.",
-        "WebGL2 고속 렌더링 — 수만 개 셀을 60fps로 표시합니다.",
-        "내 데이터 연동 — CSV/JSON 업로드·내보내기, JSON API 폴링을 지원합니다."
-      ],
-      "category": "UtilitiesApplication",
-      "language": "HTML",
-      "topics": [
-        "traffic",
-        "map",
-        "webgl",
-        "korea"
-      ],
-      "icon": "icons/gyeonggi-traffic-map.webp",
-      "screenshots": [
-        "screenshots/gyeonggi-traffic-map/01.webp",
-        "screenshots/gyeonggi-traffic-map/02.webp",
-        "screenshots/gyeonggi-traffic-map/03.webp",
-        "screenshots/gyeonggi-traffic-map/04.webp"
-      ],
-      "repo": "knoxxr/gyeonggi-traffic-map"
-    },
-    {
-      "name": "satellite-tracker-3d",
-      "displayName": "OrbitPulse 3D",
-      "web": "https://knoxxr.github.io/satellite-tracker-3d/",
-      "subtitleEn": "Real-Time Satellite Tracker on a 3D Globe",
-      "subtitleKo": "실시간 인공위성 3D 추적기",
-      "descriptionEn": "Track real satellites — ISS, Tiangong, Hubble, Korean Arirang and GK-2A, GPS, Starlink and more — live on a 3D globe using CelesTrak orbital data and SGP4. Zoom in for 3D satellite models and see upcoming passes. Runs in your browser, no install.",
-      "descriptionKo": "ISS·톈궁·허블·아리랑·천리안·GPS·스타링크 등 실제 인공위성을 CelesTrak 궤도 데이터와 SGP4로 3D 지구본 위에 실시간 추적하는 웹 앱. 줌인하면 3D 위성 모델을 보고 상공 통과 시각을 확인할 수 있으며, 설치 없이 브라우저에서 실행됩니다.",
-      "featuresEn": [
-        "Real satellites, live — Positions computed from CelesTrak orbital elements with SGP4.",
-        "3D models up close — Zoom in to switch from glowing points to satellite models, including NASA CAD for ISS and Hubble.",
-        "Orbits and pass predictions — Past/future orbit, footprint, and the next 24 hours of passes from your location.",
-        "Time control — Speed up to 1000×, pause, or jump back to live."
-      ],
-      "featuresKo": [
-        "실제 위성 실시간 — CelesTrak 궤도 요소를 SGP4로 계산해 위치를 표시합니다.",
-        "가까이서 보는 3D 모델 — 줌인하면 발광 점이 위성 모델로 바뀌며, ISS·허블 등은 NASA 실물 CAD를 씁니다.",
-        "궤도와 통과 예측 — 과거·미래 궤도, 지상 커버리지, 내 위치 기준 향후 24시간 통과 시각.",
-        "시간 제어 — 최대 1000배속, 일시정지, 실시간 복귀."
-      ],
-      "category": "UtilitiesApplication",
-      "language": "JavaScript",
-      "topics": [
-        "satellite",
-        "orbit",
-        "3d-globe",
-        "sgp4"
-      ],
-      "icon": "icons/satellite-tracker-3d.webp",
-      "screenshots": [
-        "screenshots/satellite-tracker-3d/01.webp",
-        "screenshots/satellite-tracker-3d/02.webp"
-      ],
-      "repo": "knoxxr/satellite-tracker-3d"
-    },
-    {
       "name": "flight-tracker-3d",
       "displayName": "AeroGlobe 3D",
       "web": "https://flight-tracker-3d.onrender.com/",
@@ -214,254 +104,6 @@
         "screenshots/terra-pulse-3d/05.webp"
       ],
       "repo": "knoxxr/terra-pulse-3d"
-    },
-    {
-      "name": "global-market-globe",
-      "displayName": "Orbital Markets",
-      "web": "https://global-market-globe-hxxl.vercel.app/",
-      "subtitleEn": "Real-Time Global Stocks, FX & Commodities 3D Globe",
-      "subtitleKo": "실시간 글로벌 주가·외환·원자재 3D 지구본",
-      "descriptionEn": "Watch 14 global stock indices, 9 live FX currency corridors, and 8 commodity hubs stream onto an interactive 3D globe with real-time day/night lighting. Runs right in your browser on desktop and mobile — no install.",
-      "descriptionKo": "전 세계 14개 주요 주가지수, 9개 실시간 외환(FX) 통화쌍, 8개 원자재 허브를 실시간 태양광 주야간 경계가 반영된 3D 지구본 위에 시각화하는 금융 웹 앱. PC와 모바일 브라우저에서 설치 없이 바로 실행됩니다.",
-      "featuresEn": [
-        "14 global stock indices — Vertical glowing pillars scaled by daily change, with pulse rings on open exchanges.",
-        "9 live FX corridors — 3D geodesic arcs connecting financial hubs (USD/KRW, EUR/USD, etc.) with directional flow animation.",
-        "8 commodity hubs — Rotating metallic markers for gold, WTI & Brent crude, LNG, copper, silver, wheat, and iron ore.",
-        "Live solar terminator & mobile UI — Real-time UTC day/night shadow, region quick jumps, and snap bottom sheet."
-      ],
-      "featuresKo": [
-        "14개 주가지수 — 거래소 위치에 등락률 크기의 발광 기둥과 개장 거래소 실시간 펄스 링 표시.",
-        "9개 실시간 외환 아크 — 금융 허브(뉴욕↔서울 USD/KRW, 프랑크푸르트↔뉴욕 EUR/USD 등)를 잇는 3D 대권 아크.",
-        "8개 원자재 허브 — 금, WTI·브렌트유, LNG, 구리, 은, 소맥, 철광석 거점의 실시간 시세 마커.",
-        "실시간 주야간 경계·모바일 최적화 — UTC 태양광 셰이더, 권역 빠른 이동, 스냅 바텀 시트 지원."
-      ],
-      "category": "FinanceApplication",
-      "language": "TypeScript",
-      "topics": [
-        "markets",
-        "stocks",
-        "forex",
-        "3d-globe"
-      ],
-      "screenshots": [
-        "screenshots/global-market-globe/01.webp"
-      ],
-      "icon": "icons/global-market-globe.webp",
-      "repo": "knoxxr/global-market-globe"
-    },
-    {
-      "name": "wind-tunnel-3d",
-      "displayName": "AERO LAB 3D",
-      "web": "https://wind-tunnel-3d.vercel.app/",
-      "subtitleEn": "Interactive 3D Wind Tunnel CFD Simulation in Browser",
-      "subtitleKo": "브라우저 3D 풍동 실험 · 공력(CFD) 시뮬레이션",
-      "descriptionEn": "Run a real-time 3D wind tunnel and voxel CFD simulation right in your browser with WebGL2. Test the default GT sports car, SUV, F1 racer, NACA 2412 airfoil, or upload your own .glb/.gltf/.obj/.stl 3D model to inspect drag, downforce, surface pressure (Cp) heatmaps, and volumetric smoke streamlines — no install.",
-      "descriptionKo": "별도 설치 없이 브라우저 WebGL2에서 실시간 3D 풍동 실험과 복셀 CFD 유동 해석을 실행하는 웹 앱. GT 스포츠카·SUV·F1 레이서·에어포일 프리셋과 사용자 3D 모델(.glb/.gltf/.obj/.stl) 업로드를 지원하며, 항력·다운포스·표면 압력(Cp) 히트맵·스모크 유선을 시각화합니다.",
-      "featuresEn": [
-        "Preset vehicles & custom 3D upload — GT sports car, SUV, F1 racer, NACA 2412 airfoil, sphere, plus .glb/.gltf/.obj/.stl upload (up to 50 MB).",
-        "Real-time 3D voxel CFD — Computes drag coefficient (Cd), drag force, lift/downforce (CL, FL), side force, frontal area, Reynolds number, and centerline Cp chart.",
-        "Rich 3D visualization — Volumetric smoke streamlines, airflow particles, surface Cp heatmap, movable 2D slice plane, rolling road, and yaw turntable.",
-        "PBR studio graphics & shareable links — Clearcoat car paints, studio IBL lighting, dark/light themes, and URL sharing of test setups — runs 100% in your browser."
-      ],
-      "featuresKo": [
-        "프리셋 모델 & 3D 파일 업로드 — GT 스포츠카·SUV·F1 레이서·NACA 2412 에어포일·구체 및 .glb/.gltf/.obj/.stl 업로드(최대 50MB).",
-        "실시간 3D 복셀 CFD 해석 — 항력 계수(Cd), 항력, 다운포스·양력(CL·FL), 횡력, 전면 투영 면적, 레이놀즈 수, 중심선 Cp 그래프 계산.",
-        "3D 풍동 시각화 — 볼류메트릭 스모크 유선, 기류 파티클, 표면 압력(Cp) 히트맵, 이동식 2D 단면 슬라이스, 롤링 로드·요각 턴테이블.",
-        "PBR 스튜디오 그래픽 & 조건 공유 — 5종 클리어코트 페인트, 다크/라이트 스튜디오 테마, 실험 조건 URL 공유 지원 (설치 없음)."
-      ],
-      "category": "UtilitiesApplication",
-      "language": "HTML",
-      "topics": [
-        "wind-tunnel",
-        "cfd",
-        "aerodynamics",
-        "webgl2"
-      ],
-      "icon": "icons/wind-tunnel-3d.webp",
-      "screenshots": [
-        "screenshots/wind-tunnel-3d/01.webp",
-        "screenshots/wind-tunnel-3d/02.webp",
-        "screenshots/wind-tunnel-3d/03.webp",
-        "screenshots/wind-tunnel-3d/04.webp",
-        "screenshots/wind-tunnel-3d/05.webp"
-      ],
-      "repo": "knoxxr/wind-tunnel-3d"
-    },
-    {
-      "name": "origami-3d-studio",
-      "displayName": "종이공방 3D",
-      "displayNameEn": "Origami 3D Studio",
-      "web": "https://origami-3d-studio.vercel.app/",
-      "subtitleEn": "3D Origami Folding Simulator & Animated GIF Exporter",
-      "subtitleKo": "20종 종이접기 3D 시뮬레이터 · GIF 내보내기",
-      "descriptionEn": "Explore 20 origami folding techniques and 5 step-by-step 3D models (paper crane, dart airplane, cup, kabuto, heart), fold freely by dragging on a 3D canvas with a live 2D crease pattern, and export the entire folding sequence as an animated GIF — right in your browser, no install.",
-      "descriptionKo": "알려진 종이접기 기술 20종과 5종 완성 작품(종이학·종이비행기·종이컵·투구·하트)을 3D 강체 기구학으로 시뮬레이션하고, 자유 드래그 접기와 실시간 2D 전개도 확인, 전 과정 애니메이션 GIF 내보내기까지 브라우저에서 바로 실행하는 3D 종이접기 웹 앱입니다.",
-      "featuresEn": [
-        "20 3D origami techniques — Valley, mountain, cushion, pleat, squash, petal, inside/outside reverse, rabbit ear, crimp, swivel, open/closed sink, pocket tuck, 3D inflate, Miura-ori, and Square Twist.",
-        "5 step-by-step models — Traditional paper crane, classic dart airplane, drinking cup, samurai kabuto, and origami heart.",
-        "Free Fold Studio — Intuitive drag & 3-click snap folding on 3D paper with angle control, undo/redo, and a live synchronized 2D crease pattern.",
-        "Pure-browser GIF export — Built-in GIF89a encoder exports the entire folding process plus an optional 360° 3D turntable finale with step captions."
-      ],
-      "featuresKo": [
-        "20종 3D 종이접기 기법 — 계곡·산·방석·계단·주머니·꽃잎·뒤집어 접기·토끼귀·크림프·싱크·입체 부풀리기·미우라 접기·스퀘어 트위스트 구현.",
-        "5종 단계별 완성 작품 — 종이학(10단계), 종이비행기(7단계), 종이컵(5단계), 종이 투구(6단계), 종이 하트(8단계).",
-        "자유 창작 스튜디오 — 3D 종이 위 직관적 드래그·스냅 접기, 각도 조절, 실행 취소, 실시간 2D 전개도(Crease Pattern) 동기화.",
-        "브라우저 내 GIF 내보내기 — 서버 없이 내장 GIF89a 인코더로 전 과정과 360° 회전 피날레, 단계 자막까지 바로 GIF로 저장."
-      ],
-      "category": "DesignApplication",
-      "language": "JavaScript",
-      "topics": [
-        "origami",
-        "3d-simulation",
-        "gif-exporter",
-        "crease-pattern"
-      ],
-      "screenshots": [
-        "screenshots/origami-3d-studio/01.webp",
-        "screenshots/origami-3d-studio/02.webp",
-        "screenshots/origami-3d-studio/03.webp",
-        "screenshots/origami-3d-studio/04.webp",
-        "screenshots/origami-3d-studio/05.webp"
-      ],
-      "icon": "icons/origami-3d-studio.webp",
-      "repo": "knoxxr/origami-3d-studio"
-    },
-    {
-      "name": "brickcraft-3d",
-      "displayName": "BrickCraft 3D",
-      "web": "https://brickcraft-3d-eight.vercel.app/",
-      "subtitleEn": "3D Lego Brick Assembly Studio & Instruction/GIF Exporter",
-      "subtitleKo": "93종 브릭 3D 레고 조립 · 설명서·GIF 스튜디오",
-      "descriptionEn": "Build 3D models with 93 Lego-style brick types and 24 colors right in your browser, group assembly steps, and export step-by-step GIFs, 60fps videos, transparent PNG snapshots, or instruction manuals (PDF/BOM) — no install.",
-      "descriptionKo": "브라우저에서 93종의 레고 시스템 브릭과 24종 컬러로 3D 모델을 조립하고, 조립 순서를 GIF · 60fps 영상 · 투명 PNG · 공식 스타일 조립 설명서(PDF/BOM)로 내보내는 올인원 3D 브릭 스튜디오입니다. 설치 없이 PC·모바일에서 바로 실행됩니다.",
-      "featuresEn": [
-        "93 brick types & 24 colors — Bricks, plates, tiles, slopes, arches, windows, doors, Technic/SNOT, wheels, metallic gold, and transparent parts.",
-        "Export studio — Step-by-step GIF89a with parts callout, 60fps WebM/MP4 video, transparent PNG snapshot, and printable PDF/PNG instruction manuals with BOM.",
-        "Smart 3D editing — Mirror symmetry (X/Z/4-way), real-time shadows, outline mode, multi-select, eyedropper, and switchable 16×16 / 24×24 / 32×32 baseplates.",
-        "Instant sharing & sound — Compress your entire build into a shareable URL hash, with mobile touch controls and synthesized brick click sounds."
-      ],
-      "featuresKo": [
-        "93종 브릭 & 24종 컬러 — 기본 브릭·플레이트·타일·슬로프·아치·창문·문·테크닉·SNOT·바퀴·메탈릭 골드·투명 파츠 지원.",
-        "올인원 내보내기 스튜디오 — 부품 콜아웃이 포함된 단계별 GIF89a, 60fps 영상, 투명 PNG, 부품 목록(BOM)이 담긴 조립 설명서(PDF/PNG) 저장.",
-        "편리한 3D 편집 — X/Z/4방 대칭 조립, 실시간 그림자·윤곽선 모드, 다중 선택·복제, 스포이드, 16×16·24×24·32×32 베이스판 전환.",
-        "URL 링크 공유 & 사운드 — 서버 없이 모델 전체를 URL로 즉시 공유하고, 모바일 터치 제스처와 브릭 결합 효과음 지원."
-      ],
-      "category": "DesignApplication",
-      "language": "HTML",
-      "topics": [
-        "lego",
-        "brick",
-        "3d-builder",
-        "gif-exporter"
-      ],
-      "screenshots": [
-        "screenshots/brickcraft-3d/01.webp"
-      ],
-      "icon": "icons/brickcraft-3d.webp",
-      "repo": "knoxxr/brickcraft-3d"
-    },
-    {
-      "name": "math-av-simulator",
-      "displayName": "Beauty of Math",
-      "web": "https://math-av-simulator.vercel.app/",
-      "subtitleEn": "3D Audio-Visual Mathematical Simulator (8 Worlds)",
-      "subtitleKo": "8가지 아름다운 수학 공식 3D 시청각 시뮬레이터",
-      "descriptionEn": "Experience 8 iconic mathematical worlds — Riemann Zeta critical line, Euler identity Taylor series, 50K-particle Lorenz attractor, Fourier epicycles, golden-angle phyllotaxis, GPU Julia/Mandelbrot fractals, 4D Hopf fibration, and 36K-particle Chladni resonance — rendered in real-time Three.js WebGL with generative Web Audio sound. No install.",
-      "descriptionKo": "리만 제타 함수, 오일러 항등식, 5만 파티클 로렌츠 끌개, 푸리에 주전원, 황금각 나선, GPU 프랙탈, 4D 호프 파이버레이션, 3.6만 입자 클라드니 음향 공명까지 8가지 아름다운 수학 공식을 GPU WebGL과 제너레이티브 사운드로 체험하는 3D 시청각 웹 앱입니다.",
-      "featuresEn": [
-        "8 interactive math worlds (keys 1–8) — Riemann Zeta zeros, Euler Taylor series, 50K GPU Lorenz attractor, Fourier epicycles, golden-angle phyllotaxis, Julia/Mandelbrot GPU fractals, 4D Hopf fibration, and 36K Chladni plates.",
-        "Real-time GPU WebGL — Custom Three.js ShaderMaterial & BufferGeometry with live parameter sliders, camera orbit, and smooth zoom.",
-        "Generative Web Audio engine — Lydian & Pentatonic harmonic synth pads, low-pass filter mapped to trajectory speed/curvature, and procedural reverb.",
-        "Browser native — Runs right in your browser with KaTeX formula overlays and no installation."
-      ],
-      "featuresKo": [
-        "8가지 수학 세계 (단축키 1–8) — 리만 제타 영점, 오일러 테일러 급수, 5만 GPU 로렌츠 끌개, 푸리에 주전원, 황금각 필로택시스, GPU 프랙탈, 4D 호프 파이버레이션, 3.6만 클라드니 공명.",
-        "실시간 GPU WebGL — Three.js 커스텀 셰이더로 수만 개 입자와 프랙탈을 부드럽게 렌더링하고 파라미터를 실시간 조작.",
-        "제너레이티브 사운드 엔진 — Lydian·Pentatonic 스케일 배음 신스와 궤적 속도·곡률 연동 필터, 프로시저럴 리버브.",
-        "설치 없이 바로 실행 — KaTeX 수식 안내와 함께 브라우저에서 즉시 감상·탐구할 수 있습니다."
-      ],
-      "category": "EducationalApplication",
-      "language": "TypeScript",
-      "topics": [
-        "mathematics",
-        "3d-visualization",
-        "webgl",
-        "web-audio"
-      ],
-      "icon": "icons/math-av-simulator.webp",
-      "screenshots": [
-        "screenshots/math-av-simulator/01.webp",
-        "screenshots/math-av-simulator/02.webp",
-        "screenshots/math-av-simulator/03.webp",
-        "screenshots/math-av-simulator/04.webp",
-        "screenshots/math-av-simulator/05.webp"
-      ],
-      "repo": "knoxxr/math-av-simulator"
-    },
-    {
-      "name": "cosmos-voyager",
-      "displayName": "COSMOS VOYAGER",
-      "web": "https://cosmos-voyager-ten.vercel.app/",
-      "subtitleEn": "3D Universe & Galaxy Navigation Simulator (AU to 46.5 Gly)",
-      "subtitleKo": "전 우주 은하·항성 3D 항법 시뮬레이터",
-      "descriptionEn": "Fly and warp across 18 orders of magnitude — from our Solar System and nearby stars to the Milky Way, Laniakea Supercluster, JWST farthest galaxies (JADES-GS-z14-0), and the 46.5-billion-light-year observable universe — with real astrodynamics, Kepler orbits, galaxy collisions, and Hubble expansion right in your browser. No install.",
-      "descriptionKo": "태양계와 근접 항성부터 우리 은하, 라니아케아 초은하단, JWST 최원거리 은하(JADES-GS-z14-0)와 관측 가능한 우주 경계(465억 광년)까지 18자릿수 로그 스케일로 자유 비행·워프하는 3D 우주 항법 시뮬레이터입니다. 실제 천문 좌표·천체 역학·안드로메다 충돌·허블 팽창을 설치 없이 브라우저에서 체험할 수 있습니다.",
-      "featuresEn": [
-        "Real 3D astronomical catalog — 140+ stars, galaxies, nebulae, globular clusters, supermassive black holes, quasars, superclusters, and cosmic voids placed from RA/Dec/distance.",
-        "Universal catalog resolver — Search NGC, IC, Messier, HIP, HD, GJ, Kepler, TOI, Gaia DR3, or Abell IDs to warp straight to any object and explore 120 interior star systems inside any galaxy.",
-        "Full-scale Cosmic Time Engine — Keplerian planetary & binary orbits, 3D stellar proper motion (Barnard’s Star, Proxima, S5-HVS1), Andromeda–Milky Way collision, and Hubble expansion.",
-        "Hyper-warp drive & guided tours — Relativistic Doppler warp effects, 4 guided cosmic tours, free WASD 3D flight, and touch controls."
-      ],
-      "featuresKo": [
-        "실제 천문 좌표 3D 카탈로그 — 적경·적위·거리 기반으로 배치된 140여 개 항성·은하·성운·블랙홀·퀘이사·초은하단·우주 거대 공동.",
-        "전 우주 카탈로그 검색 & 은하 내부 탐험 — NGC·IC·M·HIP·Kepler·Gaia 등 공식 코드로 즉시 워프하고, 모든 은하 내부의 120개 항성계와 중심 블랙홀까지 탐험.",
-        "전 스케일 천체 역학 (Cosmic Time Engine) — 케플러 공전, 항성 3D 고유운동, 45억 년 뒤 안드로메다–우리 은하 충돌, 허블 팽창 및 빅뱅 역행 시뮬레이션.",
-        "하이퍼 워프 & 가이드 투어 — 상대론적 도플러 워프 연출, 4종 가이드 투어, 자유 3D 비행(WASD) 및 모바일 터치 지원."
-      ],
-      "category": "EducationalApplication",
-      "language": "HTML",
-      "topics": [
-        "astronomy",
-        "universe",
-        "3d-navigation",
-        "astrophysics"
-      ],
-      "screenshots": [
-        "screenshots/cosmos-voyager/01.webp"
-      ],
-      "repo": "knoxxr/cosmos-voyager"
-    },
-    {
-      "name": "intersection-simulator-3d",
-      "displayName": "3D 교차로 교통 시뮬레이터",
-      "displayNameEn": "Intersection 3D Simulator",
-      "web": "https://intersection-simulator-3d.vercel.app/",
-      "subtitleEn": "3D Intersection Traffic & AI Signal Simulator (Godot 4.3)",
-      "subtitleKo": "AI 감응식 신호등 · 3D 교차로 교통 시뮬레이터",
-      "descriptionEn": "Simulate 3D intersection traffic flow right in your browser (Godot 4.3 WebAssembly). Test AI-adaptive traffic lights, 2/4-phase signals, emergency ambulance priority, asymmetric 1–3 lane layouts, lane closures with traffic cones, live congestion heatmaps, and day/sunset/night lighting — no install.",
-      "descriptionKo": "Godot 4.3 WebAssembly로 구현된 3D 교차로 교통 흐름 시뮬레이터입니다. AI 스마트 감응식 신호등, 2·4현시 시나리오, 구급차 긴급 우선신호, 비대칭 1~3차선 구성·공사 차선 폐쇄, 실시간 혼잡도 그래프와 낮·노을·야간 조명을 설치 없이 브라우저에서 바로 체험할 수 있습니다.",
-      "featuresEn": [
-        "Smart AI & 5 signal modes — Adaptive AI queue-balancing signals, 2-phase, 4-phase protected left turns, flashing yellow, and all-red, with live timing controls.",
-        "Presets & ambulance priority — One-click Balanced, Rush Hour (AI), Left-Turn Jam, and 1-Lane Roadwork presets plus emergency ambulance green-wave preemption.",
-        "Asymmetric lanes & roadwork — Configure 1–3 lanes independently for N/S and E/W, close individual lanes with cones, and adjust traffic volume and turn ratios live.",
-        "Live telemetry & day/night cycle — Throughput, queue, and average wait-time line charts, color-coded curb congestion, day/sunset/night lighting, and mobile touch UI."
-      ],
-      "featuresKo": [
-        "스마트 AI 감응식 & 5가지 신호 — 실시간 대기열을 비교해 녹색 신호를 자동 조절하는 AI 모드와 2현시·4현시·황색 점멸·전체 적색 시나리오.",
-        "원클릭 프리셋 & 구급차 우선신호 — 평시·출근 러시·좌회전 정체·1차선 공사 프리셋과 경광등 구급차 투입 시 우선 녹색 신호 전환.",
-        "비대칭 차선 & 실시간 교통량 — 남북·동서 1~3차선 독립 구성, 개별 차선 폐쇄(라바콘 배치), 방향별 교통량·좌우회전 비율 실시간 조절.",
-        "실시간 지표 & 낮/노을/야간 — 처리량·평균 대기시간 추이 그래프, 연석 혼잡도 색상 표시, 시간대 조명 전환 및 모바일 터치 UI."
-      ],
-      "category": "SimulationApplication",
-      "language": "GDScript",
-      "topics": [
-        "traffic-simulation",
-        "godot",
-        "3d",
-        "ai-signals"
-      ],
-      "icon": "icons/intersection-simulator-3d.webp",
-      "repo": "knoxxr/intersection-simulator-3d"
     }
   ],
   "thinks": {
@@ -945,6 +587,238 @@
         "Claude 내장 — 채팅으로 프로그램을 작성·컴파일·시험 실행하고, MCP 서버로도 쓸 수 있음.",
         "브라우저에서 실행 — Node.js 20 이상이면 Windows·macOS·Linux 모두 동작, 정보 창에서 한 번에 업데이트."
       ]
+    },
+    "global-ship-tracker-3d": {
+      "displayName": "MarineGlobe 3D",
+      "subtitleEn": "Live Global AIS Ship Tracker on a 3D Globe",
+      "subtitleKo": "전 세계 실시간 선박 추적 3D 지구본",
+      "descriptionEn": "Watch real vessel positions from the global AIS network on an interactive 3D globe — live data only, no simulation. Click a ship to see its registered details and 24-hour track. Runs in your browser, no install.",
+      "web": "https://minaryhub.github.io/global-ship-tracker-3d/",
+      "icon": "icons/global-ship-tracker-3d.webp",
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Live data only — Real vessel positions from open AIS feeds; no simulated ships.",
+        "Ship details and 24-hour track — Click any vessel for its registered particulars and recent route.",
+        "Scan any sea area — Scan and subscribe to whatever region you are viewing on the globe.",
+        "No install — Runs right in your browser."
+      ],
+      "featuresKo": [
+        "실데이터만 — 공개 AIS 피드의 실제 선박 위치만 표시하며 가상 선박은 없습니다.",
+        "제원과 24시간 항적 — 선박을 누르면 등록 제원과 최근 항로를 보여 줍니다.",
+        "원하는 해역 수신 — 지구본에서 보고 있는 해역을 바로 스캔·구독합니다.",
+        "설치 없이 실행 — 브라우저에서 바로 실행됩니다."
+      ],
+      "description": "가상 데이터 없이 전 세계 AIS 네트워크의 실제 선박 위치를 3D 지구본 위에 실시간으로 보여 주는 해양 관제 웹 앱. 선박을 누르면 제원과 24시간 항적을 확인할 수 있으며, 설치 없이 브라우저에서 실행됩니다."
+    },
+    "korea-mobile-traffic-map": {
+      "displayName": "통신 트래픽 지도",
+      "displayNameEn": "Mobile Traffic Map",
+      "subtitleEn": "Hourly Mobile Traffic Change Map of Korea",
+      "subtitleKo": "전국 행정동별 모바일 트래픽 변화 지도",
+      "descriptionEn": "An interactive map that visualizes how mobile network traffic changes by time of day across Korean administrative districts and hexagonal cells, rendered with WebGL2. Works on desktop and phones, no install.",
+      "web": "https://minaryhub.github.io/korea-mobile-traffic-map/",
+      "icon": "icons/gyeonggi-traffic-map.webp",
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Four spatial levels — Fine cells, base-station cells, districts, cities and provinces.",
+        "15-minute or hourly view — Switch metrics: change rate, Δ traffic, vs. daily average, total.",
+        "Fast WebGL2 rendering — Tens of thousands of cells at 60fps.",
+        "Bring your own data — Upload or export CSV/JSON, or poll a JSON API."
+      ],
+      "featuresKo": [
+        "4단계 공간 해상도 — 초미세 셀, 기지국 셀, 읍·면·동, 시·군·구·시·도.",
+        "15분·1시간 단위 — 변화율, Δ트래픽, 일평균 대비, 총 트래픽 지표 전환.",
+        "WebGL2 고속 렌더링 — 수만 개 셀을 60fps로 표시합니다.",
+        "내 데이터 연동 — CSV/JSON 업로드·내보내기, JSON API 폴링을 지원합니다."
+      ],
+      "description": "전국 행정동·시군구·육각 셀 단위의 시간대별 모바일 통신 트래픽 변화량을 WebGL2로 보여 주는 인터랙티브 지도. PC와 스마트폰에서 설치 없이 바로 쓸 수 있습니다."
+    },
+    "satellite-tracker-3d": {
+      "displayName": "OrbitPulse 3D",
+      "subtitleEn": "Real-Time Satellite Tracker on a 3D Globe",
+      "subtitleKo": "실시간 인공위성 3D 추적기",
+      "descriptionEn": "Track real satellites — ISS, Tiangong, Hubble, Korean Arirang and GK-2A, GPS, Starlink and more — live on a 3D globe using CelesTrak orbital data and SGP4. Zoom in for 3D satellite models and see upcoming passes. Runs in your browser, no install.",
+      "web": "https://minaryhub.github.io/satellite-tracker-3d/",
+      "icon": "icons/satellite-tracker-3d.webp",
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Real satellites, live — Positions computed from CelesTrak orbital elements with SGP4.",
+        "3D models up close — Zoom in to switch from glowing points to satellite models, including NASA CAD for ISS and Hubble.",
+        "Orbits and pass predictions — Past/future orbit, footprint, and the next 24 hours of passes from your location.",
+        "Time control — Speed up to 1000×, pause, or jump back to live."
+      ],
+      "featuresKo": [
+        "실제 위성 실시간 — CelesTrak 궤도 요소를 SGP4로 계산해 위치를 표시합니다.",
+        "가까이서 보는 3D 모델 — 줌인하면 발광 점이 위성 모델로 바뀌며, ISS·허블 등은 NASA 실물 CAD를 씁니다.",
+        "궤도와 통과 예측 — 과거·미래 궤도, 지상 커버리지, 내 위치 기준 향후 24시간 통과 시각.",
+        "시간 제어 — 최대 1000배속, 일시정지, 실시간 복귀."
+      ],
+      "description": "ISS·톈궁·허블·아리랑·천리안·GPS·스타링크 등 실제 인공위성을 CelesTrak 궤도 데이터와 SGP4로 3D 지구본 위에 실시간 추적하는 웹 앱. 줌인하면 3D 위성 모델을 보고 상공 통과 시각을 확인할 수 있으며, 설치 없이 브라우저에서 실행됩니다."
+    },
+    "global-market-globe": {
+      "displayName": "Orbital Markets",
+      "subtitleEn": "Real-Time Global Stocks, FX & Commodities 3D Globe",
+      "subtitleKo": "실시간 글로벌 주가·외환·원자재 3D 지구본",
+      "descriptionEn": "Watch 14 global stock indices, 9 live FX currency corridors, and 8 commodity hubs stream onto an interactive 3D globe with real-time day/night lighting. Runs right in your browser on desktop and mobile — no install.",
+      "web": "https://global-market-globe-hxxl.vercel.app/",
+      "icon": "icons/global-market-globe.webp",
+      "category": "FinanceApplication",
+      "featuresEn": [
+        "14 global stock indices — Vertical glowing pillars scaled by daily change, with pulse rings on open exchanges.",
+        "9 live FX corridors — 3D geodesic arcs connecting financial hubs (USD/KRW, EUR/USD, etc.) with directional flow animation.",
+        "8 commodity hubs — Rotating metallic markers for gold, WTI & Brent crude, LNG, copper, silver, wheat, and iron ore.",
+        "Live solar terminator & mobile UI — Real-time UTC day/night shadow, region quick jumps, and snap bottom sheet."
+      ],
+      "featuresKo": [
+        "14개 주가지수 — 거래소 위치에 등락률 크기의 발광 기둥과 개장 거래소 실시간 펄스 링 표시.",
+        "9개 실시간 외환 아크 — 금융 허브(뉴욕↔서울 USD/KRW, 프랑크푸르트↔뉴욕 EUR/USD 등)를 잇는 3D 대권 아크.",
+        "8개 원자재 허브 — 금, WTI·브렌트유, LNG, 구리, 은, 소맥, 철광석 거점의 실시간 시세 마커.",
+        "실시간 주야간 경계·모바일 최적화 — UTC 태양광 셰이더, 권역 빠른 이동, 스냅 바텀 시트 지원."
+      ],
+      "description": "전 세계 14개 주요 주가지수, 9개 실시간 외환(FX) 통화쌍, 8개 원자재 허브를 실시간 태양광 주야간 경계가 반영된 3D 지구본 위에 시각화하는 금융 웹 앱. PC와 모바일 브라우저에서 설치 없이 바로 실행됩니다."
+    },
+    "wind-tunnel-3d": {
+      "displayName": "AERO LAB 3D",
+      "subtitleEn": "Interactive 3D Wind Tunnel CFD Simulation in Browser",
+      "subtitleKo": "브라우저 3D 풍동 실험 · 공력(CFD) 시뮬레이션",
+      "descriptionEn": "Run a real-time 3D wind tunnel and voxel CFD simulation right in your browser with WebGL2. Test the default GT sports car, SUV, F1 racer, NACA 2412 airfoil, or upload your own .glb/.gltf/.obj/.stl 3D model to inspect drag, downforce, surface pressure (Cp) heatmaps, and volumetric smoke streamlines — no install.",
+      "web": "https://wind-tunnel-3d.vercel.app/",
+      "icon": "icons/wind-tunnel-3d.webp",
+      "category": "UtilitiesApplication",
+      "featuresEn": [
+        "Preset vehicles & custom 3D upload — GT sports car, SUV, F1 racer, NACA 2412 airfoil, sphere, plus .glb/.gltf/.obj/.stl upload (up to 50 MB).",
+        "Real-time 3D voxel CFD — Computes drag coefficient (Cd), drag force, lift/downforce (CL, FL), side force, frontal area, Reynolds number, and centerline Cp chart.",
+        "Rich 3D visualization — Volumetric smoke streamlines, airflow particles, surface Cp heatmap, movable 2D slice plane, rolling road, and yaw turntable.",
+        "PBR studio graphics & shareable links — Clearcoat car paints, studio IBL lighting, dark/light themes, and URL sharing of test setups — runs 100% in your browser."
+      ],
+      "featuresKo": [
+        "프리셋 모델 & 3D 파일 업로드 — GT 스포츠카·SUV·F1 레이서·NACA 2412 에어포일·구체 및 .glb/.gltf/.obj/.stl 업로드(최대 50MB).",
+        "실시간 3D 복셀 CFD 해석 — 항력 계수(Cd), 항력, 다운포스·양력(CL·FL), 횡력, 전면 투영 면적, 레이놀즈 수, 중심선 Cp 그래프 계산.",
+        "3D 풍동 시각화 — 볼류메트릭 스모크 유선, 기류 파티클, 표면 압력(Cp) 히트맵, 이동식 2D 단면 슬라이스, 롤링 로드·요각 턴테이블.",
+        "PBR 스튜디오 그래픽 & 조건 공유 — 5종 클리어코트 페인트, 다크/라이트 스튜디오 테마, 실험 조건 URL 공유 지원 (설치 없음)."
+      ],
+      "description": "별도 설치 없이 브라우저 WebGL2에서 실시간 3D 풍동 실험과 복셀 CFD 유동 해석을 실행하는 웹 앱. GT 스포츠카·SUV·F1 레이서·에어포일 프리셋과 사용자 3D 모델(.glb/.gltf/.obj/.stl) 업로드를 지원하며, 항력·다운포스·표면 압력(Cp) 히트맵·스모크 유선을 시각화합니다."
+    },
+    "origami-3d-studio": {
+      "displayName": "종이공방 3D",
+      "displayNameEn": "Origami 3D Studio",
+      "subtitleEn": "3D Origami Folding Simulator & Animated GIF Exporter",
+      "subtitleKo": "20종 종이접기 3D 시뮬레이터 · GIF 내보내기",
+      "descriptionEn": "Explore 20 origami folding techniques and 5 step-by-step 3D models (paper crane, dart airplane, cup, kabuto, heart), fold freely by dragging on a 3D canvas with a live 2D crease pattern, and export the entire folding sequence as an animated GIF — right in your browser, no install.",
+      "web": "https://origami-3d-studio.vercel.app/",
+      "icon": "icons/origami-3d-studio.webp",
+      "category": "DesignApplication",
+      "featuresEn": [
+        "20 3D origami techniques — Valley, mountain, cushion, pleat, squash, petal, inside/outside reverse, rabbit ear, crimp, swivel, open/closed sink, pocket tuck, 3D inflate, Miura-ori, and Square Twist.",
+        "5 step-by-step models — Traditional paper crane, classic dart airplane, drinking cup, samurai kabuto, and origami heart.",
+        "Free Fold Studio — Intuitive drag & 3-click snap folding on 3D paper with angle control, undo/redo, and a live synchronized 2D crease pattern.",
+        "Pure-browser GIF export — Built-in GIF89a encoder exports the entire folding process plus an optional 360° 3D turntable finale with step captions."
+      ],
+      "featuresKo": [
+        "20종 3D 종이접기 기법 — 계곡·산·방석·계단·주머니·꽃잎·뒤집어 접기·토끼귀·크림프·싱크·입체 부풀리기·미우라 접기·스퀘어 트위스트 구현.",
+        "5종 단계별 완성 작품 — 종이학(10단계), 종이비행기(7단계), 종이컵(5단계), 종이 투구(6단계), 종이 하트(8단계).",
+        "자유 창작 스튜디오 — 3D 종이 위 직관적 드래그·스냅 접기, 각도 조절, 실행 취소, 실시간 2D 전개도(Crease Pattern) 동기화.",
+        "브라우저 내 GIF 내보내기 — 서버 없이 내장 GIF89a 인코더로 전 과정과 360° 회전 피날레, 단계 자막까지 바로 GIF로 저장."
+      ],
+      "description": "알려진 종이접기 기술 20종과 5종 완성 작품(종이학·종이비행기·종이컵·투구·하트)을 3D 강체 기구학으로 시뮬레이션하고, 자유 드래그 접기와 실시간 2D 전개도 확인, 전 과정 애니메이션 GIF 내보내기까지 브라우저에서 바로 실행하는 3D 종이접기 웹 앱입니다."
+    },
+    "brickcraft-3d": {
+      "displayName": "BrickCraft 3D",
+      "subtitleEn": "3D Lego Brick Assembly Studio & Instruction/GIF Exporter",
+      "subtitleKo": "93종 브릭 3D 레고 조립 · 설명서·GIF 스튜디오",
+      "descriptionEn": "Build 3D models with 93 Lego-style brick types and 24 colors right in your browser, group assembly steps, and export step-by-step GIFs, 60fps videos, transparent PNG snapshots, or instruction manuals (PDF/BOM) — no install.",
+      "web": "https://brickcraft-3d-eight.vercel.app/",
+      "icon": "icons/brickcraft-3d.webp",
+      "category": "DesignApplication",
+      "featuresEn": [
+        "93 brick types & 24 colors — Bricks, plates, tiles, slopes, arches, windows, doors, Technic/SNOT, wheels, metallic gold, and transparent parts.",
+        "Export studio — Step-by-step GIF89a with parts callout, 60fps WebM/MP4 video, transparent PNG snapshot, and printable PDF/PNG instruction manuals with BOM.",
+        "Smart 3D editing — Mirror symmetry (X/Z/4-way), real-time shadows, outline mode, multi-select, eyedropper, and switchable 16×16 / 24×24 / 32×32 baseplates.",
+        "Instant sharing & sound — Compress your entire build into a shareable URL hash, with mobile touch controls and synthesized brick click sounds."
+      ],
+      "featuresKo": [
+        "93종 브릭 & 24종 컬러 — 기본 브릭·플레이트·타일·슬로프·아치·창문·문·테크닉·SNOT·바퀴·메탈릭 골드·투명 파츠 지원.",
+        "올인원 내보내기 스튜디오 — 부품 콜아웃이 포함된 단계별 GIF89a, 60fps 영상, 투명 PNG, 부품 목록(BOM)이 담긴 조립 설명서(PDF/PNG) 저장.",
+        "편리한 3D 편집 — X/Z/4방 대칭 조립, 실시간 그림자·윤곽선 모드, 다중 선택·복제, 스포이드, 16×16·24×24·32×32 베이스판 전환.",
+        "URL 링크 공유 & 사운드 — 서버 없이 모델 전체를 URL로 즉시 공유하고, 모바일 터치 제스처와 브릭 결합 효과음 지원."
+      ],
+      "description": "브라우저에서 93종의 레고 시스템 브릭과 24종 컬러로 3D 모델을 조립하고, 조립 순서를 GIF · 60fps 영상 · 투명 PNG · 공식 스타일 조립 설명서(PDF/BOM)로 내보내는 올인원 3D 브릭 스튜디오입니다. 설치 없이 PC·모바일에서 바로 실행됩니다."
+    },
+    "math-av-simulator": {
+      "displayName": "Beauty of Math",
+      "subtitleEn": "3D Audio-Visual Mathematical Simulator (8 Worlds)",
+      "subtitleKo": "8가지 아름다운 수학 공식 3D 시청각 시뮬레이터",
+      "descriptionEn": "Experience 8 iconic mathematical worlds — Riemann Zeta critical line, Euler identity Taylor series, 50K-particle Lorenz attractor, Fourier epicycles, golden-angle phyllotaxis, GPU Julia/Mandelbrot fractals, 4D Hopf fibration, and 36K-particle Chladni resonance — rendered in real-time Three.js WebGL with generative Web Audio sound. No install.",
+      "web": "https://math-av-simulator.vercel.app/",
+      "icon": "icons/math-av-simulator.webp",
+      "category": "EducationalApplication",
+      "featuresEn": [
+        "8 interactive math worlds (keys 1–8) — Riemann Zeta zeros, Euler Taylor series, 50K GPU Lorenz attractor, Fourier epicycles, golden-angle phyllotaxis, Julia/Mandelbrot GPU fractals, 4D Hopf fibration, and 36K Chladni plates.",
+        "Real-time GPU WebGL — Custom Three.js ShaderMaterial & BufferGeometry with live parameter sliders, camera orbit, and smooth zoom.",
+        "Generative Web Audio engine — Lydian & Pentatonic harmonic synth pads, low-pass filter mapped to trajectory speed/curvature, and procedural reverb.",
+        "Browser native — Runs right in your browser with KaTeX formula overlays and no installation."
+      ],
+      "featuresKo": [
+        "8가지 수학 세계 (단축키 1–8) — 리만 제타 영점, 오일러 테일러 급수, 5만 GPU 로렌츠 끌개, 푸리에 주전원, 황금각 필로택시스, GPU 프랙탈, 4D 호프 파이버레이션, 3.6만 클라드니 공명.",
+        "실시간 GPU WebGL — Three.js 커스텀 셰이더로 수만 개 입자와 프랙탈을 부드럽게 렌더링하고 파라미터를 실시간 조작.",
+        "제너레이티브 사운드 엔진 — Lydian·Pentatonic 스케일 배음 신스와 궤적 속도·곡률 연동 필터, 프로시저럴 리버브.",
+        "설치 없이 바로 실행 — KaTeX 수식 안내와 함께 브라우저에서 즉시 감상·탐구할 수 있습니다."
+      ],
+      "description": "리만 제타 함수, 오일러 항등식, 5만 파티클 로렌츠 끌개, 푸리에 주전원, 황금각 나선, GPU 프랙탈, 4D 호프 파이버레이션, 3.6만 입자 클라드니 음향 공명까지 8가지 아름다운 수학 공식을 GPU WebGL과 제너레이티브 사운드로 체험하는 3D 시청각 웹 앱입니다."
+    },
+    "cosmos-voyager": {
+      "displayName": "COSMOS VOYAGER",
+      "subtitleEn": "3D Universe & Galaxy Navigation Simulator (AU to 46.5 Gly)",
+      "subtitleKo": "전 우주 은하·항성 3D 항법 시뮬레이터",
+      "descriptionEn": "Fly and warp across 18 orders of magnitude — from our Solar System and nearby stars to the Milky Way, Laniakea Supercluster, JWST farthest galaxies (JADES-GS-z14-0), and the 46.5-billion-light-year observable universe — with real astrodynamics, Kepler orbits, galaxy collisions, and Hubble expansion right in your browser. No install.",
+      "web": "https://cosmos-voyager-ten.vercel.app/",
+      "category": "EducationalApplication",
+      "featuresEn": [
+        "Real 3D astronomical catalog — 140+ stars, galaxies, nebulae, globular clusters, supermassive black holes, quasars, superclusters, and cosmic voids placed from RA/Dec/distance.",
+        "Universal catalog resolver — Search NGC, IC, Messier, HIP, HD, GJ, Kepler, TOI, Gaia DR3, or Abell IDs to warp straight to any object and explore 120 interior star systems inside any galaxy.",
+        "Full-scale Cosmic Time Engine — Keplerian planetary & binary orbits, 3D stellar proper motion (Barnard’s Star, Proxima, S5-HVS1), Andromeda–Milky Way collision, and Hubble expansion.",
+        "Hyper-warp drive & guided tours — Relativistic Doppler warp effects, 4 guided cosmic tours, free WASD 3D flight, and touch controls."
+      ],
+      "featuresKo": [
+        "실제 천문 좌표 3D 카탈로그 — 적경·적위·거리 기반으로 배치된 140여 개 항성·은하·성운·블랙홀·퀘이사·초은하단·우주 거대 공동.",
+        "전 우주 카탈로그 검색 & 은하 내부 탐험 — NGC·IC·M·HIP·Kepler·Gaia 등 공식 코드로 즉시 워프하고, 모든 은하 내부의 120개 항성계와 중심 블랙홀까지 탐험.",
+        "전 스케일 천체 역학 (Cosmic Time Engine) — 케플러 공전, 항성 3D 고유운동, 45억 년 뒤 안드로메다–우리 은하 충돌, 허블 팽창 및 빅뱅 역행 시뮬레이션.",
+        "하이퍼 워프 & 가이드 투어 — 상대론적 도플러 워프 연출, 4종 가이드 투어, 자유 3D 비행(WASD) 및 모바일 터치 지원."
+      ],
+      "description": "태양계와 근접 항성부터 우리 은하, 라니아케아 초은하단, JWST 최원거리 은하(JADES-GS-z14-0)와 관측 가능한 우주 경계(465억 광년)까지 18자릿수 로그 스케일로 자유 비행·워프하는 3D 우주 항법 시뮬레이터입니다. 실제 천문 좌표·천체 역학·안드로메다 충돌·허블 팽창을 설치 없이 브라우저에서 체험할 수 있습니다."
+    },
+    "intersection-simulator-3d": {
+      "displayName": "3D 교차로 교통 시뮬레이터",
+      "displayNameEn": "Intersection 3D Simulator",
+      "subtitleEn": "3D Intersection Traffic & AI Signal Simulator (Godot 4.3)",
+      "subtitleKo": "AI 감응식 신호등 · 3D 교차로 교통 시뮬레이터",
+      "descriptionEn": "Simulate 3D intersection traffic flow right in your browser (Godot 4.3 WebAssembly). Test AI-adaptive traffic lights, 2/4-phase signals, emergency ambulance priority, asymmetric 1–3 lane layouts, lane closures with traffic cones, live congestion heatmaps, and day/sunset/night lighting — no install.",
+      "web": "https://intersection-simulator-3d.vercel.app/",
+      "icon": "icons/intersection-simulator-3d.webp",
+      "category": "SimulationApplication",
+      "featuresEn": [
+        "Smart AI & 5 signal modes — Adaptive AI queue-balancing signals, 2-phase, 4-phase protected left turns, flashing yellow, and all-red, with live timing controls.",
+        "Presets & ambulance priority — One-click Balanced, Rush Hour (AI), Left-Turn Jam, and 1-Lane Roadwork presets plus emergency ambulance green-wave preemption.",
+        "Asymmetric lanes & roadwork — Configure 1–3 lanes independently for N/S and E/W, close individual lanes with cones, and adjust traffic volume and turn ratios live.",
+        "Live telemetry & day/night cycle — Throughput, queue, and average wait-time line charts, color-coded curb congestion, day/sunset/night lighting, and mobile touch UI."
+      ],
+      "featuresKo": [
+        "스마트 AI 감응식 & 5가지 신호 — 실시간 대기열을 비교해 녹색 신호를 자동 조절하는 AI 모드와 2현시·4현시·황색 점멸·전체 적색 시나리오.",
+        "원클릭 프리셋 & 구급차 우선신호 — 평시·출근 러시·좌회전 정체·1차선 공사 프리셋과 경광등 구급차 투입 시 우선 녹색 신호 전환.",
+        "비대칭 차선 & 실시간 교통량 — 남북·동서 1~3차선 독립 구성, 개별 차선 폐쇄(라바콘 배치), 방향별 교통량·좌우회전 비율 실시간 조절.",
+        "실시간 지표 & 낮/노을/야간 — 처리량·평균 대기시간 추이 그래프, 연석 혼잡도 색상 표시, 시간대 조명 전환 및 모바일 터치 UI."
+      ],
+      "description": "Godot 4.3 WebAssembly로 구현된 3D 교차로 교통 흐름 시뮬레이터입니다. AI 스마트 감응식 신호등, 2·4현시 시나리오, 구급차 긴급 우선신호, 비대칭 1~3차선 구성·공사 차선 폐쇄, 실시간 혼잡도 그래프와 낮·노을·야간 조명을 설치 없이 브라우저에서 바로 체험할 수 있습니다."
+    },
+    "elevator-3d-simulator-exaone": {
+      "displayName": "3D 엘리베이터 시뮬레이터",
+      "displayNameEn": "3D Elevator Simulator",
+      "subtitleEn": "3D WebGL Elevator Dispatch & AI Efficiency Simulator",
+      "subtitleKo": "6종 배차 알고리즘 · AI 3D 엘리베이터 시뮬레이터",
+      "description": "지상·지하 층수 조절, 6가지 엘리베이터 배차 알고리즘, LG EXAONE AI 효율 최적화를 3D WebGL로 실시간 비교·시뮬레이션하는 웹 앱. 설치 없이 브라우저에서 바로 실행됩니다.",
+      "descriptionEn": "A 3D WebGL elevator simulator with above-ground and underground floor controls, 6 dispatch algorithms, EN/KR UI, and LG EXAONE AI efficiency optimization. Runs right in your browser — no install.",
+      "web": "https://elevator-3d-simulator-exaone.vercel.app/",
+      "category": "SimulationApplication"
     }
   }
 }
